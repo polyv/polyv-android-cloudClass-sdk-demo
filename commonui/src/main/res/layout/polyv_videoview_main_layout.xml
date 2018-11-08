@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/videoview_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 主播放器 -->
+    <com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView
+        android:id="@+id/pb_videoview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- 主播放器载入状态指示器 -->
+        <ProgressBar
+            android:id="@+id/loadingview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <include layout="@layout/polyv_nostream_layout"/>
+    </com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView>
+
+
+    <!-- 主播放器在准备中，显示的视图 -->
+    <TextView
+        android:id="@+id/preparingview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#848e99"
+        android:gravity="center"
+        android:text="主播放器正在准备中..."
+        android:textColor="#ffffff"
+        android:visibility="gone" />
+
+    <!-- 主播放器播放信息 -->
+    <TableLayout
+        android:id="@+id/hud_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:alpha="0.5"
+        android:background="@color/black"
+        android:padding="6dp"
+        android:visibility="gone" />
+</RelativeLayout>

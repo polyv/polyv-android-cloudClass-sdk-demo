@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 播放区域布局，全屏时会移除这一块 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_top"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- 主播放器布局 -->
+    <include
+        layout="@layout/polyv_cloudclass_videoview_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/fl_danmu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dm_10" />
+    <!-- 子播放器布局 -->
+    <include
+        layout="@layout/polyv_videoview_sub_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 亮度手势提示 -->
+    <com.easefun.polyv.commonui.player.view.PolyvLightTipsView
+        android:id="@+id/tipsview_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <!-- 音量手势提示 -->
+    <com.easefun.polyv.commonui.player.view.PolyvVolumeTipsView
+        android:id="@+id/tipsview_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+    <!-- 跑马灯 -->
+    <com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView
+        android:id="@+id/polyv_marquee_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 控制栏 -->
+    <com.easefun.polyv.cloudclassdemo.player.PolyvCloudClassMediaController
+        android:id="@+id/controller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</RelativeLayout>

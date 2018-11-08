@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_speed"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#dd404040"
+    android:clickable="true"
+    android:visibility="invisible">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <LinearLayout
+            android:id="@+id/speed_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/bt_speed_10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/polyv_bt_pressed_gray"
+                android:text="1x"
+                android:textColor="@drawable/polyv_speed_text_selector" />
+
+            <Button
+                android:id="@+id/bt_speed_12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/polyv_bt_pressed_gray"
+                android:text="1.25x"
+                android:textColor="@drawable/polyv_speed_text_selector" />
+
+            <Button
+                android:id="@+id/bt_speed_15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/polyv_bt_pressed_gray"
+                android:text="1.5x"
+                android:textColor="@drawable/polyv_speed_text_selector" />
+
+            <Button
+                android:id="@+id/bt_speed_20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/polyv_bt_pressed_gray"
+                android:text="2x"
+                android:textColor="@drawable/polyv_speed_text_selector" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

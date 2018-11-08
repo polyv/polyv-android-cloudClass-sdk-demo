@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:alpha="0.7"
+    android:background="@drawable/polyv_rl_bg_corners">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="13dp">
+
+            <TextView
+                android:id="@+id/tv_currenttime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="08:22"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/dm_20" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/tv_sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/tv_currenttime"
+                android:text=" / "
+                android:textColor="#ffffff"
+                android:textSize="@dimen/dm_30" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/tv_totaltime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/tv_sp"
+                android:text="08:22"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/dm_30" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/sb_playprogress"
+            android:layout_width="@dimen/dm_150"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="46dp"
+            android:focusable="true"
+            android:max="1000"
+            android:maxHeight="3dp"
+            android:minHeight="3dp"
+            android:paddingTop="5dp"
+            android:progress="0"
+            android:progressDrawable="@drawable/polyv_sb_bg_drawable"
+            android:secondaryProgress="0"
+            android:thumb="@null"
+            android:thumbOffset="0dp" />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="48dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/iv_avatar"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginRight="11dp"
+        android:src="@drawable/polyv_missing_face" />
+
+    <LinearLayout
+        android:id="@+id/ll_type"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_toRightOf="@id/iv_avatar"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:background="@drawable/polyv_tv_corner"
+            android:gravity="center"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:singleLine="true"
+            android:textColor="#ffffff"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_nick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_type"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="#878787"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_type"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/iv_avatar">
+
+        <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
+            android:id="@+id/gtv_receive_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/polyv_tv_receive"
+            android:gravity="center_vertical"
+            android:padding="8dp"
+            android:textColor="#546e7a"
+            android:textSize="14sp" />
+
+        <com.easefun.polyv.commonui.widget.PolyvRoundImageView
+            android:id="@+id/iv_chat_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/polyv_iv_gray"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView
+            android:id="@+id/cpv_img_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:max="100"
+            android:progress="0"
+            android:visibility="gone"
+            app:cpv_innerPadding="2dp"
+            app:cpv_outerColor="#E5ffffff"
+            app:cpv_outerSize="1dp"
+            app:cpv_progressNormalColor="#00000000"
+            app:cpv_progressReachColor="#E5ffffff"
+            app:cpv_progressStyle="FillInnerArc" />
+    </FrameLayout>
+</RelativeLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:gravity="right"
+    android:paddingLeft="48dp"
+    android:paddingRight="8dp">
+
+    <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
+        android:id="@+id/gtv_send_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tv_type"
+        android:layout_below="@id/tv_type"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/polyv_tv_send"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:textColor="#ffffff"
+        android:textSize="14sp" />
+</RelativeLayout>

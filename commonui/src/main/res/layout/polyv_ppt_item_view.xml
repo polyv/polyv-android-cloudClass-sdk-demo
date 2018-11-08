@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/polyv_ppt_container"
+    android:background="@color/black"
+    android:layout_width="@dimen/ppt_width"
+    android:layout_height="@dimen/ppt_height">
+
+    <com.easefun.polyv.commonui.player.ppt.PolyvPPTView
+        android:background="@color/video_back"
+        android:layout_gravity="center"
+        android:id="@+id/polyv_ppt_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.easefun.polyv.commonui.player.ppt.PolyvPPTView>
+
+    <ImageView
+        android:id="@+id/video_subview_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close" />
+</FrameLayout>

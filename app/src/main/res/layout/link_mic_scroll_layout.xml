@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/link_mic_surfv"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="horizontal">
+
+    <FrameLayout
+        android:background="@color/video_back"
+        android:id="@+id/link_mic_camera_layout"
+        android:layout_width="@dimen/ppt_width"
+        android:layout_height="@dimen/ppt_height">
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/camera_default" />
+    </FrameLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/polyv_link_camer_shape"
+        android:layout_width="@dimen/ppt_width"
+        android:layout_height="@dimen/ppt_height"
+        android:background="@drawable/polyv_camer_back"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/polyv_camera_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/dm_10"
+            android:src="@drawable/img_cemera_switch" />
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:ellipsize="end"
+        android:maxWidth="@dimen/dm_134"
+        android:maxLines="1"
+        android:id="@+id/polyv_link_nick"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dm_48"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/dm_10"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        tools:text="a;lfjsdjfs;k" />
+</RelativeLayout>

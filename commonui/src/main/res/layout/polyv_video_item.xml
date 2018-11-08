@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 播放区域布局，全屏时会移除这一块 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_top"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- 主播放器布局 -->
+    <include
+        layout="@layout/polyv_videoview_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 子播放器布局 -->
+    <include
+        layout="@layout/polyv_videoview_sub_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 亮度手势提示 -->
+    <com.easefun.polyv.commonui.player.view.PolyvLightTipsView
+        android:id="@+id/tipsview_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <!-- 音量手势提示 -->
+    <com.easefun.polyv.commonui.player.view.PolyvVolumeTipsView
+        android:id="@+id/tipsview_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <!-- 快进/回退提示 -->
+    <com.easefun.polyv.commonui.player.view.PolyvProgressTipsView
+        android:id="@+id/tipsview_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <!-- 控制栏 -->
+    <com.easefun.polyv.commonui.player.view.PolyvVodMediaController
+        android:id="@+id/controller"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!-- 播放速度选择布局 -->
+    <include
+        layout="@layout/polyv_controller_land_speed_layout"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true" />
+
+    <!-- 截图显示布局 -->
+    <com.easefun.polyv.commonui.player.view.PolyvScreenshotTipsView
+        android:id="@+id/tipsview_screenshot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 视频片段截取时显示布局 -->
+    <com.easefun.polyv.commonui.player.view.PolyvGifTipsView
+        android:id="@+id/tipsview_gif"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

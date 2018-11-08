@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_controller_port"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/video_refresh_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/refresh" />
+
+    <ImageView
+        android:id="@+id/video_screen_switch_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/fullscreen" />
+    <TextView
+        android:visibility="gone"
+        android:shadowColor="#FF000000"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:shadowRadius="2"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:text="@string/most_definition"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/bitrate_change"
+        android:layout_width="@dimen/dm_48"
+        android:layout_height="@dimen/dm_48"
+        android:layout_toLeftOf="@id/video_screen_switch_port"
+        android:src="@drawable/brate" />
+
+    <com.easefun.polyv.commonui.player.widget.PolyvSlideSwitch
+        android:id="@+id/video_danmu_port"
+        android:layout_width="36dp"
+        android:layout_height="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/controller_margin"
+        android:layout_toLeftOf="@id/bitrate_change" />
+    <TextView
+        android:shadowColor="#FF000000"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:shadowRadius="2"
+        android:textColor="@color/white"
+        android:layout_marginRight="5dp"
+        android:layout_alignBottom="@+id/video_danmu_port"
+        android:layout_toLeftOf="@+id/video_danmu_port"
+        android:text="@string/danmu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <ImageView
+        android:id="@+id/video_ppt_change_switch_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/video_screen_switch_port"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/controller_margin"
+        android:src="@drawable/exchange" />
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/video_hands_up_port"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/video_ppt_change_switch_port"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/controller_margin"
+        android:src="@drawable/polyv_mic_phone_selector" />
+
+</RelativeLayout>

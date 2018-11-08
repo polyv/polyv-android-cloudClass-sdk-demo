@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/rl_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/pb_progress"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:max="200"
+        android:maxHeight="8dp"
+        android:minHeight="8dp"
+        android:progress="0"
+        android:progressDrawable="@drawable/polyv_sb_bg_drawable"
+        android:thumbOffset="0dp"/>
+
+    <com.easefun.polyv.commonui.player.widget.PolyvDotView
+        android:id="@+id/v_dot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/bt_gif"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="#e0e0e0"
+        android:gravity="center"
+        android:text="GIF"
+        android:textColor="#ffffff"
+        android:textSize="12dp"/>
+</RelativeLayout>

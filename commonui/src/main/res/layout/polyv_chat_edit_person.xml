@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="#ffffff"
+    android:padding="8dp">
+
+    <com.easefun.polyv.businesssdk.sub.gif.GifEditText
+        android:id="@+id/et_talk"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="6dp"
+        android:layout_toLeftOf="@id/iv_emoji"
+        android:layout_toRightOf="@id/iv_switch"
+        android:background="@drawable/polyv_et_chat_corner"
+        android:hint="我也来聊几句..."
+        android:imeOptions="actionSend|flagNoFullscreen"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:singleLine="true"
+        android:textColor="#000000"
+        android:textColorHint="#c7c7c7"
+        android:textSize="16sp" />
+
+    <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+        android:id="@+id/iv_emoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:src="@drawable/emoji"
+        app:pressed_color="#14a2f4"
+        app:selected_color="#14a2f4" />
+</RelativeLayout>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sub_videoview_contianer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 子播放器，用于播放广告及暖场 -->
+    <com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview
+        android:id="@+id/sub_videoview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone" />
+
+    <!-- 子播放器载入状态指示器，注意不要和主播放器用同一个控件 -->
+    <ProgressBar
+        android:id="@+id/sub_loadingview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+
+    <!-- 子播放器在准备中，显示的视图 -->
+    <TextView
+        android:id="@+id/sub_preparingview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#a08e99"
+        android:gravity="center"
+        android:text="子播放器正在准备中..."
+        android:textColor="#ffffff"
+        android:visibility="gone" />
+
+    <!-- 子播放器播放信息 -->
+    <!--<TableLayout-->
+    <!--android:id="@+id/sub_hud_view"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:alpha="0.5"-->
+    <!--android:background="@color/black"-->
+    <!--android:padding="6dp"-->
+    <!--android:visibility="gone"/>-->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <!-- 广告/暖场倒计时 -->
+        <TextView
+            android:id="@+id/tv_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="倒计时"
+            android:textColor="#ffffff"
+            android:textSize="12dp"
+            android:visibility="gone" />
+
+        <!-- 片头广告跳过按钮 -->
+        <TextView
+            android:id="@+id/tv_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="  跳过"
+            android:textColor="#0000ff"
+            android:textSize="12dp"
+            android:visibility="gone" />
+    </LinearLayout>
+    <ImageView
+        android:visibility="invisible"
+        android:src="@drawable/back"
+        android:id="@+id/sub_video_back_land"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

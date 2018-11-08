@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_controller_land"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/video_refresh_land"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/refresh" />
+
+    <LinearLayout
+
+        android:id="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dm_48"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/video_refresh_land"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:shadowColor="#FF000000"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="2"
+            android:text="@string/danmu"
+            android:textColor="@color/white" />
+
+        <com.easefun.polyv.commonui.player.widget.PolyvSlideSwitch
+            android:id="@+id/video_danmu_land"
+            android:layout_width="36dp"
+            android:layout_height="16dp"
+            android:layout_marginRight="@dimen/controller_margin"
+            android:layout_toLeftOf="@id/bitrate_change_land" />
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginRight="@dimen/dm_10"
+            android:id="@+id/bitrate_change_land"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dm_48"
+            android:gravity="center"
+            android:shadowColor="#FF000000"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="2"
+            android:src="@drawable/brate"
+            android:text="@string/most_definition"
+
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/video_ppt_change_switch_land"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/controller_margin"
+        android:src="@drawable/exchange" />
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/video_hands_up_land"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/video_ppt_change_switch_land"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/controller_margin"
+        android:src="@drawable/polyv_mic_phone_selector" />
+</RelativeLayout>

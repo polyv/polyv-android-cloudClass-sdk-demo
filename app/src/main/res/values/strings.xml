@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">POLYV云课堂</string>
+    <string name="danmu">弹幕</string>
+
+    <!-- 登录 -->
+    <string name="login">登录</string>
+    <string name="login_head_info">POLYV&#160;&#160;云课堂</string>
+    <string name="login_userId">用户ID</string>
+    <string name="login_vid">视频ID</string>
+    <string name="login_channelId">频道ID</string>
+    <string name="login_appId">APP ID</string>
+    <string name="login_appSecert">APP Secert</string>
+    <string name="login_waiting">正在登录中，请稍等...</string>
+    <string name="login_copyright">2013 - 2018 广州易方信息科技有限公司 版权所有</string>
+
+</resources>

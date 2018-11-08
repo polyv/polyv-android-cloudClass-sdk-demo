@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><!--使用include的id find，不然为null-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="236dp"
+    android:background="#ececec"
+    android:padding="8dp"
+    android:visibility="gone">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_emo_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/iv_delete"
+        android:scrollbars="none" />
+
+    <ImageView
+        android:id="@+id/iv_delete"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/polyv_iv_corner_pressed"
+        android:scaleType="center"
+        android:src="@drawable/polyv_backspace_android" />
+
+    <TextView
+        android:id="@+id/tv_send"
+        android:layout_width="44dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/iv_delete"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/polyv_tv_selected_send_message"
+        android:gravity="center"
+        android:text="发送"
+        android:textColor="@color/polyv_tv_text_selected_send_message"
+        android:textSize="14sp" />
+</RelativeLayout>

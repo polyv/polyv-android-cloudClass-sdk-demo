@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTWebView
+        android:id="@+id/polyv_ppt_web"
+        android:clickable="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTWebView>
+    <ImageView
+        android:layout_gravity="center"
+        android:id="@+id/polyv_ppt_default_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ppt_default" />
+</FrameLayout>

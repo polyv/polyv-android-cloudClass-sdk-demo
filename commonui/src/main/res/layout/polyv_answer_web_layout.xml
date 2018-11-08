@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/polyv_answer_web_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:visibility="invisible"
+    android:background="@color/gray_alpha">
+
+    <com.easefun.polyv.cloudclass.video.PolyvAnswerWebView
+
+        android:id="@+id/polyv_question_web"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/dm_20"
+        android:layout_marginTop="@dimen/dm_60"
+        android:layout_marginRight="@dimen/dm_20"
+        android:layout_marginBottom="@dimen/dm_60">
+
+    </com.easefun.polyv.cloudclass.video.PolyvAnswerWebView>
+
+    <ImageView
+        android:id="@+id/answer_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="@dimen/dm_75"
+        android:layout_marginRight="@dimen/dm_30"
+        android:src="@drawable/close" />
+</FrameLayout>
