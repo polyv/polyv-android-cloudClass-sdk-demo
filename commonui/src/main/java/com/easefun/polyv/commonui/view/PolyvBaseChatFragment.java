@@ -195,17 +195,16 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
                             // 键盘关闭
                             if (bottom > oldBottom) {
                                 isKeyboardVisible = false;
-                                if (!isShowEmoji) {
-                                    resetChatEditContainer();
-                                } else {
-                                    replaceChatEditContainer(chatEditLayout);//放在这里替换，避免布局抖动
-                                    emoListLayout.setVisibility(View.VISIBLE);//放在这里替换，避免布局抖动
-                                    changeViewLayoutParams();
-                                }
+                                acceptKeyboardCloseEvent(chatEditLayout);
                             }// 键盘弹出
                             else if (bottom < oldBottom) {
                                 isKeyboardVisible = true;
                             }
+                    } else if (right > 0 && oldRight > 0 && right != oldRight && isKeyboardVisible) {//键盘显示状态时切换到了横屏
+                        if (bottom != oldBottom) {//键盘关闭
+                            isKeyboardVisible = false;
+                            acceptKeyboardCloseEvent(chatEditLayout);
+                        }
                     }
                 }
             });
@@ -246,8 +245,8 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    resetViewLayoutParams();
                     isShowEmoji = false;
+                    resetViewLayoutParams();
                     replaceChatEditContainer(chatEditLayout);
                     KeyboardUtils.showSoftInput(talk);//替换后再显示
                     emoListLayout.setVisibility(View.GONE);
@@ -279,26 +278,18 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
                 isShowEmoji = emoListLayout.getVisibility() != View.VISIBLE;//willShow
                 KeyboardUtils.hideSoftInput(talk);//隐藏后再替换
                 if (isShowEmoji) {
-                    if (!isKeyboardVisible)//键盘隐藏时才替换
+                    talk.requestFocus();
+                    if (!isKeyboardVisible) {//键盘隐藏时才替换
                         replaceChatEditContainer(chatEditLayout);//放在监听器那里替换
+                        emoListLayout.setVisibility(View.VISIBLE);//放在监听器那里替换
+                        changeViewLayoutParams();//放在监听器那里替换
+                    }
                 } else {
                     resetChatEditContainer();
-                }
-                if (emoListLayout.getVisibility() == View.GONE)
-                    talk.requestFocus();
-                if (isShowEmoji) {
-                    if (!isKeyboardVisible)
-                        emoListLayout.setVisibility(View.VISIBLE);//放在监听器那里替换
-                } else {
                     emoListLayout.setVisibility(View.GONE);
-                }
-                emoji.setSelected(isShowEmoji);
-                if (isShowEmoji) {
-                    if (!isKeyboardVisible)
-                        changeViewLayoutParams();//放在监听器那里替换
-                } else {
                     resetViewLayoutParams();
                 }
+                emoji.setSelected(isShowEmoji);
             }
         });
         //查看更多信息
@@ -323,12 +314,14 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
     }
 
     private void resetViewLayoutParams() {
-        final ViewGroup viewParent = (ViewGroup) view.getParent();
-        if (viewParent == null)
-            return;
-        ViewGroup.LayoutParams vlp = viewParent.getLayoutParams();//viewpager中改变view的高度无效
-        vlp.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        viewParent.setLayoutParams(vlp);
+        if (view != null) {
+            final ViewGroup viewParent = (ViewGroup) view.getParent();
+            if (viewParent == null)
+                return;
+            ViewGroup.LayoutParams vlp = viewParent.getLayoutParams();//viewpager中改变view的高度无效
+            vlp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            viewParent.setLayoutParams(vlp);
+        }
     }
 
     private void changeViewLayoutParams() {
@@ -358,7 +351,7 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
     }
 
     private void resetChatEditContainer() {
-        if (talkLayout.getParent() != talkParentLayout) {
+        if (talkLayout != null && talkLayout.getParent() != talkParentLayout) {
             if (talkLayout.getParent() != null) {
                 ((ViewGroup) talkLayout.getParent()).setVisibility(View.GONE);
                 ((ViewGroup) talkLayout.getParent()).removeView(talkLayout);
@@ -447,6 +440,16 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
             talk.getText().insert(selectionStart, span);
     }
 
+    private void acceptKeyboardCloseEvent(ViewGroup chatEditLayout) {
+        if (!isShowEmoji) {
+            resetChatEditContainer();
+        } else {
+            replaceChatEditContainer(chatEditLayout);//放在这里替换，避免布局抖动
+            emoListLayout.setVisibility(View.VISIBLE);//放在这里替换，避免布局抖动
+            changeViewLayoutParams();//放在这里替换，避免布局抖动
+        }
+    }
+
     protected void hideSoftInputAndEmoList() {
         if (talk != null) {
             KeyboardUtils.hideSoftInput(talk);
@@ -455,7 +458,7 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
             emoListLayout.setVisibility(View.GONE);
             emoji.setSelected(false);
         }
-        if (isShowEmoji) {
+        if (isShowEmoji) {//isShowEmoji->键盘已隐藏
             resetChatEditContainer();//如果键盘还没隐藏，需要交给监听器重置，不然会有问题
             resetViewLayoutParams();
         }
@@ -473,14 +476,16 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        hideSoftInputAndEmoList();
+        if (getUserVisibleHint()) {
+            hideSoftInputAndEmoList();
+        }
     }
 
     public boolean onBackPressed() {
         if (getImageViewerContainer() != null && getImageViewerContainer().getVisibility() == View.VISIBLE) {
             getImageViewerContainer().setVisibility(View.GONE);
             return true;
-        } else if (emoListLayout.getVisibility() == View.VISIBLE) {
+        } else if (emoListLayout != null && emoListLayout.getVisibility() == View.VISIBLE) {
             hideSoftInputAndEmoList();
             return true;
         }

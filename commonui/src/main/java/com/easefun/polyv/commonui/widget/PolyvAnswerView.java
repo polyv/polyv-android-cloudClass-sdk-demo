@@ -68,17 +68,7 @@ public class PolyvAnswerView extends FrameLayout {
             public void accept(PolyvSocketMessageVO polyvSocketMessage) throws Exception {
 
                 String event = polyvSocketMessage.getEvent();
-                if (GET_TEST_QUESTION_CONTENT.equals(event) ||
-                        GET_TEST_QUESTION_RESULT.equals(event)) {
-                    PolyvCommonLog.d(TAG, "receive question message");
-                    showAnswerWebView(polyvSocketMessage);
-                }
-
-                if (event != null && event.contains(TEST_QUESTION)) {
-                    if (answerWebView != null) {
-                        answerWebView.callTestQuestion(polyvSocketMessage.getMessage());
-                    }
-                }
+                processSocketMessage(polyvSocketMessage, event);
             }
         });
 
@@ -88,6 +78,20 @@ public class PolyvAnswerView extends FrameLayout {
                 answerContainer.setVisibility(GONE);
             }
         });
+    }
+
+    public void processSocketMessage(PolyvSocketMessageVO polyvSocketMessage, String event) {
+        if (GET_TEST_QUESTION_CONTENT.equals(event) ||
+                GET_TEST_QUESTION_RESULT.equals(event)) {
+            PolyvCommonLog.d(TAG, "receive question message");
+            showAnswerWebView(polyvSocketMessage);
+        }
+
+        if (event != null && event.contains(TEST_QUESTION)) {
+            if (answerWebView != null) {
+                answerWebView.callTestQuestion(polyvSocketMessage.getMessage());
+            }
+        }
     }
 
 

@@ -134,7 +134,7 @@ public class PolyvLinkMicListView extends RecyclerView {
 
         Log.d(TAG, "resetFloatViewPort: leftMargin :" + portraitLeft + " parent height :topMargin"
                 + portraitTop + "   width :" + getMeasuredWidth());
-        rlp.leftMargin = portraitLeft;
+        rlp.leftMargin = 0;
         rlp.topMargin = PolyvScreenUtils.dip2px(getContext(), 318);
         setLayoutParams(rlp);
 

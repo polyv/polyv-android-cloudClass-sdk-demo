@@ -72,23 +72,26 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
                     return;
                 }
 
-
-                String event = polyvSocketMessageVO.getEvent();
-                if (ONSLICESTART.equals(event) ||
-                        ONSLICEDRAW.equals(event) ||
-                        ONSLICECONTROL.equals(event) ||
-                        ONSLICEOPEN.equals(event) || ONSLICEID.equals(event)) {
-                    PolyvCommonLog.d(TAG, "receive ppt message");
-                    hideLoading();
-                    delayDisposes.add(PolyvRxTimer.delay(2 *1000, new Consumer<Long>() {
-                        @Override
-                        public void accept(Long aLong) throws Exception {
-                            sendWebMessage(polyvSocketMessageVO.getMessage());
-                        }
-                    }));
-                }
+                processSocketMessage(polyvSocketMessageVO);
             }
         });
+    }
+
+    public void processSocketMessage(final PolyvSocketMessageVO polyvSocketMessageVO) {
+        String event = polyvSocketMessageVO.getEvent();
+        if (ONSLICESTART.equals(event) ||
+                ONSLICEDRAW.equals(event) ||
+                ONSLICECONTROL.equals(event) ||
+                ONSLICEOPEN.equals(event) || ONSLICEID.equals(event)) {
+            PolyvCommonLog.d(TAG, "receive ppt message:"+event);
+            hideLoading();
+            delayDisposes.add(PolyvRxTimer.delay(2 *1000, new Consumer<Long>() {
+                @Override
+                public void accept(Long aLong) throws Exception {
+                    sendWebMessage(polyvSocketMessageVO.getMessage());
+                }
+            }));
+        }
     }
 
     private void hideLoading() {

@@ -1,19 +1,19 @@
-#-------------------------------------------»ù±¾²»ÓÃ¶¯ÇøÓò--------------------------------------------
-#---------------------------------»ù±¾Ö¸ÁîÇø----------------------------------
--optimizationpasses 5       # Ö¸¶¨´úÂëµÄÑ¹Ëõ¼¶±ğ
--dontusemixedcaseclassnames     # ÊÇ·ñÊ¹ÓÃ´óĞ¡Ğ´»ìºÏ
--dontskipnonpubliclibraryclasses        # Ö¸¶¨²»È¥ºöÂÔ·Ç¹«¹²µÄ¿âÀà
--dontskipnonpubliclibraryclassmembers       # Ö¸¶¨²»È¥ºöÂÔ°ü¿É¼ûµÄ¿âÀàµÄ³ÉÔ±
--dontpreverify      # »ìÏıÊ±ÊÇ·ñ×öÔ¤Ğ£Ñé
--verbose        # »ìÏıÊ±ÊÇ·ñ¼ÇÂ¼ÈÕÖ¾
+#-------------------------------------------åŸºæœ¬ä¸ç”¨åŠ¨åŒºåŸŸ--------------------------------------------
+#---------------------------------åŸºæœ¬æŒ‡ä»¤åŒº----------------------------------
+-optimizationpasses 5       # æŒ‡å®šä»£ç çš„å‹ç¼©çº§åˆ«
+-dontusemixedcaseclassnames     # æ˜¯å¦ä½¿ç”¨å¤§å°å†™æ··åˆ
+-dontskipnonpubliclibraryclasses        # æŒ‡å®šä¸å»å¿½ç•¥éå…¬å…±çš„åº“ç±»
+-dontskipnonpubliclibraryclassmembers       # æŒ‡å®šä¸å»å¿½ç•¥åŒ…å¯è§çš„åº“ç±»çš„æˆå‘˜
+-dontpreverify      # æ··æ·†æ—¶æ˜¯å¦åšé¢„æ ¡éªŒ
+-verbose        # æ··æ·†æ—¶æ˜¯å¦è®°å½•æ—¥å¿—
 -printmapping proguardMapping.txt
--optimizations !code/simplification/cast,!field/*,!class/merging/*      # »ìÏıÊ±Ëù²ÉÓÃµÄËã·¨
+-optimizations !code/simplification/cast,!field/*,!class/merging/*      # æ··æ·†æ—¶æ‰€é‡‡ç”¨çš„ç®—æ³•
 -keepattributes *Annotation*,InnerClasses
 -keepattributes Signature
 -keepattributes SourceFile,LineNumberTable
 #----------------------------------------------------------------------------
--ignorewarnings     # ÊÇ·ñºöÂÔ¼ì²â£¬£¨ÊÇ£©
-#---------------------------------Ä¬ÈÏ±£ÁôÇø---------------------------------
+-ignorewarnings     # æ˜¯å¦å¿½ç•¥æ£€æµ‹ï¼Œï¼ˆæ˜¯ï¼‰
+#---------------------------------é»˜è®¤ä¿ç•™åŒº---------------------------------
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
@@ -26,7 +26,7 @@
 -keep class android.support.** {*;}
 #-ignorewarnings -keep class * { public private *; }
 
-#Èç¹ûÓĞÒıÓÃv4°ü¿ÉÒÔÌí¼ÓÏÂÃæÕâĞĞ
+#å¦‚æœæœ‰å¼•ç”¨v4åŒ…å¯ä»¥æ·»åŠ ä¸‹é¢è¿™è¡Œ
 -keep class android.support.v4.** { *; }
 -keep public class * extends android.support.v4.**
 -keep public class * extends android.app.Fragment
@@ -63,11 +63,11 @@
     java.lang.Object writeReplace();
     java.lang.Object readResolve();
 }
-#±íÊ¾²»»ìÏıRÎÄ¼şÖĞµÄËùÓĞ¾²Ì¬×Ö¶Î
+#è¡¨ç¤ºä¸æ··æ·†Ræ–‡ä»¶ä¸­çš„æ‰€æœ‰é™æ€å­—æ®µ
 -keep class **.R$* {
     public static <fields>;
 }
-# ±£Áô×¢½â²»±»»ìÏı
+# ä¿ç•™æ³¨è§£ä¸è¢«æ··æ·†
 -keep public @interface * {
     ** default (*);
 }

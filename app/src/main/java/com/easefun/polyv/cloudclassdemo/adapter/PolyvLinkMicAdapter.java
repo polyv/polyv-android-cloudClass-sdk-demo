@@ -92,9 +92,7 @@ public class PolyvLinkMicAdapter extends RecyclerView.Adapter<PolyvLinkMicAdapte
         }
         PolyvJoinInfoEvent polyvJoinRequestSEvent = joins.get(uid);
         holder.camer.setVisibility(uid.equals(myUid) ? View.VISIBLE : View.INVISIBLE);
-        if (polyvJoinRequestSEvent != null && !TextUtils.isEmpty(polyvJoinRequestSEvent.getNick())) {
-            holder.polyvLinkNick.setText(polyvJoinRequestSEvent.getNick());
-        } else if (uid.equals(myUid)) {
+        if (uid.equals(myUid)) {
             holder.polyvLinkNick.setText("我");
             owernView = holder.itemView;
             owernCamera = holder.camerSwitch;
@@ -109,6 +107,8 @@ public class PolyvLinkMicAdapter extends RecyclerView.Adapter<PolyvLinkMicAdapte
                 startShowTimer();
             }
 
+        }else if (polyvJoinRequestSEvent != null ) {
+            holder.polyvLinkNick.setText(polyvJoinRequestSEvent.getNick());
         }
         SurfaceView surfaceView = (SurfaceView) holder.camerLayout.getChildAt(1);
         PolyvCommonLog.d(TAG, "onBindViewHolder:uid :" + uid+"  pos :"+position);

@@ -1,5 +1,7 @@
 package com.easefun.polyv.commonui;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -156,14 +158,22 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     protected void startAnimation(View animationView) {
         float originScaleX = (float) PolyvScreenUtils.dip2px(context,144)/ ScreenUtils.getScreenWidth() ;
-        AnimationSet animationSet = new AnimationSet(false);
+        AnimatorSet animationSet = new AnimatorSet();
+
 
         if(!firstSwitchLocation){
-            ScaleAnimation scaleAnimation = new ScaleAnimation(originScaleX,1,originScaleX,1,0,0);
-            scaleAnimation.setDuration(200);
-            scaleAnimation.setInterpolator(new LinearInterpolator());
-            animationSet.addAnimation(scaleAnimation);
-            animationView.startAnimation(animationSet);
+            animationView.setPivotX(0);
+            animationView.setPivotY(0);
+            ObjectAnimator scaleAnimationX =
+                    ObjectAnimator.ofFloat(animationView,"scaleX",originScaleX,1);
+            ObjectAnimator scaleAnimationY =
+                    ObjectAnimator.ofFloat(animationView,"scaleY",originScaleX,1);
+            scaleAnimationX.setDuration(200);
+            scaleAnimationY.setDuration(200);
+            scaleAnimationX.setInterpolator(new LinearInterpolator());
+            scaleAnimationY.setInterpolator(new LinearInterpolator());
+            animationSet.playTogether(scaleAnimationX,scaleAnimationY);
+            animationSet.start();
         }
         firstSwitchLocation = false;
     }

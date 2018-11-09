@@ -533,7 +533,6 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                     if (((PolyvBaseChatFragment) fragment).onBackPressed())
                         return true;
                 }
-                finish();
             }
         }
         return super.onKeyDown(keyCode, event);
@@ -568,7 +567,10 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                 if (ONSLICECONTROL.equals(event) || ONSLICEID.equals(event)) {
                     //不影响主屏幕得切换跟隐藏显示按钮 主屏幕逻辑下  该消息会触发 交换按钮得逻辑变化
                     if (livePlayerHelper != null && livePlayerHelper.isJoinLinkMick()) {
-                        livePlayerHelper.updateMainScreenStatus(message);
+                        livePlayerHelper.updateMainScreenStatus(message,event);
+                        if(answerView != null){
+                            answerView.processSocketMessage(new PolyvSocketMessageVO(message, event),event);
+                        }
                         return;
                     }
                 }

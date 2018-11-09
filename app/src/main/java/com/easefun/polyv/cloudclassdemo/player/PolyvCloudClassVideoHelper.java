@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.event.linkmic.PolyvJoinLeaveSEvent;
 import com.easefun.polyv.cloudclass.chat.event.linkmic.PolyvJoinRequestSEvent;
+import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketSliceControlVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketSliceIdVO;
 import com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView;
@@ -40,6 +42,7 @@ import com.easefun.polyv.linkmic.model.PolyvLinkMicJoinStatus;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +73,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private static final String TAG = "PolyvCloudClassVideoHelper";
 
     private static final int LINK_JOIN_TIME = 20 * 1000;//加入连麦的超时事件
+
+    private static final String JOIN_DEFAULT_TYPE = "JOIN_DEFAULT_TYPE";
     private PolyvPermissionManager permissionManager;
     protected PolyvChatManager polyvChatManager;
     private Disposable linkJoinTimer,getLinkMicJoins;
@@ -259,15 +264,15 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     private void processJoinUnCachesStatus() {
         int size = noCachesIds.size();
-        for (Long longUid:noCachesIds) {
-
+        Iterator<Long> iterator = noCachesIds.iterator();
+        while (iterator.hasNext()){
+            Long longUid = iterator.next();
             PolyvJoinInfoEvent joinInfoEvent = joinRequests.get(longUid+"");
             if(joinInfoEvent != null){
-                noCachesIds.remove(longUid);
+                iterator.remove();
                 polyvLinkMicAdapter.addData(joinRequests.get(longUid + ""),false);
                 PolyvCommonLog.d(TAG, "processJoinUnCachesStatus :" + longUid );
             }
-
         }
 
         if(size >0){
@@ -356,7 +361,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
         List<PolyvJoinInfoEvent> joinListBeans = data.getJoinList();
         for (PolyvJoinInfoEvent joinListBean : joinListBeans) {
-            if(!joinRequests.containsKey(joinListBean.getUserId())){
+            if(!joinRequests.containsKey(joinListBean.getUserId()) || JOIN_DEFAULT_TYPE.equals(joinListBean.getUserType())){
                 joinRequests.put(joinListBean.getUserId(), joinListBean);
             }
         }
@@ -585,6 +590,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private void processJoinStatus(int uid,int elapsed) {
         long longUid = uid & 0xFFFFFFFFL;
         if(!joinRequests.containsKey(""+longUid)){//不包含 需要更新数据
+            PolyvJoinInfoEvent defaultEvent = createDefaultJoin(longUid);
+            joinRequests.put(longUid+"",defaultEvent);
             noCachesIds.add(longUid);
 
             //3秒以后去查询 数据  以免同时多个人加入
@@ -598,6 +605,15 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         PolyvCommonLog.d(TAG, "userjoin :" + longUid + " elapseed:" + elapsed);
         cancleLinkTimer();
         changeViewToRtc(true);
+    }
+
+    @NonNull
+    private PolyvJoinInfoEvent createDefaultJoin(long longUid) {
+        PolyvJoinInfoEvent defaultEvent = new PolyvJoinInfoEvent();
+        defaultEvent.setUserId(longUid+"");
+        defaultEvent.setNick("");
+        defaultEvent.setUserType(JOIN_DEFAULT_TYPE);
+        return defaultEvent;
     }
 
     private void startJoinListTimer() {
@@ -770,7 +786,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
      * 更新控制栏 主副平切换按钮得状态  （切换 或者是 显示副屏）
      * @param polyvSocketMessage
      */
-    public void updateMainScreenStatus(String polyvSocketMessage) {
+    public void updateMainScreenStatus(String polyvSocketMessage,String event) {
         PolyvSocketSliceControlVO polyvSocketSliceControl = PolyvGsonUtil.
                 fromJson(PolyvSocketSliceControlVO.class, polyvSocketMessage);
         if (polyvSocketSliceControl != null && polyvSocketSliceControl.getData() != null) {
@@ -780,6 +796,10 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             if(controller != null){
                 controller.showCamerView();
             }
+        }
+
+        if(pptView != null){
+            pptView.processSocketMessage(new PolyvSocketMessageVO(polyvSocketMessage, event));
         }
     }
 }

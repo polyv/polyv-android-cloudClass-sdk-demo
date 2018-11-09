@@ -2,6 +2,7 @@ package com.easefun.polyv.commonui.widget;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -107,6 +108,22 @@ public class PolyvScaleImageView extends AppCompatImageView {
             public void onScaleEnd(ScaleGestureDetector detector) {
             }
         });
+        addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (!canScale())
+                    return;
+                if (oldRight > 0 && right > 0) {
+                    if (right > oldRight) {//切到横屏
+                        resetScaleX(getDrawable());
+                        reset();
+                    } else if (right < oldRight) {//切换竖屏
+                        resetScaleX(getDrawable());
+                        reset();
+                    }
+                }
+            }
+        });
     }
 
 
@@ -172,24 +189,7 @@ public class PolyvScaleImageView extends AppCompatImageView {
         post(runnable = new Runnable() {
             @Override
             public void run() {
-                int width = getWidth();
-                int height = getHeight();
-                int drawableWidth = drawable.getIntrinsicWidth();
-                int drawableHeight = drawable.getIntrinsicHeight();
-                float wdScale = width * 1.0f / drawableWidth;
-                float hdScale = height * 1.0f / drawableHeight;
-                if (width > drawableWidth && height > drawableHeight) {
-                    scaleX = Math.min(wdScale, hdScale);
-                } else if (width > drawableWidth && height < drawableHeight) {
-                    scaleX = hdScale;//不能用竖直滚动布局嵌套，不然imageView的height会随着drawableHeight而大于可见区域的height
-                } else if (width < drawableWidth && height > drawableHeight) {
-                    scaleX = wdScale;
-                } else if (width < drawableWidth && height < drawableHeight) {
-                    scaleX = Math.min(wdScale, hdScale);
-                }
-                minScaleX = scaleX * 0.5f;
-                midScaleX = scaleX * 2;
-                maxScaleX = scaleX * 5;
+                resetScaleX(drawable);
                 reset();
                 setVisibility(View.VISIBLE);
                 if (drawable instanceof GifDrawable) {
@@ -197,6 +197,27 @@ public class PolyvScaleImageView extends AppCompatImageView {
                 }
             }
         });
+    }
+
+    private void resetScaleX(Drawable drawable) {
+        int width = getWidth();
+        int height = getHeight();
+        int drawableWidth = drawable.getIntrinsicWidth();
+        int drawableHeight = drawable.getIntrinsicHeight();
+        float wdScale = width * 1.0f / drawableWidth;
+        float hdScale = height * 1.0f / drawableHeight;
+        if (width > drawableWidth && height > drawableHeight) {
+            scaleX = Math.min(wdScale, hdScale);
+        } else if (width > drawableWidth && height < drawableHeight) {
+            scaleX = hdScale;//不能用竖直滚动布局嵌套，不然imageView的height会随着drawableHeight而大于可见区域的height
+        } else if (width < drawableWidth && height > drawableHeight) {
+            scaleX = wdScale;
+        } else if (width < drawableWidth && height < drawableHeight) {
+            scaleX = Math.min(wdScale, hdScale);
+        }
+        minScaleX = scaleX * 0.5f;
+        midScaleX = scaleX * 2;
+        maxScaleX = scaleX * 5;
     }
 
     private void reset() {
@@ -235,6 +256,12 @@ public class PolyvScaleImageView extends AppCompatImageView {
     //判断当前移动距离是否大于系统默认最小移动距离
     private boolean isMoveAction(float dx, float dy) {
         return Math.sqrt(dx * dx + dy * dy) > touchSlop;
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        //改变时，获取宽高可能相反
     }
 
     @Override

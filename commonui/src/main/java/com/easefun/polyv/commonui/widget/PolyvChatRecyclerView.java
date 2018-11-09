@@ -56,7 +56,7 @@ public class PolyvChatRecyclerView extends RecyclerView {
     }
 
     private void closeDefaultAnimator(RecyclerView recyclerView) {
-        recyclerView.getItemAnimator().setAddDuration(0);
+//        recyclerView.getItemAnimator().setAddDuration(0);
         recyclerView.getItemAnimator().setChangeDuration(0);
         recyclerView.getItemAnimator().setMoveDuration(0);
         recyclerView.getItemAnimator().setRemoveDuration(0);
