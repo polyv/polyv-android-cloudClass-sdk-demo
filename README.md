@@ -92,6 +92,7 @@ SDKdemo是SDK的demo示例Android studio项目工程，其中包含了最新SDK�
   - 禁言
   - 踢人
   - 私聊
+  - 未读消息提醒
 
 ### 答题
 - [ ] #### 基本功能
