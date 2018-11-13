@@ -70,7 +70,7 @@ SDKdemo是SDK的demo示例Android studio项目工程，其中包含了最新SDK�
   - 播放区域左方是亮度调节区域
   - 水平左右滑动seek进度播放
 
-- [ ] #### ppt播放
+- #### ppt播放
   - 教师端，ppt显示切换
   - ppt、教师端的同步回放
   - ppt与视频播放的快进快退的同步
