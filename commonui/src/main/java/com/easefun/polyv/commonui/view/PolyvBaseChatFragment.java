@@ -248,11 +248,11 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
                     isShowEmoji = false;
                     resetViewLayoutParams();
                     replaceChatEditContainer(chatEditLayout);
-                    KeyboardUtils.showSoftInput(talk);//替换后再显示
+                    KeyboardUtils.showSoftInput(talk);//避免点击编辑框可能不弹出，替换后再显示
                     emoListLayout.setVisibility(View.GONE);
                     emoji.setSelected(isShowEmoji);
                 }
-                return true;
+                return false;
             }
         });
         //表情列表
@@ -278,12 +278,12 @@ public abstract class PolyvBaseChatFragment extends PolyvBaseFragment {
                 isShowEmoji = emoListLayout.getVisibility() != View.VISIBLE;//willShow
                 KeyboardUtils.hideSoftInput(talk);//隐藏后再替换
                 if (isShowEmoji) {
-                    talk.requestFocus();
                     if (!isKeyboardVisible) {//键盘隐藏时才替换
                         replaceChatEditContainer(chatEditLayout);//放在监听器那里替换
                         emoListLayout.setVisibility(View.VISIBLE);//放在监听器那里替换
                         changeViewLayoutParams();//放在监听器那里替换
                     }
+                    talk.requestFocus();
                 } else {
                     resetChatEditContainer();
                     emoListLayout.setVisibility(View.GONE);

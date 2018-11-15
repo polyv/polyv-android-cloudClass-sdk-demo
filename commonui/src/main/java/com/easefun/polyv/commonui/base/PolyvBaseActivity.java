@@ -1,8 +1,10 @@
 package com.easefun.polyv.commonui.base;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +15,7 @@ import com.easefun.polyv.foundationsdk.permission.PolyvPermissionListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -21,18 +24,32 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     protected CompositeDisposable disposables;
     protected PolyvPermissionManager permissionManager;
     private final int myRequestCode = 13333;
+    private final static int APP_STATUS_KILLED = 0; // 表示应用是被杀死后在启动的
+    private final static int APP_STATUS_RUNNING = 1; // 表示应用时正常的启动流程
+    private static int APP_STATUS = APP_STATUS_KILLED; // 记录App的启动状态
+    protected boolean isCreateSuccess, isKick;
     //静态变量记录学员是否被踢，如果被踢后，需要结束应用后才能再次进来观看直播，这个逻辑可以更改
-    public static Map<String, Boolean> kickMap = new HashMap<>();
+    private static Map<String, Boolean> kickMap = new HashMap<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             savedInstanceState.putParcelable("android:support:fragments", null);
+        }
         super.onCreate(savedInstanceState);
+        isCreateSuccess = false;
+        isKick = false;
+        if (getClass().getName().equals(getLaunchActivityName()) && getTaskActivityCount() < 2 || getLaunchActivityName() == null) {
+            APP_STATUS = APP_STATUS_RUNNING;
+        }
+        if (APP_STATUS == APP_STATUS_KILLED && restartApp()) { // 非正常启动流程，直接重新初始化应用界面
+            return;
+        }
         disposables = new CompositeDisposable();
         permissionManager = PolyvPermissionManager.with(this)
                 .addRequestCode(myRequestCode)
                 .setPermissionsListener(this);
+        isCreateSuccess = true;
     }
 
     @Override
@@ -50,6 +67,50 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
                 permissionManager.onPermissionResult(permissions, grantResults);
                 break;
         }
+    }
+
+    private String getLaunchActivityName() {
+        Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
+        resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        resolveIntent.setPackage(getPackageName());
+        List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(resolveIntent, 0);
+        if (resolveInfos != null)
+            for (ResolveInfo resolveInfo : resolveInfos) {
+                return resolveInfo.activityInfo.name;
+            }
+        return null;
+    }
+
+    private int getTaskActivityCount() {
+        ActivityManager am = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
+        if (am == null)
+            return -1;
+        try {
+            // get the info from the currently running task
+            List<ActivityManager.RunningTaskInfo> taskInfos = am.getRunningTasks(1);
+            if (taskInfos != null)
+                for (ActivityManager.RunningTaskInfo taskInfo : taskInfos) {
+                    return taskInfo.numActivities;
+                }
+        } catch (Exception e) {
+        }
+        return -1;
+    }
+
+    public boolean restartApp() {
+        try {
+            Intent intent = new Intent(this, Class.forName(getLaunchActivityName()));
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+            return true;
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    public boolean isInitialize() {
+        return isCreateSuccess && !isKick;
     }
 
     public static void setKickValue(String channelId, boolean isKick) {
@@ -78,12 +139,20 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
         return false;
     }
 
+    public boolean checkKickTips(String channelId, String... message) {
+        return isKick = checkKickTips(this, channelId, message);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (disposables != null) {
             disposables.dispose();
             disposables = null;
+        }
+        if (permissionManager != null) {
+            permissionManager.destroy();
+            permissionManager = null;
         }
     }
 

@@ -107,3 +107,5 @@ SDKdemo是SDK的demo示例Android studio项目工程，其中包含了最新SDK�
 #### 更多关于SDKdemo和SDK的详细介绍请看[Wiki](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/wiki)。
 
 0.2.0版API文档请看[v0.2.0 API](http://repo.polyv.net/android/cloudclass/javadoc/0.2.0/index.html)
+
+0.3.0版API文档请看[v0.3.0 API](http://repo.polyv.net/android/cloudclass/javadoc/0.3.0/index.html)

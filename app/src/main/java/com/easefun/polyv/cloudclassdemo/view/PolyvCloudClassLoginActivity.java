@@ -159,13 +159,13 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
 
     // <editor-fold defaultstate="collapsed" desc="设置测试数据">
     private void setTestData() {
-        appId.setText("eyvksc8el8");
-        appSecert.setText("3c2fd0a23e014da28f142b7cbcd2ff7e");
-        userId.setText("220643a413");
-        channelId.setText("193706");
+        appId.setText("");
+        appSecert.setText("");
+        userId.setText("");
+        channelId.setText("");
 
-        playbackVideoId.setText("220643a413ef907ff9a00d98ad42b093_2");
-        playbackAppId.setText("eyvksc8el8");
+        playbackVideoId.setText("");
+        playbackAppId.setText("");
 
         loginTv.setSelected(true);
     }

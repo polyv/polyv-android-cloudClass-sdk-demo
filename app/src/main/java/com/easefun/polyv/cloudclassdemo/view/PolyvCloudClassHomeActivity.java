@@ -87,11 +87,10 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private PolyvChatManager chatManager = new PolyvChatManager();
     private PolyvAnswerView answerView;
     private ViewGroup answerContainer;
-    private PolyvLinkMicListView linkMicLayout;
+    private LinearLayout linkMicLayout;
+    private PolyvLinkMicListView linkMicLayoutParent;
 
     private static final String TAG = "PolyvCloudClassHomeActivity";
-    //播放界面是否可以初始化
-    private boolean isInitial;
     private static final String CHANNELID_KEY = "channelid";
     private static final String USERID_KEY = "userid";
     private static final String VIDEOID_KEY = "videoid";
@@ -125,15 +124,16 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //如果创建失败，则不初始化
+        if (!isCreateSuccess) {
+            return;
+        }
 
         initialParams();
 
-        if (PolyvBaseActivity.checkKickTips(this, channelId)) {
-            //检查用户是否被踢，被踢后无法观看直播
-            isInitial = false;
+        //如果用户被踢，则不初始化
+        if (checkKickTips(channelId)) {
             return;
-        } else {
-            isInitial = true;
         }
 
         setContentView(R.layout.polyv_activity_cloudclass_home);
@@ -148,7 +148,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (!isInitial) {
+        if (!isInitialize()) {
             //未初始化时，不执行以下代码，避免出现空指针异常
             return;
         }
@@ -166,7 +166,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (!isInitial) {
+        if (!isInitialize()) {
             //未初始化时，不执行以下代码，避免出现空指针异常
             return;
         }
@@ -185,7 +185,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     protected void onDestroy() {
         PolyvCommonLog.d(TAG, "home ondestory");
         super.onDestroy();
-        if (!isInitial) {
+        if (!isInitialize()) {
             //未初始化时，不执行以下代码，避免出现空指针异常
             return;
         }
@@ -237,6 +237,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
     private void initialLinkMic() {
         linkMicLayout = findViewById(R.id.link_mic_layout);
+        linkMicLayoutParent = findViewById(R.id.link_mic_layout_parent);
         if (playMode == PolyvPlayOption.PLAYMODE_LIVE) {
             PolyvLinkMicWrapper.getInstance().init(this);
             PolyvLinkMicWrapper.getInstance().intialConfig(channelId);
@@ -423,8 +424,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         livePlayerHelper.initConfig();
         livePlayerHelper.addPPT(videoPptContainer);
 
-        livePlayerHelper.addLinkMicLayout(linkMicLayout);
-        linkMicLayout.resetFloatViewPort();
+        livePlayerHelper.addLinkMicLayout(linkMicLayout,linkMicLayoutParent);
+        linkMicLayoutParent.resetFloatViewPort();
 
         PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(channelId, userId, "123");
         polyvBaseVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
@@ -452,8 +453,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             videoPptContainer.resetSoftTo();
         }
 
-        if (linkMicLayout != null) {
-            linkMicLayout.resetSoftTo();
+        if (linkMicLayoutParent != null) {
+            linkMicLayoutParent.resetSoftTo();
         }
     }
 
@@ -462,8 +463,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             videoPptContainer.topSubviewTo(chatTopSelectLayout.getTop());
         }
 
-        if (linkMicLayout != null) {
-            linkMicLayout.topSubviewTo(chatTopSelectLayout.getTop());
+        if (linkMicLayoutParent != null) {
+            linkMicLayoutParent.topSubviewTo(chatTopSelectLayout.getTop());
         }
     }
 

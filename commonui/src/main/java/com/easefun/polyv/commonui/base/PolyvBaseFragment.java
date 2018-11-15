@@ -109,8 +109,7 @@ public abstract class PolyvBaseFragment extends Fragment implements PolyvPermiss
             disposables = null;
         }
         if (permissionManager != null) {
-            permissionManager.setObject(null);
-            permissionManager.setPermissionsListener(null);
+            permissionManager.destroy();
             permissionManager = null;
         }
     }

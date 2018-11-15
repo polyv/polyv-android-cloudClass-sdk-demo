@@ -20,7 +20,7 @@ public class PolyvCloudClassApp extends MultiDexApplication {
     /** 加密向量 */
     private String iv = "2u9gDPKdX6GyQJKU";
     /** SDK加密串，可以在点播后台获取 */
-    private String config = "CMWht3MlpVkgpFzrLNAebYi4RdQDY/Nhvk3Kc+qWcck6chwHYKfl9o2aOVBvXVTRZD/14XFzVP7U5un43caq1FXwl0cYmTfimjTmNUYa1sZC1pkHE8gEsRpwpweQtEIiTGVEWrYVNo4/o5jI2/efzA==";
+    private String config = "";
 
     @Override
     public void onCreate() {

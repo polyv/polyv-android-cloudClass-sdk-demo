@@ -22,6 +22,7 @@ import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.adapter.PolyvChatImgFragmentStateAdapter;
 import com.easefun.polyv.commonui.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.commonui.utils.PolyvToast;
+import com.easefun.polyv.foundationsdk.permission.PolyvOnGrantedListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.utils.PolyvSDCardUtils;
 
@@ -67,6 +68,12 @@ public class PolyvImageViewer extends FrameLayout {
         return permissionManager.permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .opstrs(-1)
                 .meanings("存储权限")
+                .setOnGrantedListener(new PolyvOnGrantedListener() {
+                    @Override
+                    public void afterPermissionsOnGranted() {
+
+                    }
+                })
                 .request();
     }
 
@@ -78,60 +85,75 @@ public class PolyvImageViewer extends FrameLayout {
         ivDownload.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentPosition > -1) {
-                    boolean result = requestStoragePermission();
+                if (permissionManager == null) {
+                    downloadImg();
+                } else {
+                    boolean result = permissionManager.permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .opstrs(-1)
+                            .meanings("存储权限")
+                            .setOnGrantedListener(new PolyvOnGrantedListener() {
+                                @Override
+                                public void afterPermissionsOnGranted() {
+                                    downloadImg();
+                                }
+                            })
+                            .request();
                     if (!result) {
                         toast("请允许存储权限后再保存图片");
-                        return;
                     }
-                    final String imgUrl = getImgUrl(chatTypeItems.get(currentPosition));
-                    if (imgUrl == null) {
-                        toast("图片保存失败(null)");
-                        return;
-                    }
-                    final String fileName = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);
-                    final String savePath = PolyvSDCardUtils.createPath(getContext(), "PolyvImg");
-                    compositeDisposable.add(
-                            Observable.just(1)
-                                    .map(new Function<Integer, File>() {
-                                        @Override
-                                        public File apply(Integer integer) throws Exception {
-                                            return Glide.with(getContext())
-                                                    .asFile()
-                                                    .load(imgUrl)
-                                                    .submit()
-                                                    .get();
-                                        }
-                                    })
-                                    .map(new Function<File, Boolean>() {
-                                        @Override
-                                        public Boolean apply(File file) throws Exception {
-                                            return FileUtils.copyFile(file, new File(savePath, fileName),
-                                                    new FileUtils.OnReplaceListener() {
-                                                        @Override
-                                                        public boolean onReplace() {
-                                                            return true;
-                                                        }
-                                                    });
-                                        }
-                                    })
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<Boolean>() {
-                                        @Override
-                                        public void accept(Boolean aBoolean) throws Exception {
-                                            toast(aBoolean ? "图片保存在：" + new File(savePath, fileName).getAbsolutePath() : "图片保存失败(saveFailed)");
-                                        }
-                                    }, new Consumer<Throwable>() {
-                                        @Override
-                                        public void accept(Throwable throwable) throws Exception {
-                                            toast("图片保存失败(loadFailed)");
-                                        }
-                                    })
-                    );
                 }
             }
         });
+    }
+
+    private void downloadImg() {
+        if (currentPosition > -1) {
+            final String imgUrl = getImgUrl(chatTypeItems.get(currentPosition));
+            if (imgUrl == null) {
+                toast("图片保存失败(null)");
+                return;
+            }
+            final String fileName = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);
+            final String savePath = PolyvSDCardUtils.createPath(getContext(), "PolyvImg");
+            compositeDisposable.add(
+                    Observable.just(1)
+                            .map(new Function<Integer, File>() {
+                                @Override
+                                public File apply(Integer integer) throws Exception {
+                                    return Glide.with(getContext())
+                                            .asFile()
+                                            .load(imgUrl)
+                                            .submit()
+                                            .get();
+                                }
+                            })
+                            .map(new Function<File, Boolean>() {
+                                @Override
+                                public Boolean apply(File file) throws Exception {
+                                    return FileUtils.copyFile(file, new File(savePath, fileName),
+                                            new FileUtils.OnReplaceListener() {
+                                                @Override
+                                                public boolean onReplace() {
+                                                    return true;
+                                                }
+                                            });
+                                }
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<Boolean>() {
+                                @Override
+                                public void accept(Boolean aBoolean) throws Exception {
+                                    toast(aBoolean ? "图片保存在：" + new File(savePath, fileName).getAbsolutePath() : "图片保存失败(saveFailed)");
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+                                    toast("图片保存失败(loadFailed)");
+                                }
+                            })
+            );
+        }
     }
 
     @Override

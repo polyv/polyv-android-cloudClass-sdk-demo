@@ -57,10 +57,13 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         View.inflate(context, R.layout.polyv_ppt_webview_layout, this);
         polyvPPTWebView = findViewById(R.id.polyv_ppt_web);
         pptLoadingView = findViewById(R.id.polyv_ppt_default_icon);
+        loadWeb();
+
+    }
+
+    private void loadWeb() {
         polyvPPTWebView.loadWeb();//"file:///android_asset/startForMobile.html"
-
         registerSocketMessage();
-
     }
 
     private void registerSocketMessage() {

@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
@@ -25,6 +26,7 @@ import com.easefun.polyv.cloudclass.model.PolyvSocketSliceIdVO;
 import com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.adapter.PolyvLinkMicAdapter;
+import com.easefun.polyv.cloudclassdemo.adapter.PolyvLinkMicDataBinder;
 import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.base.PolyvBaseActivity;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
@@ -95,8 +97,10 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             "麦克风权限",
     };
 
-    private PolyvLinkMicListView linkMicLayout;
-    private PolyvLinkMicAdapter polyvLinkMicAdapter;
+    private LinearLayout linkMicLayout;
+    private PolyvLinkMicListView linkMicLayoutParent;
+    private PolyvLinkMicDataBinder polyvLinkMicAdapter;
+    private LinearLayoutManager linearLayoutManager;
     private Map<String, PolyvJoinInfoEvent> joinRequests = new ConcurrentHashMap<>();
     private PolyvSocketSliceIdVO sliceIdVo;
     private String sessionId = "";
@@ -270,15 +274,15 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             PolyvJoinInfoEvent joinInfoEvent = joinRequests.get(longUid+"");
             if(joinInfoEvent != null){
                 iterator.remove();
-                polyvLinkMicAdapter.addData(joinRequests.get(longUid + ""),false);
+                polyvLinkMicAdapter.addData(joinRequests.get(longUid + ""),true);
                 PolyvCommonLog.d(TAG, "processJoinUnCachesStatus :" + longUid );
             }
         }
 
-        if(size >0){
-            polyvLinkMicAdapter.notifyItemRangeChanged(polyvLinkMicAdapter.getItemCount()-size, size);
-        }
-        linkMicLayout.scrollToPosition(polyvLinkMicAdapter.getItemCount() - 1);
+//        if(size >0){
+//            polyvLinkMicAdapter.notifyItemRangeChanged(polyvLinkMicAdapter.getItemCount()-size, size);
+//        }
+//        linkMicLayoutParent.scrollToPosition(polyvLinkMicAdapter.getItemCount() - 1,linkMicLayout);
 
         cancleLinkTimer();
         changeViewToRtc(true);
@@ -470,6 +474,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             S_HANDLER.post(new Runnable() {
                 @Override
                 public void run() {
+                    long longUid = uid & 0xFFFFFFFFL;
+                    polyvLinkMicAdapter.addOwenr(longUid+"",joinRequests.get(longUid));
                     sendJoinSuccess();
                     cancleLinkTimer();
                     hideSubView();
@@ -513,7 +519,6 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                         ToastUtils.showLong(joinInfoEvent.getNick() + "离开连麦室");
                     }
                     polyvLinkMicAdapter.removeData(longUid + "");
-                    linkMicLayout.scrollToPosition(polyvLinkMicAdapter.getItemCount() - 1);
                 }
             });
 
@@ -549,7 +554,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                         int pos = joinInfo.getPos();
                         joinInfo.setMute(mute);
                         if (pos != 0) {
-                            polyvLinkMicAdapter.notifyItemChanged(pos);
+                            polyvLinkMicAdapter.notifyItemChanged(pos,mute);
                         }
                     }
                     ToastUtils.showLong(nick + (mute ? "摄像头已关闭" : "摄像头已打开"));
@@ -600,7 +605,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         }
         polyvLinkMicAdapter.addData(joinRequests.get(longUid + ""),true);
 
-        linkMicLayout.scrollToPosition(polyvLinkMicAdapter.getItemCount() - 1);
+//        linkMicLayoutParent.scrollToPosition(polyvLinkMicAdapter.getItemCount() - 1,linkMicLayout);
 
         PolyvCommonLog.d(TAG, "userjoin :" + longUid + " elapseed:" + elapsed);
         cancleLinkTimer();
@@ -758,23 +763,37 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             leaveChannel();
         }
 
+        linkMicLayoutParent.setVisibility(INVISIBLE);
         linkMicLayout.removeAllViews();
         polyvLinkMicAdapter.clear();
         polyvChatManager.removeNewMessageListener(this);
         PolyvLinkMicWrapper.getInstance().removeEventHandler(polyvLinkMicAGEventHandler);
     }
 
-    public void addLinkMicLayout(PolyvLinkMicListView linkMicLayout) {
+    public void addLinkMicLayout(LinearLayout linkMicLayout, PolyvLinkMicListView linkMicLayoutParent) {
         this.linkMicLayout = linkMicLayout;
+        this.linkMicLayoutParent = linkMicLayoutParent;
+        linkMicLayout.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right,
+                                       int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if(oldRight <=right){
+                    linkMicLayoutParent.scrollToPosition(0,linkMicLayout);
+                }
+            }
+        });
+//        this.linkMicLayout.setItemViewCacheSize(10);
 
-        polyvLinkMicAdapter = new PolyvLinkMicAdapter
+        polyvLinkMicAdapter = new PolyvLinkMicDataBinder
                 (PolyvLinkMicWrapper.getInstance().getEngineConfig().mUid + "");
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        linkMicLayout.setLayoutManager(linearLayoutManager);
 
-        linkMicLayout.setAdapter(polyvLinkMicAdapter);
+//        linearLayoutManager = new LinearLayoutManager(context);
+//        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+//        linkMicLayout.setLayoutManager(linearLayoutManager);
 
+//        linkMicLayout.setAdapter(polyvLinkMicAdapter);
+
+        polyvLinkMicAdapter.addParent(linkMicLayout);
         polyvLinkMicAdapter.updateCamerStatus(cameraOpen);
     }
 

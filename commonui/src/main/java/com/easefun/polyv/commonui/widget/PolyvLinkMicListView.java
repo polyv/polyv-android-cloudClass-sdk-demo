@@ -6,10 +6,15 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
@@ -19,7 +24,7 @@ import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
  * @create 2018/10/18
  * @Describe
  */
-public class PolyvLinkMicListView extends RecyclerView {
+public class PolyvLinkMicListView extends HorizontalScrollView {
     private static final String TAG = "PolyvCamerListView";
     // 竖屏下的位置
     private int portraitLeft = 0;
@@ -28,19 +33,23 @@ public class PolyvLinkMicListView extends RecyclerView {
     //键盘弹起前得位置
     private int beforeSoftLeft = 0;
     private int beforeSoftTop = 0;
+    private Scroller scroller;
 
     public PolyvLinkMicListView(Context context) {
-        super(context);
+        this(context,null);
     }
 
     public PolyvLinkMicListView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs,0);
     }
 
     public PolyvLinkMicListView(Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
+    public void initView(Context context){
+        scroller = new Scroller(context);
+    }
     @Override
     protected void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -152,4 +161,15 @@ public class PolyvLinkMicListView extends RecyclerView {
 
         return rlp;
     }
+
+
+    public Scroller getScroller() {
+        return scroller;
+    }
+
+    public void scrollToPosition(int pos, View parent) {
+
+        smoothScrollTo(parent.getRight(),0);
+    }
+
 }

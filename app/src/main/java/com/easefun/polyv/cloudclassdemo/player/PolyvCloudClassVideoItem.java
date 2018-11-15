@@ -12,9 +12,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
+import com.easefun.polyv.businesssdk.api.common.player.PolyvPlayError;
 import com.easefun.polyv.businesssdk.api.common.player.listener.IPolyvVideoViewListenerEvent;
 import com.easefun.polyv.businesssdk.model.link.PolyvMicphoneStatus;
 import com.easefun.polyv.businesssdk.model.video.PolyvLiveMarqueeVo;
@@ -193,6 +195,28 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         // 设置跑马灯
         polyvCloudClassVideoView.setMarqueeView(marqueeView, marqueeItem = new PolyvMarqueeItem());
 
+        polyvCloudClassVideoView.setOnErrorListener(new IPolyvVideoViewListenerEvent.OnErrorListener() {
+            @Override
+            public void onError(int what, int extra) {
+
+            }
+
+            @Override
+            public void onError(PolyvPlayError error) {
+                String tips = error.playStage == PolyvPlayError.PLAY_STAGE_HEADAD ? "片头广告"
+                        : error.playStage == PolyvPlayError.PLAY_STAGE_TAILAD ? "片尾广告"
+                        : error.playStage == PolyvPlayError.PLAY_STAGE_TEASER ? "暖场视频"
+                        : error.isMainStage() ? "主视频" : "";
+                if (error.isMainStage()) {
+                    preparingview.setVisibility(View.GONE);
+                }
+
+                showDefaultIcon();
+
+                Toast.makeText(context, tips + "播放异常\n" + error.errorDescribe + " (errorCode:" + error.errorCode +
+                        "-" + error.playStage + ")\n" + error.playPath, Toast.LENGTH_LONG).show();
+            }
+        });
         polyvCloudClassVideoView.setOnPreparedListener(new IPolyvVideoViewListenerEvent.OnPreparedListener() {
             @Override
             public void onPrepared() {
@@ -316,6 +340,14 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
     }
 
+    public void showDefaultIcon() {
+        if(loadingview != null){
+            loadingview.setVisibility(GONE);
+        }
+        if(noStream != null){
+            noStream.setVisibility(VISIBLE);
+        }
+    }
     @Override
     public View getView() {
         return rootView;

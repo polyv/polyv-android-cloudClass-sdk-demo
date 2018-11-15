@@ -474,10 +474,10 @@ public class PolyvFragmentGroupChat extends PolyvBaseChatFragment {
                         //公告
                         case PolyvChatManager.EVENT_GONGGAO:
                             final PolyvGongGaoEvent gongGaoEvent = PolyvEventHelper.getEventObject(PolyvGongGaoEvent.class, message, event);
-                            if (gongGaoEvent != null) {
-                                gongGaoEvent.setObjects(PolyvTextImageLoader.messageToSpan(gongGaoEvent.getContent(), ConvertUtils.dp2px(14), false, getContext()));
-                                startMarquee((CharSequence) gongGaoEvent.getObjects()[0]);
-                            }
+//                            if (gongGaoEvent != null) {
+//                                gongGaoEvent.setObjects(PolyvTextImageLoader.messageToSpan(gongGaoEvent.getContent(), ConvertUtils.dp2px(14), false, getContext()));
+//                                startMarquee((CharSequence) gongGaoEvent.getObjects()[0]);
+//                            }
                             break;
                         //删除某条聊天记录
                         case PolyvChatManager.EVENT_REMOVE_CONTENT:

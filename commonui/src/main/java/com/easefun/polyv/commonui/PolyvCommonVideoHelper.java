@@ -215,12 +215,20 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         if (videoView != null && videoView.isPlaying()) {
             videoView.pause();
         }
+//
+//        if(subVideoview != null && subVideoview.isShow()){
+//            subVideoview.pause(false);
+//        }
     }
 
     public void resume(){
         if(videoView != null && !videoView.isPlaying()){
             videoView.start();
         }
+//
+//        if(subVideoview != null && !subVideoview.isPlaying() && subVideoview.isShow()){
+//            subVideoview.start();
+//        }
     }
 
     public void destory() {
