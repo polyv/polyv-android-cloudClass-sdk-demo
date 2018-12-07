@@ -34,7 +34,7 @@
         android:layout_toLeftOf="@id/video_screen_switch_port"
         android:src="@drawable/brate" />
 
-    <com.easefun.polyv.commonui.player.widget.PolyvSlideSwitch
+    <com.easefun.polyv.commonui.player.widget.PolyvSlideSwitchView
         android:id="@+id/video_danmu_port"
         android:layout_width="36dp"
         android:layout_height="16dp"

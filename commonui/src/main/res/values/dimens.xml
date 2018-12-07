@@ -7,6 +7,7 @@
     <dimen name="ppt_width">144dp</dimen>
     <dimen name="ppt_height">108dp</dimen>
     <dimen name="controller_margin">15dp</dimen>
+    <dimen name="dm_3">3dp</dimen>
     <dimen name="dm_10">10dp</dimen>
     <dimen name="dm_12">12dp</dimen>
     <dimen name="dm_20">20dp</dimen>
@@ -18,6 +19,7 @@
     <dimen name="dm_75">75dp</dimen>
     <dimen name="dm_92">92dp</dimen>
     <dimen name="dm_100">100dp</dimen>
+    <dimen name="dm_118">118dp</dimen>
     <dimen name="dm_150">150dp</dimen>
     <dimen name="dm_134">134dp</dimen>
     <dimen name="dm_200">200dp</dimen>

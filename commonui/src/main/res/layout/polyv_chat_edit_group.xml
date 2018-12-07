@@ -20,13 +20,13 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
-        android:layout_toLeftOf="@id/iv_emoji"
+        android:layout_toLeftOf="@id/right_layout"
         android:layout_toRightOf="@id/iv_switch"
         android:background="@drawable/polyv_et_chat_corner"
         android:hint="我也来聊几句..."
         android:imeOptions="actionSend|flagNoFullscreen"
         android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:paddingRight="40dp"
         android:singleLine="true"
         android:textColor="#000000"
         android:textColorHint="#c7c7c7"
@@ -36,20 +36,47 @@
         android:id="@+id/iv_emoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/et_talk"
         android:layout_centerVertical="true"
         android:layout_marginRight="6dp"
-        android:layout_toLeftOf="@+id/iv_flower"
-        android:src="@drawable/emoji"
         android:clickable="true"
+        android:padding="@dimen/dm_3"
+        android:src="@drawable/emoji"
         app:pressed_color="#14a2f4"
         app:selected_color="#14a2f4" />
 
-    <com.easefun.polyv.commonui.widget.PolyvPressedImageView
-        android:id="@+id/iv_flower"
+    <LinearLayout
+        android:id="@+id/right_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/flower"
-        app:pressed_color="#14a2f4" />
+        android:layout_alignParentRight="true">
+
+        <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+            android:id="@+id/iv_flower"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/flower"
+            android:visibility="gone"
+            app:pressed_color="#14a2f4" />
+
+        <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+            android:id="@+id/like"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="6dp"
+            android:src="@drawable/polyv_icon_likes"
+            android:visibility="gone"
+            app:pressed_color="#14a2f4" />
+
+        <ImageView
+            android:id="@+id/add_more"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/plv_more"
+            android:visibility="gone" />
+    </LinearLayout>
 </RelativeLayout>

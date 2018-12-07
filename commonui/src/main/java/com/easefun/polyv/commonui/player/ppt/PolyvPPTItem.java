@@ -79,7 +79,7 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
     }
 
     @Override
-    public IPolyvPPTView getPPTView() {
+    public PolyvPPTView getPPTView() {
         return polyvPptView;
     }
 

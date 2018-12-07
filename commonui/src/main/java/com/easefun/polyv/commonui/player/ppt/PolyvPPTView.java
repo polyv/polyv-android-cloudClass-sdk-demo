@@ -80,6 +80,10 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         });
     }
 
+    public void reLoad(){
+        polyvPPTWebView.loadWeb();
+    }
+
     public void processSocketMessage(final PolyvSocketMessageVO polyvSocketMessageVO) {
         String event = polyvSocketMessageVO.getEvent();
         if (ONSLICESTART.equals(event) ||
@@ -136,13 +140,13 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
 
         if (socketDispose != null) {
             socketDispose.dispose();
+            socketDispose = null;
         }
-        socketDispose = null;
 
         if (delayDisposes != null) {
             delayDisposes.dispose();
+            delayDisposes = null;
         }
-        delayDisposes = null;
     }
 
     @Override

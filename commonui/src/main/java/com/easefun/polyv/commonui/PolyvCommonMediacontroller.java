@@ -23,7 +23,7 @@ import com.easefun.polyv.businesssdk.api.common.meidaControl.IPolyvMediaControll
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
 import com.easefun.polyv.businesssdk.model.video.PolyvBitrateVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvDefinitionVO;
-import com.easefun.polyv.commonui.player.PolyvBitAdapter;
+import com.easefun.polyv.commonui.player.adapter.PolyvBitRateAdapter;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
@@ -54,7 +54,7 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     protected RelativeLayout liveControllerBottom;
     protected LinearLayout bitrateLayout;
     protected RecyclerView bitrateListPort;
-    protected PolyvBitAdapter polyvBitAdapter;
+    protected PolyvBitRateAdapter polyvBitAdapter;
     protected volatile int currentBitratePos;
     protected boolean hasData;
     protected PolyvBitrateVO polyvLiveBitrateVO;
@@ -185,7 +185,7 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
 
                 ViewGroup.LayoutParams vlp = parentView.getLayoutParams();
                 vlp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-                vlp.height = PolyvScreenUtils.getHeight4_3();
+                vlp.height = PolyvScreenUtils.getHeight();
 
                 videoControllerLand.setVisibility(View.GONE);
                 videoControllerPort.setVisibility(View.VISIBLE);
@@ -247,7 +247,7 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
             bitrateChangeLand.setVisibility(VISIBLE);
             this.polyvLiveBitrateVO = polyvLiveBitrateVO;
             if (polyvBitAdapter == null && polyvLiveBitrateVO.getDefinitions() != null) {
-                polyvBitAdapter = new PolyvBitAdapter(polyvLiveBitrateVO, getContext());
+                polyvBitAdapter = new PolyvBitRateAdapter(polyvLiveBitrateVO, getContext());
                 List<PolyvDefinitionVO> definitions = polyvLiveBitrateVO.getDefinitions();
                 bitrateListPort.setLayoutManager(new GridLayoutManager(getContext(),
                         !definitions.isEmpty() ? definitions.size() : 3));
@@ -301,7 +301,7 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
             return;
         }
         if (polyvLiveBitrateVO != null) {
-            polyvBitAdapter = new PolyvBitAdapter(polyvLiveBitrateVO, getContext());
+            polyvBitAdapter = new PolyvBitRateAdapter(polyvLiveBitrateVO, getContext());
             polyvBitAdapter.setOnClickListener(this);
             bitrateListPort.setLayoutManager(port ? new LinearLayoutManager(getContext())
                     : new GridLayoutManager(getContext(), polyvLiveBitrateVO.getDefinitions().size()));
@@ -390,4 +390,6 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     public void initialBitrate(PolyvBitrateVO bitrateVO) {
         initBitList(bitrateVO);
     }
+
+    public abstract void updatePPTShowStatus(boolean showPPT);
 }

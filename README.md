@@ -109,3 +109,5 @@ SDKdemo是SDK的demo示例Android studio项目工程，其中包含了最新SDK�
 0.2.0版API文档请看[v0.2.0 API](http://repo.polyv.net/android/cloudclass/javadoc/0.2.0/index.html)
 
 0.3.0版API文档请看[v0.3.0 API](http://repo.polyv.net/android/cloudclass/javadoc/0.3.0/index.html)
+
+0.4.0版API文档请看[v0.4.0 API](http://repo.polyv.net/android/cloudclass/javadoc/0.4.0/index.html)

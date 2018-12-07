@@ -23,14 +23,14 @@
         android:layout_height="match_parent" />
 
     <!-- 亮度手势提示 -->
-    <com.easefun.polyv.commonui.player.view.PolyvLightTipsView
+    <com.easefun.polyv.commonui.player.widget.PolyvLightTipsView
         android:id="@+id/tipsview_light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
     <!-- 音量手势提示 -->
-    <com.easefun.polyv.commonui.player.view.PolyvVolumeTipsView
+    <com.easefun.polyv.commonui.player.widget.PolyvVolumeTipsView
         android:id="@+id/tipsview_volume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:layout_height="match_parent" />
 
     <!-- 控制栏 -->
-    <com.easefun.polyv.cloudclassdemo.player.PolyvCloudClassMediaController
+    <com.easefun.polyv.cloudclassdemo.watch.player.PolyvCloudClassMediaController
         android:id="@+id/controller"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

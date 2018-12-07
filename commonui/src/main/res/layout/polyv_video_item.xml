@@ -18,28 +18,28 @@
         android:layout_height="match_parent" />
 
     <!-- 亮度手势提示 -->
-    <com.easefun.polyv.commonui.player.view.PolyvLightTipsView
+    <com.easefun.polyv.commonui.player.widget.PolyvLightTipsView
         android:id="@+id/tipsview_light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
     <!-- 音量手势提示 -->
-    <com.easefun.polyv.commonui.player.view.PolyvVolumeTipsView
+    <com.easefun.polyv.commonui.player.widget.PolyvVolumeTipsView
         android:id="@+id/tipsview_volume"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
     <!-- 快进/回退提示 -->
-    <com.easefun.polyv.commonui.player.view.PolyvProgressTipsView
+    <com.easefun.polyv.commonui.player.widget.PolyvProgressTipsView
         android:id="@+id/tipsview_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
     <!-- 控制栏 -->
-    <com.easefun.polyv.commonui.player.view.PolyvVodMediaController
+    <com.easefun.polyv.commonui.player.widget.PolyvVodMediaController
         android:id="@+id/controller"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -53,15 +53,10 @@
         android:layout_alignParentRight="true" />
 
     <!-- 截图显示布局 -->
-    <com.easefun.polyv.commonui.player.view.PolyvScreenshotTipsView
+    <com.easefun.polyv.commonui.player.widget.PolyvScreenshotTipsView
         android:id="@+id/tipsview_screenshot"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- 视频片段截取时显示布局 -->
-    <com.easefun.polyv.commonui.player.view.PolyvGifTipsView
-        android:id="@+id/tipsview_gif"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </RelativeLayout>

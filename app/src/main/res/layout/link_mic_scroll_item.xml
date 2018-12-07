@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/polyv_link_mic_container"
+        android:layout_width="@dimen/ppt_width"
+        android:layout_height="@dimen/ppt_height">
+
+        <FrameLayout
+            android:id="@+id/polyv_link_mic_camera_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/video_back">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:src="@drawable/camera_default" />
+            <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicWaveView
+                android:id="@+id/polyv_link_mic_sound_wave"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/polyv_link_camera_switch_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/polyv_camer_back"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/polyv_camera_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="@dimen/dm_10"
+                android:src="@drawable/img_cemera_switch" />
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/polyv_link_nick"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dm_48"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/dm_10"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxWidth="@dimen/dm_134"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            tools:text="a;lfjsdjfs;k" />
+
+    </RelativeLayout>
+</FrameLayout>

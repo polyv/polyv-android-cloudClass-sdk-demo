@@ -7,8 +7,8 @@ import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView;
 import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
-import com.easefun.polyv.commonui.player.view.PolyvVodMediaController;
-import com.easefun.polyv.commonui.player.view.PolyvVodVideoItem;
+import com.easefun.polyv.commonui.player.widget.PolyvVodMediaController;
+import com.easefun.polyv.commonui.player.widget.PolyvVodVideoItem;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -24,10 +24,13 @@ public class PolyvVodVideoHelper extends PolyvCommonVideoHelper<PolyvVodVideoIte
     }
 
     @Override
-    public void initConfig() {
+    public void initConfig(boolean isNoramlLivePlayBack) {
 
         controller.addHelper(this);
-        controller.changePPTVideoLocation();
+        controller.updatePPTShowStatus(!isNoramlLivePlayBack);
+        if(!isNoramlLivePlayBack){
+            controller.changePPTVideoLocation();
+        }
     }
 
     public void pause() {

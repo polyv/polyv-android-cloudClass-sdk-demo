@@ -24,7 +24,7 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:replace="android:icon,android:theme">
         <activity
-            android:name=".view.PolyvCloudClassLoginActivity"
+            android:name=".login.PolyvCloudClassLoginActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
 
@@ -34,11 +34,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.PolyvCloudClassHomeActivity"
+            android:name=".watch.PolyvCloudClassHomeActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden|adjustResize">
 
         </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>

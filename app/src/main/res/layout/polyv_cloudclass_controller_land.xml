@@ -34,7 +34,7 @@
             android:text="@string/danmu"
             android:textColor="@color/white" />
 
-        <com.easefun.polyv.commonui.player.widget.PolyvSlideSwitch
+        <com.easefun.polyv.commonui.player.widget.PolyvSlideSwitchView
             android:id="@+id/video_danmu_land"
             android:layout_width="36dp"
             android:layout_height="16dp"

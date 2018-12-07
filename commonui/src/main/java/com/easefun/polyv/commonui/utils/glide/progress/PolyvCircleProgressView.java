@@ -32,7 +32,7 @@ public class PolyvCircleProgressView extends ProgressBar {
     private String mTextPrefix = ""; // 进度值后缀
     private boolean mTextVisible = true; // 是否显示进度值
     private boolean mReachCapRound; // 画笔是否使用圆角边界，normalStyle下生效
-    private int mRadius = PolyvDpUtils.dp2px(getContext(), 20); // 半径
+    private int mRadius = PolyvDpUtils.dp2px(getContext(), 15); // 半径
     private int mStartArc; // 起始角度
     private int mInnerBackgroundColor; // 内部背景填充颜色
     private int mProgressStyle = ProgressStyle.NORMAL; // 进度风格

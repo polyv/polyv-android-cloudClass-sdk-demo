@@ -17,11 +17,6 @@
         android:progressDrawable="@drawable/polyv_sb_bg_drawable"
         android:thumbOffset="0dp"/>
 
-    <com.easefun.polyv.commonui.player.widget.PolyvDotView
-        android:id="@+id/v_dot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
     <Button
         android:id="@+id/bt_gif"
         android:layout_width="52dp"

@@ -7,9 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.ScaleAnimation;
 
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
@@ -21,7 +19,7 @@ import com.easefun.polyv.cloudclass.video.api.IPolyvCloudClassVideoView;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTView;
-import com.easefun.polyv.commonui.widget.PolyvTouchContainer;
+import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
@@ -36,16 +34,19 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     protected static final String TAG = "PolyvCommonVideoHelper";
     protected Context context;
     protected T videoItem;
+
     protected ViewGroup pptContianer;
-    protected PolyvTouchContainer pptParent;
+    protected PolyvTouchContainerView pptParent;
+    protected PolyvPPTView pptView;
+
     protected ViewGroup playerParent, playerView;
     protected ViewGroup subVideoviewParent;
-    protected PolyvPPTView pptView;
     protected P videoView;
     protected PolyvBaseVideoParams playOption;
     protected PolyvAuxiliaryVideoview subVideoview;
     protected Q controller;
     protected View loadingView, noStreamView;
+    protected int videoViewVolume;
 
     protected  static final Handler S_HANDLER;
 
@@ -62,8 +63,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         this.subVideoview = videoItem.getSubVideoView();
         this.subVideoviewParent = (ViewGroup) subVideoview.getParent();
 
-        pptView = (PolyvPPTView) polyvPPTItem.getPPTView();
-        pptContianer = polyvPPTItem.getItemRootView().findViewById(R.id.polyv_ppt_container);
+
         this.playerParent = videoItem.getView().findViewById(R.id.rl_top);
         this.playerView = playerParent.findViewById(PolyvBaseVideoView.IJK_VIDEO_ID);
         this.loadingView = playerParent.findViewById(R.id.loadingview);
@@ -71,9 +71,19 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         this.context = playerView.getContext();
 
         controller.setMediaPlayer(videoView);
-        polyvPPTItem.addMediaController(controller);
-        videoItem.bindPPTView(polyvPPTItem);
 
+        initPPT(videoItem, polyvPPTItem);
+
+    }
+
+    public void initPPT(T videoItem, PolyvPPTItem polyvPPTItem) {
+        if(polyvPPTItem != null){
+            pptView = (PolyvPPTView) polyvPPTItem.getPPTView();
+            pptContianer = polyvPPTItem.getItemRootView().findViewById(R.id.polyv_ppt_container);
+            polyvPPTItem.addMediaController(controller);
+            videoItem.bindPPTView(polyvPPTItem);
+
+        }
     }
 
 
@@ -88,9 +98,12 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     }
 
-    public abstract void initConfig();
+    public abstract void initConfig(boolean isNormalLive);
 
-    public void addPPT(PolyvTouchContainer container) {
+    public void addPPT(PolyvTouchContainerView container) {
+        if(pptContianer == null){
+            return;
+        }
         container.removeAllViews();
         ViewGroup viewGroup = (ViewGroup) pptContianer.getParent();
         if (viewGroup != null)
@@ -118,7 +131,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
 
     private void changeView(boolean changeToVideoView) {
-
+        if(pptContianer == null || pptView == null){
+            return;
+        }
         PolyvCommonLog.d(TAG,"show ppt sub:"+changeToVideoView);
         pptContianer.removeView(changeToVideoView ? pptView : playerView);
         videoView.removeView(changeToVideoView ? playerView : pptView);
@@ -179,7 +194,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
 
     public void showCamerView() {
-        pptParent.setVisibility(View.VISIBLE);
+        if(pptParent != null){
+            pptParent.setVisibility(View.VISIBLE);
+        }
     }
 
     public void changeToLandscape() {
@@ -208,7 +225,14 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         if (playOption == null) {
             return;
         }
+        openVideoViewSound();
         startPlay(playOption);
+    }
+
+    private void openVideoViewSound() {
+        if(videoView != null){
+            videoView.setVolume(videoViewVolume);
+        }
     }
 
     public void pause() {

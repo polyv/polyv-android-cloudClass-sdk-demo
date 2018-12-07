@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<com.easefun.polyv.commonui.player.widget.PolyvSoftUtilLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.easefun.polyv.commonui.player.widget.PolyvSoftView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/polyv_soft_listener_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -47,7 +47,7 @@
                 android:id="@+id/live_top_select"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dm_42"
-                android:layout_below="@id/fl_container"
+                android:layout_below="@id/player_container"
                 android:orientation="horizontal">
 
                 <RelativeLayout
@@ -179,4 +179,4 @@
         android:gravity="bottom"
         android:text="@string/login_copyright" />
 
-</com.easefun.polyv.commonui.player.widget.PolyvSoftUtilLinearLayout>
+</com.easefun.polyv.commonui.player.widget.PolyvSoftView>
