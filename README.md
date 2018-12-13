@@ -12,7 +12,7 @@ SDKdemo是SDK的demo示例Android studio项目工程，其中包含了最新SDK�
 #### 运行环境
 * JDK 1.7 或以上
 * Android SDK 16或以上
-* Android Studio 2.2.0 或以上
+* Android Studio 3.0.0 或以上
 ***
 #### 支持功能
 
