@@ -5,7 +5,7 @@ polyv-android-cloudClass-sdk-demo
 [![GitHub release](https://img.shields.io/badge/release-v0.3.0-blue.svg)](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/releases/tag/v0.3.0)
 #### polyvSDKCloudClass （以下称SDK）是什么？
 
-SDK是Polyv为开发者用户提供的云课堂观看端SDK ，是jar文件和so文件。易于集成，内部包含`登录` `视频直播`  `视频回放`   `聊天`  `连麦` `ppt播放`等功能。首先需要在[链接到官网](www.polyv.net)注册账户并开通点播功能，然后集成SDK到你的项目中。
+SDK是Polyv为开发者用户提供的云课堂观看端SDK ，是jar文件和so文件。易于集成，内部包含`登录` `视频直播`  `视频回放`   `聊天`  `连麦` `ppt播放`等功能。首先需要在[链接到官网](http://www.polyv.net)注册账户并开通点播功能，然后集成SDK到你的项目中。
 #### polyv-android-cloudClass-sdk-demo（以下称**SDKdemo**）是什么？
 SDKdemo是SDK的demo示例Android studio项目工程，其中包含了最新SDK并且演示了如何在项目中集成SDK。
 ***
