@@ -61,6 +61,7 @@ public class PolyvMarqueeTextView extends AppCompatTextView {
     private int mFirstScrollDelay;
     private Runnable runnable;
     private int rollDuration;
+    private boolean isStopToCenter;
 
     public PolyvMarqueeTextView(Context context) {
         this(context, null);
@@ -95,6 +96,16 @@ public class PolyvMarqueeTextView extends AppCompatTextView {
         this.onGetRollDurationListener = onGetRollDurationListener;
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        removeCallbacks(runnable);
+    }
+
+    public void setStopToCenter(boolean isStopToCenter) {
+        this.isStopToCenter = isStopToCenter;
+    }
+
     /**
      * 开始滚动
      */
@@ -102,12 +113,6 @@ public class PolyvMarqueeTextView extends AppCompatTextView {
         mPaused = true;
         mFirst = true;
         resumeScroll();
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        removeCallbacks(runnable);
     }
 
     /**
@@ -121,41 +126,58 @@ public class PolyvMarqueeTextView extends AppCompatTextView {
 
         // 使用 LinearInterpolator 进行滚动
         if (mScroller == null) {
-            mScroller = new Scroller(this.getContext(), new LinearInterpolator());
+            mScroller = new Scroller(this.getContext(), new LinearInterpolator(getContext(), null));
             setScroller(mScroller);
         }
-        post(runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (mXPaused == 0)
-                    mXPaused = -1 * getWidth();
-                int scrollingLen = calculateScrollingLen();
-                final int distance = scrollingLen - mXPaused;
-                double durationDouble = mRollingInterval * distance * 1.00000 / scrollingLen;
-                if (scrollingLen < getWidth()) {
-                    durationDouble = durationDouble / (getWidth() / (float) scrollingLen);
+        if (getWidth() > 0) {
+            scroll();
+        } else {
+            post(runnable = new Runnable() {
+                @Override
+                public void run() {
+                    scroll();
                 }
-                final int duration = (int) durationDouble;
-                rollDuration = duration;
-                if (mFirst) {
-                    postDelayed(runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            callOnFirstGetRollDuration(rollDuration);
-                            setVisibility(View.VISIBLE);//gone不能获取宽高，需使用invisible
-                            mScroller.startScroll(mXPaused, 0, distance, 0, duration);
-                            invalidate();
-                            mPaused = false;
-                        }
-                    }, mFirstScrollDelay);
-                } else {
-                    callOnFirstGetRollDuration(rollDuration);
-                    mScroller.startScroll(mXPaused, 0, distance, 0, duration);
+            });
+        }
+    }
+
+    private void scroll() {
+        if (mXPaused == 0)
+            mXPaused = -1 * getWidth();
+        int scrollingLen = calculateScrollingLen();
+        //滚动的距离
+        int distance = scrollingLen - mXPaused;
+        double durationDouble = mRollingInterval * distance * 1.00000 / scrollingLen;
+        if (scrollingLen < getWidth()) {
+            durationDouble = durationDouble / (getWidth() / (float) scrollingLen);
+        }
+        int tmpDistance = distance;
+        rollDuration = (int) durationDouble;
+        if (isStopToCenter && mXPaused < 0) {
+            if (scrollingLen >= getWidth())
+                distance = Math.abs(mXPaused);
+            else
+                distance = Math.abs(mXPaused) - (getWidth() - scrollingLen) / 2;
+            rollDuration = (int) (rollDuration / (tmpDistance * 1.0f / distance));
+        }
+        final int finalDistance = distance;
+        if (mFirst) {
+            callOnFirstGetRollDuration(rollDuration);
+            postDelayed(runnable = new Runnable() {
+                @Override
+                public void run() {
+                    setVisibility(View.VISIBLE);//gone不能获取宽高，需使用invisible
+                    mScroller.startScroll(mXPaused, 0, finalDistance, 0, rollDuration);
                     invalidate();
                     mPaused = false;
                 }
-            }
-        });
+            }, mFirstScrollDelay);
+        } else {
+            callOnFirstGetRollDuration(rollDuration);
+            mScroller.startScroll(mXPaused, 0, distance, 0, rollDuration);
+            invalidate();
+            mPaused = false;
+        }
     }
 
     private void callOnFirstGetRollDuration(int rollDuration) {
@@ -192,7 +214,7 @@ public class PolyvMarqueeTextView extends AppCompatTextView {
         mPaused = true;
 //        mScroller.startScroll(0, 0, 0, 0, 0);//src
         mXPaused = -1 * getWidth();
-        mScroller.startScroll(mXPaused, 0, mXPaused, 0, 0);
+//        mScroller.startScroll(mXPaused, 0, mXPaused, 0, 0);
     }
 
     /**

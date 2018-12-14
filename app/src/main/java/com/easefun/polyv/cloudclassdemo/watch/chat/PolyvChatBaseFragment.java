@@ -40,6 +40,7 @@ import com.easefun.polyv.commonui.adapter.PolyvBaseRecyclerViewAdapter;
 import com.easefun.polyv.commonui.base.PolyvBaseFragment;
 import com.easefun.polyv.commonui.utils.PolyvFaceManager;
 import com.easefun.polyv.commonui.utils.PolyvToast;
+import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
 import com.easefun.polyv.commonui.widget.PolyvChatRecyclerView;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
@@ -111,6 +112,13 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     protected ViewGroup getChatEditContainer() {
         if (homePresnter != null) {
             return homePresnter.getChatEditContainer();
+        }
+        return null;
+    }
+
+    protected String getSessionId() {
+        if (homePresnter != null) {
+            return homePresnter.getSessionId();
         }
         return null;
     }
@@ -551,6 +559,18 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        if (chatListAdapter != null && chatListAdapter.getLoadImgMap() != null) {
+            for (String key : chatListAdapter.getLoadImgMap().keySet()) {
+                for (int value : chatListAdapter.getLoadImgMap().get(key)) {
+                    PolyvMyProgressManager.removeListener(key, value);
+                }
+            }
+        }
+        super.onDestroy();
     }
 
     public abstract void sendMessage();

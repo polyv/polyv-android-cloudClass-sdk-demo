@@ -22,7 +22,7 @@ import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
  * @Describe
  */
 public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyvRotateBaseView{
-    private static final String TAG = "PolyvCamerListView";
+    private static final String TAG = "PolyvLinkMicListView";
     // 竖屏下的位置
     private int portraitLeft = 0;
     private int portraitTop = 0;

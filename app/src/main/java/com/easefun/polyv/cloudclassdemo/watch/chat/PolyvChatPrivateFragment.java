@@ -109,16 +109,4 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
             }
         }));
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (chatListAdapter != null && chatListAdapter.getLoadImgMap() != null) {
-            for (String key : chatListAdapter.getLoadImgMap().keySet()) {
-                for (int value : chatListAdapter.getLoadImgMap().get(key)) {
-                    PolyvMyProgressManager.removeListener(key, value);
-                }
-            }
-        }
-    }
 }

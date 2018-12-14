@@ -41,8 +41,6 @@ public class PolyvChatImageViewer extends FrameLayout {
     private TextView tvPage;
     private ImageView ivDownload;
     private ViewPager vpImageViewer;
-    //    private List<Fragment> fragmentList;
-//    private PolyvFragmentStateAdapter fragmentAdapter;
     private List<PolyvChatListAdapter.ChatTypeItem> chatTypeItems;
     private int currentPosition = -1;
     private PolyvPermissionManager permissionManager;
@@ -151,6 +149,16 @@ public class PolyvChatImageViewer extends FrameLayout {
     }
 
     @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibility != View.VISIBLE) {
+            compositeDisposable.dispose();
+        } else {
+            compositeDisposable = new CompositeDisposable();
+        }
+    }
+
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         compositeDisposable = new CompositeDisposable();
@@ -189,22 +197,6 @@ public class PolyvChatImageViewer extends FrameLayout {
     public void setData(final List<PolyvChatListAdapter.ChatTypeItem> items, int curPosition) {
         if (items != null && items.size() > 0) {
             chatTypeItems = items;
-//            if (fragmentList == null)
-//                fragmentList = new ArrayList<>();
-//            else
-//                fragmentList.clear();
-//            List<Fragment> fragmentList = new ArrayList<>();
-//            for (int i = 0; i < chatTypeItems.size(); i++) {
-//                PolyvChatImageFragment chatImageFragment = new PolyvChatImageFragment();
-//                chatImageFragment.setData(chatTypeItems.get(i), i);
-//                fragmentList.add(chatImageFragment);
-//            }
-//            if (fragmentAdapter == null) {
-//                fragmentAdapter = new PolyvFragmentStateAdapter(((AppCompatActivity) getContext()).getSupportFragmentManager(), fragmentList);
-//                vpImageViewer.setAdapter(fragmentAdapter);
-//            } else {
-//                fragmentAdapter.notifyDataSetChanged();
-//            }
             PolyvChatImgFragmentStatePagerAdapter fragmentAdapter = new PolyvChatImgFragmentStatePagerAdapter(((AppCompatActivity) getContext()).getSupportFragmentManager(), chatTypeItems);
             fragmentAdapter.setOnClickImgListener(new OnClickListener() {
                 @Override

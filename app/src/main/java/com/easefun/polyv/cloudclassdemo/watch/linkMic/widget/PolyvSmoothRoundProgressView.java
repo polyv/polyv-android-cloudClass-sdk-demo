@@ -4,19 +4,10 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Shader;
-import android.graphics.SweepGradient;
-import android.nfc.Tag;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.TextView;
@@ -35,10 +26,9 @@ public class PolyvSmoothRoundProgressView extends View {
     private Paint bgPaint;//绘制背景圆弧的画笔
     private Paint progressPaint;//绘制圆弧的画笔
 
-    private RectF mRectF;//绘制圆弧的矩形区域
+    private RectF circleRectF;//绘制圆弧的矩形区域
 
     private CircleBarAnim animStart;
-    private CircleBarEndAnim animEnd;
 
     private float progressNum;//可以更新的进度条数值
     private float maxNum;//进度条最大值
@@ -75,7 +65,7 @@ public class PolyvSmoothRoundProgressView extends View {
         progressNum = 0;
         maxNum = 1000;
         defaultSize = PolyvScreenUtils.dip2px(context, 100);
-        mRectF = new RectF();
+        circleRectF = new RectF();
 
         progressPaint = new Paint();
         progressPaint.setStyle(Paint.Style.STROKE);//只描边，不填充
@@ -92,7 +82,6 @@ public class PolyvSmoothRoundProgressView extends View {
         bgPaint.setStrokeCap(Paint.Cap.ROUND);
 
         animStart = new CircleBarAnim();
-        animEnd = new CircleBarEndAnim();
     }
 
     @Override
@@ -105,7 +94,7 @@ public class PolyvSmoothRoundProgressView extends View {
         setMeasuredDimension(min, min);// 强制改View为以最短边为长度的正方形
 
         if (min >= barWidth * 2) {
-            mRectF.set(barWidth / 2, barWidth / 2, min - barWidth / 2, min - barWidth / 2);
+            circleRectF.set(barWidth / 2, barWidth / 2, min - barWidth / 2, min - barWidth / 2);
         }
 
     }
@@ -113,39 +102,15 @@ public class PolyvSmoothRoundProgressView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawArc(mRectF, startAngle, sweepAngle, false, bgPaint);
+        canvas.drawArc(circleRectF, startAngle, sweepAngle, false, bgPaint);
         if (progressSweepAngle <= 0) {
             progressSweepAngle = 0;
         }
         if (progressSweepAngle >= 0) {
-            canvas.drawArc(mRectF, startAngle, progressSweepAngle, false, progressPaint);
+            canvas.drawArc(circleRectF, startAngle, progressSweepAngle, false, progressPaint);
         }
     }
 
-    public class CircleBarEndAnim extends Animation {
-        public CircleBarEndAnim() {
-        }
-
-        @Override
-        protected void applyTransformation(float interpolatedTime, Transformation t) {//interpolatedTime从0渐变成1,到1时结束动画,持续时间由setDuration（time）方法设置
-            super.applyTransformation(interpolatedTime, t);
-            progressSweepAngle = sweepAngle - interpolatedTime * sweepAngle * progressNum / maxNum;
-            if (onAnimationListener != null) {
-                onAnimationListener.howTiChangeProgressColor(progressPaint, interpolatedTime, progressNum, maxNum);
-            }
-            if (progressSweepAngle <= 0) {
-                progressSweepAngle = 0;
-            }
-
-            if (Math.abs(interpolatedTime - 1) < 0.01) {
-                progressSweepAngle = 0;
-            }
-
-            postInvalidate();
-
-        }
-
-    }
 
     public class CircleBarAnim extends Animation {
 
@@ -188,7 +153,7 @@ public class PolyvSmoothRoundProgressView extends View {
                 if (textView != null) {
                     textView.setText(onAnimationListener.howToChangeText(interpolatedTime, progressNum, maxNum));
                 }
-                onAnimationListener.howTiChangeProgressColor(progressPaint, interpolatedTime, progressNum, maxNum);
+                onAnimationListener.howToChangeProgressColor(progressPaint, interpolatedTime, progressNum, maxNum);
             }
 
             if (Math.abs(interpolatedTime - 1) < 0.01) {
@@ -270,7 +235,7 @@ public class PolyvSmoothRoundProgressView extends View {
          * @param updateNum        进度条数值
          * @param maxNum           进度条最大值
          */
-        void howTiChangeProgressColor(Paint paint, float interpolatedTime, float updateNum, float maxNum);
+        void howToChangeProgressColor(Paint paint, float interpolatedTime, float updateNum, float maxNum);
 
     }
 

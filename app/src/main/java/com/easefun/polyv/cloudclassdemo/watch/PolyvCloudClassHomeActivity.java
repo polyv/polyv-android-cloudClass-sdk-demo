@@ -33,22 +33,22 @@ import com.easefun.polyv.cloudclass.model.answer.PolyvJSQuestionVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionSocketVO;
 import com.easefun.polyv.cloudclass.video.PolyvAnswerWebView;
 import com.easefun.polyv.cloudclassdemo.R;
+import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatBaseFragment;
+import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatFragmentAdapter;
+import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatGroupFragment;
+import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatPrivateFragment;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.IPolyvRotateBaseView;
 import com.easefun.polyv.cloudclassdemo.watch.player.PolyvCloudClassMediaController;
 import com.easefun.polyv.cloudclassdemo.watch.player.PolyvCloudClassVideoHelper;
 import com.easefun.polyv.cloudclassdemo.watch.player.PolyvCloudClassVideoItem;
 import com.easefun.polyv.cloudclassdemo.watch.player.PolyvOrientoinListener;
 import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
-import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatFragmentAdapter;
 import com.easefun.polyv.commonui.base.PolyvBaseActivity;
 import com.easefun.polyv.commonui.player.PolyvVodVideoHelper;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
-import com.easefun.polyv.commonui.player.widget.PolyvVodVideoItem;
 import com.easefun.polyv.commonui.player.widget.PolyvSlideSwitchView;
+import com.easefun.polyv.commonui.player.widget.PolyvVodVideoItem;
 import com.easefun.polyv.commonui.utils.PolyvChatEventBus;
-import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatBaseFragment;
-import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatGroupFragment;
-import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatPrivateFragment;
 import com.easefun.polyv.commonui.widget.PolyvAnswerView;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
@@ -700,6 +700,16 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="IPolyvHomePresnter实现">
+    @Override
+    public String getSessionId() {
+        if (playMode == PolyvPlayOption.PLAYMODE_LIVE && livePlayerHelper != null) {
+            if (livePlayerHelper.getVideoView() != null && livePlayerHelper.getVideoView().getModleVO() != null) {
+                return livePlayerHelper.getVideoView().getModleVO().getChannelSessionId();
+            }
+        }
+        return null;
+    }
+
     @Override
     public void sendDanmu(CharSequence content) {
         if (livePlayerHelper != null) {

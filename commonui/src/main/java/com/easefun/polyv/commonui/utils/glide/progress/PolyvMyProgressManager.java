@@ -27,7 +27,7 @@ public class PolyvMyProgressManager {
                     if (onProgressListenerList != null) {
                         int percentage = (int) ((bytesRead * 1f / totalBytes) * 100f);
                         boolean isComplete = percentage >= 100;
-                        if (!isComplete) {//交给glide回调
+                        if (!isComplete) {//交给glide回调(可以回调，因为多个相同url请求时glide只会回调其中一个，但是回调的话图片不会显示)
                             for (PolyvOnProgressListener onProgressListener : onProgressListenerList)
                                 onProgressListener.onProgress(url, isComplete, percentage, bytesRead, totalBytes);
                         }
@@ -121,6 +121,10 @@ public class PolyvMyProgressManager {
         }
 
         return listenersMap.get(url);
+    }
+
+    public static Map<String, List<Object[]>> getListenersMap() {
+        return listenersMap;
     }
 
     public static List<PolyvOnProgressListener> getProgressListener(String url) {

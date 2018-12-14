@@ -12,7 +12,7 @@ import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
 /**
  * @author df
  * @create 2018/11/30
- * @Describe
+ * @Describe 旋转view的抽象定义
  */
 public interface IPolyvRotateBaseView {
 

@@ -5,7 +5,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
-import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicWaveView;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 
 import io.agora.rtc.IRtcEngineEventHandler;

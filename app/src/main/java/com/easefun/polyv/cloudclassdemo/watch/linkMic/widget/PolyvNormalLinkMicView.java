@@ -17,13 +17,15 @@ import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
 /**
  * @author df
- * @create 2018/11/30* @Describe
+ * @create 2018/11/30*
+ * @Describe
  */
 public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotateBaseView {
     private static final String TAG = "PolyvNormalLinkMicView";
     //键盘弹起前得位置
     private int beforeSoftLeft = 0;
     private int beforeSoftTop = 0;
+    //控件一开始的顶部位置
     private int originTop = 0;
 
     private boolean canShow;
@@ -81,7 +83,7 @@ public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotate
 
     @Override
     public void resetFloatViewLand() {
-        setVisibility(INVISIBLE);
+        super.setVisibility(INVISIBLE);
     }
 
     @Override
@@ -100,7 +102,7 @@ public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotate
         rlp.leftMargin = 0;
         rlp.topMargin = originTop;
         if(canShow){
-            setVisibility(VISIBLE);
+            super.setVisibility(VISIBLE);
         }
         setLayoutParams(rlp);
     }
@@ -154,4 +156,10 @@ public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotate
         this.canShow = canShow;
     }
 
+    @Override
+    public void setVisibility(int visibility) {
+        if(PolyvScreenUtils.isPortrait(getContext())){
+            super.setVisibility(visibility);
+        }
+    }
 }

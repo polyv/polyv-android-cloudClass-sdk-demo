@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 public interface IPolyvHomeProtocol {
     void sendDanmu(CharSequence content);
 
+    //当前直播的场次Id
+    String getSessionId();
+
     ViewGroup getImageViewerContainer();
 
     ViewGroup getChatEditContainer();

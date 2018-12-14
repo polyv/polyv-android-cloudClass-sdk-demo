@@ -98,6 +98,10 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     }
 
+    public P getVideoView() {
+        return videoView;
+    }
+
     public abstract void initConfig(boolean isNormalLive);
 
     public void addPPT(PolyvTouchContainerView container) {

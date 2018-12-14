@@ -237,6 +237,8 @@ public class PolyvChatListAdapter extends PolyvBaseRecyclerViewAdapter {
     }
 
     private void handleReceiveMessage(ReceiveMessageHolder receiveMessageHolder, Object object, int position) {
+        receiveMessageHolder.imgLoading.setTag(position);
+
         String userType, actor, nick, pic;
         CharSequence message = null;
         String chatImg = null;
@@ -380,15 +382,23 @@ public class PolyvChatListAdapter extends PolyvBaseRecyclerViewAdapter {
         PolyvMyProgressManager.removeListener(chatImg, position);
         final PolyvOnProgressListener onProgressListener = new PolyvOnProgressListener() {
             @Override
-            public void onStart(String url) {
-                imgLoading.setVisibility(View.VISIBLE);
+            public void onStart(String url) {//后台回来会重新开始
+                if ((int) imgLoading.getTag() != position)
+                    return;
+                if (imgLoading.getProgress() == 0 && imgLoading.getVisibility() != View.VISIBLE) {
+                    imgLoading.setVisibility(View.VISIBLE);
+                    imageView.setImageDrawable(null);
+                }
             }
 
             @Override
             public void onProgress(String url, boolean isComplete, int percentage, long bytesRead, long totalBytes) {
+                if ((int) imgLoading.getTag() != position)
+                    return;
                 if (isComplete) {
                     imgLoading.setVisibility(View.GONE);
-                } else {
+                    imgLoading.setProgress(100);
+                } else if (imageView.getDrawable() == null) {//onFailed之后可能触发onProgress
                     imgLoading.setVisibility(View.VISIBLE);
                     imgLoading.setProgress(percentage);
                 }
@@ -396,7 +406,10 @@ public class PolyvChatListAdapter extends PolyvBaseRecyclerViewAdapter {
 
             @Override
             public void onFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                if ((int) imgLoading.getTag() != position)
+                    return;
                 imgLoading.setVisibility(View.GONE);
+                imgLoading.setProgress(0);
             }
         };
         PolyvMyProgressManager.addListener(chatImg, position, onProgressListener);
@@ -451,6 +464,7 @@ public class PolyvChatListAdapter extends PolyvBaseRecyclerViewAdapter {
     }
 
     private void handleSendMessage(SendMessageHolder sendMessageHolder, Object object, int position) {
+        sendMessageHolder.imgLoading.setTag(position);
         if (!(object instanceof PolyvSendLocalImgEvent || object instanceof PolyvChatImgHistory)) {
             sendMessageHolder.resendMessageButton.setVisibility(View.GONE);
             sendMessageHolder.chatImg.setVisibility(View.GONE);

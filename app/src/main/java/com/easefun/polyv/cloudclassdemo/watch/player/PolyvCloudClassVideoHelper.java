@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -538,6 +539,13 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
             setMainScreenSize(mainScreenLinkView);
 
+            SurfaceView surfaceView = (SurfaceView) polyvLinkMicAdapter.getCameraView(mainScreenLinkView);
+            if (surfaceView != null) {
+                surfaceView.setZOrderOnTop(changeToVideoView);
+                surfaceView.setZOrderMediaOverlay(changeToVideoView);
+
+            }
+
             videoView.addView(changeToVideoView ? pptView : mainScreenLinkView, 0, new ViewGroup.LayoutParams
                     (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -798,9 +806,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private void hideSubView() {
         linkMicLayout.setVisibility(VISIBLE);
         linkMicLayoutParent.enableShow(true);
-        if(PolyvScreenUtils.isPortrait(context)){
-            linkMicLayoutParent.setVisibility(VISIBLE);
-        }
+        linkMicLayoutParent.setVisibility(VISIBLE);
 
         if(pptContianer != null){
             pptContianer.setVisibility(INVISIBLE);

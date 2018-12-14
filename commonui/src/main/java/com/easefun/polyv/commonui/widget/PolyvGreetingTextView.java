@@ -2,13 +2,13 @@ package com.easefun.polyv.commonui.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.widget.AppCompatTextView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.ScaleAnimation;
 
 import com.easefun.polyv.cloudclass.chat.event.PolyvLoginEvent;
 
@@ -24,9 +24,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
-public class PolyvGreetingTextView extends AppCompatTextView {
+public class PolyvGreetingTextView extends PolyvMarqueeTextView {
     private List<PolyvLoginEvent> loginEventList = new ArrayList<>();
+    private boolean isStart;
     private Disposable acceptLoginDisposable;
+    private Runnable runnable;
+    private int rollDuration;
 
     public PolyvGreetingTextView(Context context) {
         super(context);
@@ -45,38 +48,89 @@ public class PolyvGreetingTextView extends AppCompatTextView {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         loginEventList.clear();
-        acceptLoginDisposable.dispose();
+        removeCallbacks(runnable);
+        if (acceptLoginDisposable != null) {
+            acceptLoginDisposable.dispose();
+        }
     }
 
-    private int getShowTime() {
-        int showTime = 3;
-        if (loginEventList.size() >= 3)
-            showTime = 1;
-        return showTime;
+    private int getScrollTime() {
+        int scrollTime = 2;
+        return scrollTime;
+    }
+
+    private int getStayTime() {
+        int stayTime = 2;
+        return stayTime;
     }
 
     private void showGreetingText() {
         if (loginEventList.size() < 1) {
-            setVisibility(View.GONE);
+            stopScroll();
+            setVisibility(View.INVISIBLE);
+            ((ViewGroup) getParent()).setVisibility(View.GONE);
+            ((ViewGroup) getParent()).clearAnimation();
+            ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1f, 1f, 0f);
+            scaleAnimation.setDuration(555);
+            ((ViewGroup) getParent()).startAnimation(scaleAnimation);
+            isStart = !isStart;
             return;
         }
-        final int showTime = getShowTime();
-        final PolyvLoginEvent loginEvent = loginEventList.remove(0);
+
+        final int scrollTime = getScrollTime();
+        rollDuration = scrollTime * 1000;
+
+        SpannableStringBuilder span;
+        if (loginEventList.size() >= 10) {
+            StringBuilder stringBuilder = new StringBuilder();
+            int lf = 0, ls = 0;
+            for (int i = 0; i <= 2; i++) {
+                PolyvLoginEvent loginEvent = loginEventList.get(i);
+                if (i != 2)
+                    stringBuilder.append(loginEvent.getUser().getNick()).append("、");
+                else
+                    stringBuilder.append(loginEvent.getUser().getNick());
+                if (i == 0)
+                    lf = stringBuilder.toString().length() - 1;
+                else if (i == 1)
+                    ls = stringBuilder.toString().length() - lf - 2;
+            }
+            span = new SpannableStringBuilder("欢迎 " + stringBuilder.toString() + " 等" + loginEventList.size() + "人加入");
+            span.setSpan(new ForegroundColorSpan(Color.rgb(129, 147, 199)), 3, 3 + lf, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            span.setSpan(new ForegroundColorSpan(Color.rgb(129, 147, 199)), 3 + lf + 1, 3 + lf + 1 + ls, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            span.setSpan(new ForegroundColorSpan(Color.rgb(129, 147, 199)), 3 + lf + 1 + ls + 1, span.length() - 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            loginEventList.clear();
+        } else {
+            PolyvLoginEvent loginEvent = loginEventList.remove(0);
+            span = new SpannableStringBuilder("欢迎 " + loginEvent.getUser().getNick() + " 加入");
+            span.setSpan(new ForegroundColorSpan(Color.rgb(129, 147, 199)), 3, span.length() - 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        final SpannableStringBuilder finalSpan = span;
+
         acceptLoginDisposable = Observable.just(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) throws Exception {
-                        SpannableStringBuilder span = new SpannableStringBuilder("欢迎 " + loginEvent.getUser().getNick() + " 加入");
-                        span.setSpan(new ForegroundColorSpan(Color.rgb(129, 147, 199)), 3, span.length() - 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        setText(span);
-                        setVisibility(View.VISIBLE);
+                        ((ViewGroup) getParent()).setVisibility(View.VISIBLE);
+                        setVisibility(View.INVISIBLE);
+                        setText(finalSpan);
+                        setStopToCenter(true);
+                        setRndDuration(scrollTime * 1000);
+                        setOnGetRollDurationListener(new OnGetRollDurationListener() {
+                            @Override
+                            public void onFirstGetRollDuration(int rollDuration) {
+                                PolyvGreetingTextView.this.rollDuration = rollDuration;
+                            }
+                        });
+                        stopScroll();
+                        startScroll();
                     }
                 })
                 .flatMap(new Function<Integer, ObservableSource<?>>() {
                     @Override
                     public ObservableSource<?> apply(Integer integer) throws Exception {
-                        return Observable.timer(showTime, TimeUnit.SECONDS);
+                        return Observable.timer(rollDuration + getStayTime() * 1000, TimeUnit.MILLISECONDS);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -94,8 +148,24 @@ public class PolyvGreetingTextView extends AppCompatTextView {
 
     public void acceptLoginEvent(final PolyvLoginEvent loginEvent) {
         loginEventList.add(loginEvent);
-        if (getVisibility() != View.VISIBLE) {
-            showGreetingText();
+        if (!isStart) {
+            isStart = !isStart;
+            if (getWidth() > 0) {
+                showGreetingText();
+            } else {
+                post(runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        ((ViewGroup) getParent()).setVisibility(View.VISIBLE);//先显示父控件才能获取到宽
+                        post(runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                showGreetingText();
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
 }

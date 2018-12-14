@@ -13,8 +13,8 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -96,8 +96,6 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     //添加更多的布局
     private LinearLayout moreLayout;
     private PolyvLikeIconView liv_like;
-    //公告
-    private FrameLayout flGongGao;
     private PolyvMarqueeTextView tvGongGao;
     //下拉加载历史记录
     private SwipeRefreshLayout chatPullLoad;
@@ -179,6 +177,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) chatMessageList.getLayoutManager();
         int firstPosition = linearLayoutManager.findFirstVisibleItemPosition();
         int lastPosition = linearLayoutManager.findLastVisibleItemPosition();
+        if (firstPosition < 0 || lastPosition < 0)
+            return null;
         for (int i = 0; i <= lastPosition - firstPosition; i++) {
             PolyvChatListAdapter.ChatTypeItem chatTypeItem = chatListAdapter.getChatTypeItems().get(i + firstPosition);
             if (chatTypeItem.object == sendLocalImgEvent) {
@@ -396,11 +396,19 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                     return;
                 }
                 //发送点赞
-                int sendValue = chatManager.sendLikes();
+                int sendValue = chatManager.sendLikes(getSessionId());
                 if (sendValue < 0) {
                     toast.makeText(getContext(), "送花失败：" + sendValue, PolyvToast.LENGTH_SHORT).show(true);
+                } else {
+                    PolyvLikesEvent likesEvent = new PolyvLikesEvent();
+                    likesEvent.setNick(chatManager.nickName);
+                    likesEvent.setUserId(chatManager.userId);
+                    likesEvent.setObjects(generateLikeSpan(likesEvent.getNick()));
+
+                    chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(likesEvent, PolyvChatListAdapter.ChatTypeItem.TYPE_TIPS));
+                    chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
+                    chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
                 }
-                //成功后不用添加到列表里，因为后续会收到自己的送花事件，在那里添加
             }
         });
 
@@ -410,7 +418,12 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chatManager.sendLikes();
+                int sendValue = chatManager.sendLikes(getSessionId());
+                if (sendValue < 0) {
+                    toast.makeText(getContext(), "点赞失败：" + sendValue, PolyvToast.LENGTH_SHORT).show(true);
+                } else {
+                    liv_like.addLoveIcon();
+                }
             }
         });
 
@@ -492,13 +505,12 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                         sendMessageHolder.imgLoading.setProgress(0);
                     }
                     //放在view初始之后
-                    chatManager.sendChatImage(sendLocalImgEvent);
+                    chatManager.sendChatImage(sendLocalImgEvent, getSessionId());
                 }
             }
         });
 
         //公告
-        flGongGao = findViewById(R.id.fl_gonggao);
         tvGongGao = findViewById(R.id.tv_gonggao);
 
         //欢迎语
@@ -533,7 +545,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         sendLocalImgEvent.setWidth(pictureWh[0]);
         sendLocalImgEvent.setHeight(pictureWh[1]);
 
-        chatManager.sendChatImage(sendLocalImgEvent);
+        chatManager.sendChatImage(sendLocalImgEvent, getSessionId());
 
         chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(sendLocalImgEvent, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND));
         chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
@@ -592,6 +604,15 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                 toast.makeText(getContext(), "发送失败：" + sendValue, PolyvToast.LENGTH_SHORT).show(true);
             }
         }
+    }
+
+    private Spannable generateLikeSpan(String sendNick) {
+        SpannableStringBuilder span = new SpannableStringBuilder(sendNick + " 赠送了鲜花p");
+        Drawable drawable = getContext().getResources().getDrawable(R.drawable.polyv_gift_flower);
+        int textSize = ConvertUtils.dp2px(12);
+        drawable.setBounds(0, 0, textSize * 2, textSize * 2);
+        span.setSpan(new RelativeImageSpan(drawable, RelativeImageSpan.ALIGN_CENTER), span.length() - 1, span.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return span;
     }
 
     private void acceptLoginSuccessEvent() {
@@ -705,25 +726,20 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                             break;
                         //点赞(此处用作送花)
                         case PolyvChatManager.EVENT_LIKES:
-                            if (isNormalLive) {//点赞
-                                liv_like.addLoveIcon();
-                            } else {//送花
-                                PolyvLikesEvent likesEvent = PolyvEventHelper.getEventObject(PolyvLikesEvent.class, message, event);
-                                if (likesEvent != null) {
-                                    eventObject = likesEvent;
-                                    eventType = PolyvChatListAdapter.ChatTypeItem.TYPE_TIPS;
+                            PolyvLikesEvent likesEvent = PolyvEventHelper.getEventObject(PolyvLikesEvent.class, message, event);
+                            if (likesEvent != null) {
+                                if (!chatManager.userId.equals(likesEvent.getUserId())) {
+                                    if (isNormalLive) {//点赞
+                                        liv_like.addLoveIcon();
+                                    } else {//送花
+                                        eventObject = likesEvent;
+                                        eventType = PolyvChatListAdapter.ChatTypeItem.TYPE_TIPS;
 
-                                    //把需要显示的信息先解析保存下来
-                                    String sendNick = likesEvent.getNick();
-                                    SpannableStringBuilder span = new SpannableStringBuilder(sendNick + " 赠送了鲜花p");
-                                    Drawable drawable = getContext().getResources().getDrawable(R.drawable.polyv_gift_flower);
-                                    int textSize = ConvertUtils.dp2px(12);
-                                    drawable.setBounds(0, 0, textSize * 2, textSize * 2);
-                                    span.setSpan(new RelativeImageSpan(drawable, RelativeImageSpan.ALIGN_CENTER), span.length() - 1, span.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                    likesEvent.setObjects(span);
+                                        //把需要显示的信息先解析保存下来
+                                        likesEvent.setObjects(generateLikeSpan(likesEvent.getNick()));
+                                    }
                                 }
                             }
-
                             break;
                         //聊天室开启/关闭，于登录事件前收到
                         case PolyvChatManager.EVENT_CLOSEROOM:
@@ -895,12 +911,12 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
             @Override
             public void run() {
-                flGongGao.setVisibility(View.VISIBLE);
+                ((ViewGroup) tvGongGao.getParent()).setVisibility(View.VISIBLE);
                 tvGongGao.setText(msg);
                 tvGongGao.setOnGetRollDurationListener(new PolyvMarqueeTextView.OnGetRollDurationListener() {
                     @Override
                     public void onFirstGetRollDuration(int rollDuration) {
-                        startCountDown(rollDuration * 3);
+                        startCountDown(rollDuration * 3 + tvGongGao.getScrollFirstDelay());
                     }
                 });
                 tvGongGao.stopScroll();
@@ -915,12 +931,13 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                 .subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(Long aLong) throws Exception {
+                        tvGongGao.setVisibility(View.INVISIBLE);
                         tvGongGao.stopScroll();
-                        flGongGao.setVisibility(View.GONE);
-                        flGongGao.clearAnimation();
+                        ((ViewGroup) tvGongGao.getParent()).setVisibility(View.GONE);
+                        ((ViewGroup) tvGongGao.getParent()).clearAnimation();
                         ScaleAnimation scaleAnimation = new ScaleAnimation(1f, 1f, 1f, 0f);
                         scaleAnimation.setDuration(555);
-                        flGongGao.startAnimation(scaleAnimation);
+                        ((ViewGroup) tvGongGao.getParent()).startAnimation(scaleAnimation);
                     }
                 });
     }
@@ -936,13 +953,6 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     public void onDestroy() {
         super.onDestroy();
         disposableGonggaoCd();
-        if (chatListAdapter != null && chatListAdapter.getLoadImgMap() != null) {
-            for (String key : chatListAdapter.getLoadImgMap().keySet()) {
-                for (int value : chatListAdapter.getLoadImgMap().get(key)) {
-                    PolyvMyProgressManager.removeListener(key, value);
-                }
-            }
-        }
     }
 
     public void setNormalLive(boolean normalLive) {

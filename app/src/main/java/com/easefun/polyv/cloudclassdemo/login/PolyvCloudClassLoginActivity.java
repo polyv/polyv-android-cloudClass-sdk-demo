@@ -57,7 +57,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     private EditText playbackAppId, playbackAppSecrect;
     private RelativeLayout liveGroupLayout;
     private RelativeLayout playbackGroupLayout;
-    private Disposable getTokenDisposable;
+    private Disposable getTokenDisposable,verifyDispose;
     private ProgressDialog progress;
 
     private static final String TAG = "PolyvCloudClassLoginAct";
@@ -114,6 +114,9 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
             public void onDismiss(DialogInterface dialog) {
                 if (getTokenDisposable != null) {
                     getTokenDisposable.dispose();
+                }
+                if(verifyDispose != null){
+                    verifyDispose.dispose();
                 }
                 loginTv.setEnabled(true);
             }
@@ -314,7 +317,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         if(TextUtils.isEmpty(vid)){
             return;
         }
-       PolyvLoginManager.getPlayBackType(vid, new PolyvrResponseCallback<PolyvPlayBackVO>() {
+        verifyDispose = PolyvLoginManager.getPlayBackType(vid, new PolyvrResponseCallback<PolyvPlayBackVO>() {
             @Override
             public void onSuccess(PolyvPlayBackVO playBack) {
                 boolean isLivePlayBack = playBack.getLiveType() == 0;
@@ -357,7 +360,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     }
 
     private void requestLiveStatus(String userId) {
-        PolyvResponseExcutor.excuteUndefinData(PolyvApiManager.getPolyvLiveStatusApi().geLiveStatusJson(channelId.getText().toString())
+        verifyDispose = PolyvResponseExcutor.excuteUndefinData(PolyvApiManager.getPolyvLiveStatusApi().geLiveStatusJson(channelId.getText().toString())
                 , new PolyvrResponseCallback<PolyvLiveStatusVO>() {
                     @Override
                     public void onSuccess(PolyvLiveStatusVO statusVO) {

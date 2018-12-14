@@ -52,19 +52,27 @@
             app:scroll_mode="mode_forever" />
     </FrameLayout>
 
-    <com.easefun.polyv.commonui.widget.PolyvGreetingTextView
-        android:id="@+id/greeting_text"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/fl_gonggao"
         android:layout_margin="8dp"
         android:background="@drawable/polyv_tv_bg_corner"
-        android:gravity="center"
         android:padding="12dp"
-        android:text="欢迎语"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:visibility="gone" />
+        android:visibility="gone">
+
+        <com.easefun.polyv.commonui.widget.PolyvGreetingTextView
+            android:id="@+id/greeting_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="#000000"
+            android:textSize="12sp"
+            android:visibility="invisible"
+            app:scroll_first_delay="100"
+            app:scroll_interval="6666"
+            app:scroll_mode="mode_once" />
+    </FrameLayout>
 
     <com.easefun.polyv.commonui.widget.PolyvCornerBgTextView
         android:id="@+id/tv_status"
