@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/dm_32"
+    android:background="@drawable/polyv_chat_tip_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/dm_3">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/gift_avatar"
+        android:layout_width="@dimen/dm_20"
+        android:layout_height="@dimen/dm_20"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/dm_10"
+        android:src="@drawable/polyv_default_teacher" />
+
+    <TextView
+        android:id="@+id/gift_name"
+        android:layout_width="wrap_content"
+
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dm_10"
+        android:textColor="#3f3f3f"
+        android:textSize="16sp"
+        tools:text="送出环球旅行" />
+
+    <ImageView
+        android:id="@+id/gift_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dm_10"
+        android:src="@drawable/polyv_gift" />
+
+    <TextView
+        android:id="@+id/gift_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#e30101"
+        android:textSize="20sp"
+        tools:text="X10"
+        android:layout_marginRight="@dimen/dm_3"/>
+</LinearLayout>

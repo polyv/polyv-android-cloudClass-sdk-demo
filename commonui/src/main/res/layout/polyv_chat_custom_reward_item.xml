@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/dm_32"
+    android:background="@drawable/polyv_chat_tip_bg"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/dm_3">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/reward_avatar"
+        android:layout_width="@dimen/dm_20"
+        android:layout_height="@dimen/dm_20"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="@dimen/dm_10"
+        android:src="@drawable/polyv_default_teacher" />
+
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dm_10"
+        android:text="打赏了"
+        android:textColor="#3f3f3f"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:id="@+id/accept_reward_person_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dm_10"
+        tools:text="王波波老师王波波老师"
+        android:textColor="#929292"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_weight="1"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:id="@+id/reward_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dm_5"
+        tools:text="1616161616.80"
+        android:textColor="#e30101"
+        android:textSize="18sp" />
+    <TextView
+        android:id="@+id/reward_value_unit"
+        android:text="元"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/dm_5"
+        android:textColor="#929292"
+        android:textSize="16sp" />
+    <ImageView
+
+        android:id="@+id/reward_pic"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginRight="@dimen/dm_5"
+        android:src="@drawable/reward" />
+</LinearLayout>

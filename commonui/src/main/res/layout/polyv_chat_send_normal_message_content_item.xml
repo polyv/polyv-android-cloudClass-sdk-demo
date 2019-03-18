@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/send_messsage_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    >
+    <!--android:background="@drawable/polyv_tv_send"-->
+    <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
+        android:id="@+id/gtv_send_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <com.easefun.polyv.commonui.widget.PolyvRoundImageView
+        android:id="@+id/iv_chat_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/polyv_iv_gray"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
+    <com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView
+        android:id="@+id/cpv_img_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:max="100"
+        android:progress="0"
+        android:visibility="gone"
+        app:cpv_innerPadding="2dp"
+        app:cpv_outerColor="#E5ffffff"
+        app:cpv_outerSize="1dp"
+        app:cpv_progressNormalColor="#00000000"
+        app:cpv_progressReachColor="#E5ffffff"
+        app:cpv_progressStyle="FillInnerArc" />
+</FrameLayout>
