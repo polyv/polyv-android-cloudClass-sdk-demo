@@ -23,7 +23,18 @@ public interface PolyvDevApi {
     Observable<ResponseBody> getLikeInfo(@Query("appId") String appId, @Query("timestamp") String timestamp,
                                          @Query("channelIds") String channelIds, @Query("sign") String sign);
 
-    @GET("live/inner/v3/applet/get-class-detail")
-    Observable<PolyvResponseApiBean> getClassDetail(@Query("timestamp") String timestamp,
-                                                                      @Query("channelId") String channelIds, @Query("sign") String sign);
+    /**
+     * 获取
+     * @param channelId
+     * @param timestamp
+     * @param sign
+     * @param appId
+     * @return
+     */
+    @GET("/live/v3/applet/sdk/get-channel-detail")
+    Observable<PolyvResponseApiBean> getClassDetail(@Query("channelId") int channelId,
+                                                    @Query("timestamp") long timestamp,
+                                                    @Query("sign") String sign,
+                                                    @Query("appId") String appId
+    );
 }

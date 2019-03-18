@@ -15,7 +15,8 @@
         android:layout_marginBottom="@dimen/dm_18"
         android:layout_marginTop="@dimen/dm_18"
         android:ellipsize="end"
-        android:maxLength="10"
+        android:maxEms="6"
+        android:maxLines="1"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:text="教师名字" />

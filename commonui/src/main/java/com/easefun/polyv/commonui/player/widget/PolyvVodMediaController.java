@@ -110,6 +110,17 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         initialBitrate();
     }
 
+    @Override
+    public void updateSubVideoViewPosition(boolean add) {
+        if(polyvVodVideoHelper != null){
+            if(add){
+                polyvVodVideoHelper.addAuxiliaryScreenToTeacherInfoLayout();
+            }else {
+                polyvVodVideoHelper.removeFromTeacherInfoLayout();
+            }
+        }
+    }
+
     private void initalHandler() {
         noLeakHandler = new PolyvNoLeakHandler(getContext()) {
             @Override
@@ -424,8 +435,8 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
 
     @Override
     public void updateControllerWithCloseSubView() {
-        pbPptVideoSwitch.setVisibility(GONE);
-        pbPptVideoSwitchLand.setVisibility(GONE);
+        pbPptVideoSwitch.setVisibility(INVISIBLE);
+        pbPptVideoSwitchLand.setVisibility(INVISIBLE);
         pbSubviewShow.setVisibility(VISIBLE);
         pbSubviewShowLand.setVisibility(VISIBLE);
         if (showPPTSubView) {

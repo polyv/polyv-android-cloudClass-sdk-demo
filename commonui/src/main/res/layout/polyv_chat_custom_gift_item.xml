@@ -26,7 +26,8 @@
         android:textSize="16sp"
         tools:text="送出环球旅行" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
+
         android:id="@+id/gift_pic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,11 +35,13 @@
         android:src="@drawable/polyv_gift" />
 
     <TextView
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
         android:id="@+id/gift_count"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:textColor="#e30101"
         android:textSize="20sp"
         tools:text="X10"
-        android:layout_marginRight="@dimen/dm_3"/>
+        android:layout_marginRight="@dimen/dm_10"/>
 </LinearLayout>

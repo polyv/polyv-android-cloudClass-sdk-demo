@@ -12,5 +12,6 @@
     <declare-styleable name="PolyvPressedImageView">
         <attr name="pressed_color" format="color" />
         <attr name="selected_color" format="color" />
+        <attr name="disabled_color" format="color" />
     </declare-styleable>
 </resources>

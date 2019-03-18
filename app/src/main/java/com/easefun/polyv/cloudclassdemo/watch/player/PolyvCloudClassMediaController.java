@@ -268,6 +268,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             case R.id.video_ppt_change_switch_land:
                 if (showCamer) {
                     showCamerView();
+                    polyvCloudClassPlayerHelper.addAuxiliaryScreenToTeacherInfoLayout();
                 } else {
                     changePPTVideoLocation();
                 }
@@ -436,6 +437,10 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             videoScreenSwitchLand.setImageResource(R.drawable.camera);
 
         }
+
+        if(polyvCloudClassPlayerHelper != null){
+            polyvCloudClassPlayerHelper.removeFromTeacherInfoLayout();
+        }
     }
 
     /**
@@ -479,12 +484,22 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     @Override
     public void showMicPhoneLine(int visiable) {
 
-        if (videoHandsUpPort != null) {
-            videoHandsUpPort.setVisibility(visiable);
-        }
+//        if (videoHandsUpPort != null) {
+//            videoHandsUpPort.setVisibility(visiable);
+//        }
+//
+//        if (videoHandsUpLand != null) {
+//            videoHandsUpLand.setVisibility(visiable);
+//        }
+    }
 
-        if (videoHandsUpLand != null) {
-            videoHandsUpLand.setVisibility(visiable);
+    public void updateSubVideoViewPosition(boolean add ) {
+        if(polyvCloudClassPlayerHelper != null){
+            if(add){
+                polyvCloudClassPlayerHelper.addAuxiliaryScreenToTeacherInfoLayout();
+            }else {
+                polyvCloudClassPlayerHelper.removeFromTeacherInfoLayout();
+            }
         }
     }
 }

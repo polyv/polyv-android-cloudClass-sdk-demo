@@ -87,14 +87,24 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
         super(context, attrs, defStyleAttr);
         initialView();
     }
+// <editor-fold defaultstate="collapsed" desc="抽象方法">
 
     protected abstract void initialView();
 
 
     /**
+     * 更新副屏在教师栏的位置
+     * @param add
+     */
+    public abstract void updateSubVideoViewPosition(boolean add);
+
+    /**
      * 切换主副平
      */
     public abstract void changePPTVideoLocation();
+
+    public abstract void updatePPTShowStatus(boolean showPPT);
+// </editor-fold>
 
     protected void initialBitrate() {
         bitrateLayout = findViewById(R.id.bitrate_layout);
@@ -391,5 +401,4 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
         initBitList(bitrateVO);
     }
 
-    public abstract void updatePPTShowStatus(boolean showPPT);
 }

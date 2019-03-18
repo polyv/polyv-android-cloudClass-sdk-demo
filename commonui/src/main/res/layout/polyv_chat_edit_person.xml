@@ -13,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="6dp"
         android:layout_toLeftOf="@id/iv_emoji"
-        android:layout_toRightOf="@id/iv_switch"
+        android:layout_toRightOf="@id/iv_course"
         android:background="@drawable/polyv_et_chat_corner"
         android:hint="我也来聊几句..."
         android:imeOptions="actionSend|flagNoFullscreen"

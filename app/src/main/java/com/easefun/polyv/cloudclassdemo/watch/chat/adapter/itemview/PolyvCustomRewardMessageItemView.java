@@ -67,4 +67,9 @@ public class PolyvCustomRewardMessageItemView extends IPolyvCustomMessageBaseIte
         rewardPic = findViewById(R.id.reward_pic);
         rewardValueUnit = findViewById(R.id.reward_value_unit);
     }
+
+    @Override
+    public void playAnimation() {
+
+    }
 }

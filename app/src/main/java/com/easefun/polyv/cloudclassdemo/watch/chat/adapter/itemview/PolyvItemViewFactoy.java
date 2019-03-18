@@ -59,6 +59,11 @@ public class PolyvItemViewFactoy {
                 View.inflate(context, R.layout.polyv_chat_default_message,this);
                 defaultView = findViewById(R.id.chat_message_default_tip);
             }
+
+            @Override
+            public void playAnimation() {
+
+            }
         };
     }
 }

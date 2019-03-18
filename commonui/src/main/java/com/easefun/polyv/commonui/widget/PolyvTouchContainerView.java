@@ -26,20 +26,20 @@ public class PolyvTouchContainerView extends FrameLayout {
     private float lastX, lastY;
 
     // 竖屏下的位置
-    private int originLeft,portraitLeft = 0;
-    private int originTop,portraitTop = 0;
+    private int originLeft, portraitLeft = 0;
+    private int originTop, portraitTop = 0;
 
     //键盘弹起前得位置
     private int beforeSoftLeft = 0;
     private int beforeSoftTop = 0;
-    private RotateTask rotateTask ;
+    private RotateTask rotateTask;
 
     public PolyvTouchContainerView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public PolyvTouchContainerView(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public PolyvTouchContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -51,14 +51,17 @@ public class PolyvTouchContainerView extends FrameLayout {
         rotateTask = new RotateTask();
     }
 
-    public void initParam(int left ,int top){
+    public void initParam(int left, int top) {
         originLeft = left;
         originTop = top;
-        PolyvCommonLog.d(TAG,"left:"+left+"  top:"+top);
+        PolyvCommonLog.d(TAG, "left:" + left + "  top:" + top);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        int left=getLeft(),top= getTop(),
+                parentWidth =((View) getParent()).getMeasuredWidth(),
+                parentHeight=((View) getParent()).getMeasuredHeight();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             lastX = event.getX();
             lastY = event.getY();
@@ -71,10 +74,10 @@ public class PolyvTouchContainerView extends FrameLayout {
             int offX = (int) (x - lastX);
             int offY = (int) (y - lastY);
             View view = this;
-            int left = view.getLeft() + offX;
-            int top = view.getTop() + offY;
-            int parentWidth = ((View) view.getParent()).getMeasuredWidth();
-            int parentHeight = ((View) view.getParent()).getMeasuredHeight();
+            left = view.getLeft() + offX;
+            top = view.getTop() + offY;
+//            parentWidth = ((View) view.getParent()).getMeasuredWidth();
+//            parentHeight = ((View) view.getParent()).getMeasuredHeight();
             if (offX < 0 && left < 0)
                 left = 0;
             if (offY < 0 && top < 0)
@@ -97,8 +100,18 @@ public class PolyvTouchContainerView extends FrameLayout {
             rlp.leftMargin = left;
             rlp.topMargin = top;
             view.setLayoutParams(rlp);
+
+            if (touchPositionCallback != null) {
+                touchPositionCallback.onTouchMovePosition(left, top, left + parentWidth, top + parentHeight);
+            }
         }
         if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+            if (touchPositionCallback != null) {
+                int upLeft = (int) (left+event.getX()- lastX);
+                int upTop = (int) (top+event.getY()- lastY);
+                touchPositionCallback.onTouchUpPosition(upLeft, upTop,
+                        upLeft + getMeasuredWidth(), upTop + getMeasuredHeight());
+            }
             lastX = 0;
             lastY = 0;
         }
@@ -116,12 +129,12 @@ public class PolyvTouchContainerView extends FrameLayout {
         } else {
             return;
         }
-        PolyvCommonLog.d(TAG,"left ;"+layoutParams.leftMargin+"  width :"+getMeasuredWidth()+"  width :"+ScreenUtils.getScreenWidth());
+        PolyvCommonLog.d(TAG, "left ;" + layoutParams.leftMargin + "  width :" + getMeasuredWidth() + "  width :" + ScreenUtils.getScreenWidth());
         portraitLeft = layoutParams.leftMargin;
         portraitTop = layoutParams.topMargin;
 
         Log.d(TAG, "resetFloatViewLand: portraitLeft :" + portraitLeft + " portraitTop :"
-                + portraitTop+ "   width :" + getMeasuredWidth());
+                + portraitTop + "   width :" + getMeasuredWidth());
 
         layoutParams.leftMargin = ((ViewGroup) getParent()).getMeasuredWidth() - getMeasuredWidth();
         layoutParams.topMargin = 0;
@@ -140,12 +153,12 @@ public class PolyvTouchContainerView extends FrameLayout {
         } else {
             return;
         }
-        Log.d(TAG, "resetFloatViewPort: portraitLeft :" +portraitLeft+ " parent portraitTop :"
+        Log.d(TAG, "resetFloatViewPort: portraitLeft :" + portraitLeft + " parent portraitTop :"
                 + portraitTop + "   width :" + getMeasuredWidth());
-        if(portraitLeft + getMeasuredWidth() >= ScreenUtils.getScreenWidth()){
+        if (portraitLeft + getMeasuredWidth() >= ScreenUtils.getScreenWidth()) {
             rlp.leftMargin = originLeft;
             rlp.topMargin = originTop;
-        }else{
+        } else {
             rlp.leftMargin = portraitLeft;
             rlp.topMargin = portraitTop;
         }
@@ -157,19 +170,24 @@ public class PolyvTouchContainerView extends FrameLayout {
     protected void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         rotateTask.buildConfig(newConfig);
-        if(getHandler() != null){
+        if (getHandler() != null) {
             getHandler().removeCallbacks(rotateTask);
         }
         post(rotateTask);
 
     }
 
+    public void setTouchPositionCallback(TouchPositionCallback touchPositionCallback) {
+        this.touchPositionCallback = touchPositionCallback;
+    }
+
     class RotateTask implements Runnable {
         public Configuration newConfig;
 
-        public void buildConfig(Configuration configuration){
+        public void buildConfig(Configuration configuration) {
             newConfig = configuration;
         }
+
         @Override
         public void run() {
 
@@ -191,7 +209,7 @@ public class PolyvTouchContainerView extends FrameLayout {
                 }
                 beforeSoftLeft = rlp.leftMargin;
                 beforeSoftTop = rlp.topMargin;
-                if(rlp.topMargin+rlp.height < top){
+                if (rlp.topMargin + rlp.height < top) {
                     return;
                 }
 
@@ -240,4 +258,15 @@ public class PolyvTouchContainerView extends FrameLayout {
     public void setOriginTop(int originTop) {
         this.originTop = originTop;
     }
+
+    private TouchPositionCallback touchPositionCallback;
+
+    // <editor-fold defaultstate="collapsed" desc="手指移动区域内的回掉接口">
+    public interface TouchPositionCallback {
+        public void onTouchMovePosition(int left, int top, int right, int bottom);
+
+        public void onTouchUpPosition(int left, int top, int right, int bottom);
+    }
+    // </editor-fold>
+
 }

@@ -1,22 +1,31 @@
 package com.easefun.polyv.commonui.adapter;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.bumptech.glide.request.RequestOptions;
+import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
+import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class PolyvBaseRecyclerViewAdapter extends
-        RecyclerView.Adapter<PolyvBaseRecyclerViewAdapter.ClickableViewHolder> {
+        RecyclerView.Adapter<ClickableViewHolder> {
 
-    private Context context;
+    protected Context context;
 
     protected RecyclerView mRecyclerView;
 
     private List<RecyclerView.OnScrollListener> mListeners = new ArrayList<>();
 
+    protected RequestOptions requestOptions_t;
+    protected RequestOptions requestOptions_s;
+    protected Map<String, List<Integer>> loadImgMap = new HashMap<>();
 
     public PolyvBaseRecyclerViewAdapter(RecyclerView recyclerView) {
 
@@ -49,6 +58,30 @@ public abstract class PolyvBaseRecyclerViewAdapter extends
     }
 
 
+    public Map<String, List<Integer>> getLoadImgMap() {
+        return loadImgMap;
+    }
+
+
+    public RequestOptions getRequestOptions_t() {
+        return requestOptions_t;
+    }
+
+    public RequestOptions getRequestOptions_s() {
+        return requestOptions_s;
+    }
+
+    public  void onDestory(){
+        if (getLoadImgMap() != null) {
+            for (String key : getLoadImgMap().keySet()) {
+                for (int value : getLoadImgMap().get(key)) {
+                    PolyvMyProgressManager.removeListener(key, value);
+                }
+            }
+        }
+    };
+
+
     public interface OnItemClickListener {
 
         void onItemClick(int position, ClickableViewHolder holder);
@@ -59,9 +92,9 @@ public abstract class PolyvBaseRecyclerViewAdapter extends
         boolean onItemLongClick(int position, ClickableViewHolder holder);
     }
 
-    private OnItemClickListener itemClickListener;
+    protected OnItemClickListener itemClickListener;
 
-    private OnItemLongClickListener itemLongClickListener;
+    protected OnItemLongClickListener itemLongClickListener;
 
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -107,29 +140,10 @@ public abstract class PolyvBaseRecyclerViewAdapter extends
         });
     }
 
-
-    public static class ClickableViewHolder extends RecyclerView.ViewHolder {
-
-        private View parentView;
-
-
-        public ClickableViewHolder(View itemView) {
-
-            super(itemView);
-            this.parentView = itemView;
-        }
-
-
-        View getParentView() {
-
-            return parentView;
-        }
-
-
-        @SuppressWarnings("unchecked")
-        public <T extends View> T $(@IdRes int id) {
-
-            return (T) parentView.findViewById(id);
-        }
+    @Override
+    public void onViewRecycled(@NonNull ClickableViewHolder holder) {
+        super.onViewRecycled(holder);
     }
+
+
 }

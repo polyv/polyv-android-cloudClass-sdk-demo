@@ -89,6 +89,7 @@
 }
 #----------------------------------------------------------------------------
 
+-keep class com.easefun.polyv.commonui.model.** {*;}
 -keep class com.easefun.polyv.foundationsdk.** {*;}
 -keep class com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient {*;}
 -keep class com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient {*;}
@@ -100,3 +101,5 @@
 -keep class com.easefun.polyv.linkmic.model.** {*;}
 -keep class tv.danmaku.** {*;}
 -keep class io.agora.** {*;}
+
+-keep class com.easefun.polyv.cloudclassdemo.watch.chat.modle.**{*;}

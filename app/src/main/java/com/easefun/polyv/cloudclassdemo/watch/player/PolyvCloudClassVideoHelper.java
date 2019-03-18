@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
@@ -27,6 +28,7 @@ import com.easefun.polyv.cloudclass.model.PolyvSocketSliceControlVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketSliceIdVO;
 import com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView;
 import com.easefun.polyv.cloudclassdemo.R;
+import com.easefun.polyv.cloudclassdemo.watch.PolyvDemoClient;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.IPolyvDataBinder;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvNormalLiveLinkMicDataBinder;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvLinkMicDataBinder;
@@ -112,6 +114,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private PolyvSocketSliceIdVO sliceIdVo;
     private String sessionId = "";
     private boolean cameraOpen = true,showPPT;
+
 
     private Disposable joinListTimer;
     private Set<Long> noCachesIds = new HashSet<>();//在缓存中没有找到数据得uid
@@ -240,6 +243,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private void processTeacherInfo(String message) {
         PolyvJoinInfoEvent joinInfoEvent = PolyvGsonUtil.fromJson(PolyvJoinInfoEvent.class,message);
         joinRequests.put(joinInfoEvent.getUid(),joinInfoEvent);
+
+        PolyvDemoClient.getInstance().setTeacher(joinInfoEvent);
     }
 
     public void processJoinLeaveMessage(String message) {
@@ -512,6 +517,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     @Override
     public void onDestroy() {
 
+        PolyvDemoClient.getInstance().onDestory();
     }
 
     @Override
@@ -987,4 +993,10 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             pptView.processSocketMessage(new PolyvSocketMessageVO(polyvSocketMessage, event));
         }
     }
+
+    @Override
+    public void showCamerView() {
+        super.showCamerView();
+    }
+
 }

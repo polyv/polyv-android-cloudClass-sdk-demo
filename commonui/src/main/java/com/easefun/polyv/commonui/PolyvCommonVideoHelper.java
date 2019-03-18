@@ -8,6 +8,8 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
@@ -15,14 +17,27 @@ import com.easefun.polyv.businesssdk.api.common.player.PolyvBaseVideoView;
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
 import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView;
+import com.easefun.polyv.cloudclass.chat.event.PolyvLoginEvent;
 import com.easefun.polyv.cloudclass.video.api.IPolyvCloudClassVideoView;
+import com.easefun.polyv.commonui.model.PolyvGiftMessageBean;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTView;
+import com.easefun.polyv.commonui.utils.PolyvChatEventBus;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.easefun.polyv.commonui.utils.PolyvScreenUtils.getLayoutParamsLayout;
+
 
 /**
  * @author df
@@ -51,6 +66,13 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     protected  static final Handler S_HANDLER;
 
     private boolean firstSwitchLocation = true;//第一次切换主副屏 不用动画
+
+    //教师信息相关
+    private LinearLayout teacherInfoLayout,teacherMiddleLayout;
+    private TextView teacherName,onlineNumber,giftSend,teacherNameVertical;
+    private boolean hasFixedTeacherCamera;//副屏幕是否已经固定在教师栏信息
+    private int teacherInfoTop,teacherInfoBottom,teacherHeight,pptContainerWidth,pptContainerHeight;
+    private Disposable loginDispose;
 
     static {
         S_HANDLER = new Handler(Looper.getMainLooper());
@@ -102,7 +124,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         return videoView;
     }
 
+   // <editor-fold defaultstate="collapsed" desc="抽象方法">
     public abstract void initConfig(boolean isNormalLive);
+   // </editor-fold>
 
     public void addPPT(PolyvTouchContainerView container) {
         if(pptContianer == null){
@@ -264,10 +288,129 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         videoView.destroy();
         controller.destroy();
         videoItem.destroy();
+        loginDispose.dispose();
 
         videoView = null;
         controller = null;
         videoItem = null;
+        loginDispose= null;
 
     }
+
+    // <editor-fold defaultstate="collapsed" desc="教师信息相关">
+    /**
+     * 教师信息相关
+     */
+
+    private void initTeacherView(LinearLayout teacherParent){
+        this.teacherInfoLayout = teacherParent;
+        teacherMiddleLayout = teacherInfoLayout.findViewById(R.id.teacher_info_middle_container);
+        teacherName = teacherInfoLayout.findViewById(R.id.teacher_name);
+        teacherNameVertical = teacherInfoLayout.findViewById(R.id.teacher_name_vertical);
+        onlineNumber = teacherInfoLayout.findViewById(R.id.online_number);
+        giftSend = teacherInfoLayout.findViewById(R.id.gift_send);
+        giftSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PolyvRxBus.get().post(new PolyvGiftMessageBean());
+            }
+        });
+    }
+
+    public void addAuxiliaryScreenToTeacherInfoLayout() {
+        hasFixedTeacherCamera = true;
+        updateTeacherLayoutParams(true);
+        updateTeacherNamePosition(true);
+        resetAuxiliaryScreenToTeacherInfo();
+    }
+
+    public void removeFromTeacherInfoLayout() {
+        hasFixedTeacherCamera = false;
+        updateTeacherLayoutParams(false);
+        updateTeacherNamePosition(false);
+    }
+
+    //更新教师名字显示位置
+    private void updateTeacherNamePosition(boolean fixedAuxiliaryScreen) {
+        ViewGroup.MarginLayoutParams rlp = getLayoutParamsLayout(teacherInfoLayout);
+        ViewGroup.MarginLayoutParams middleLayoutRlp = getLayoutParamsLayout(teacherMiddleLayout);
+        if(fixedAuxiliaryScreen){
+            rlp.height = pptContainerHeight;
+
+            middleLayoutRlp.leftMargin = pptContainerWidth+PolyvScreenUtils.dip2px(context,15);
+            teacherName.setVisibility(View.GONE);
+            teacherNameVertical.setVisibility(View.VISIBLE);
+        }else {
+            rlp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+            middleLayoutRlp.leftMargin = PolyvScreenUtils.dip2px(context,15);;
+            teacherName.setVisibility(View.VISIBLE);
+            teacherNameVertical.setVisibility(View.GONE);
+        }
+        teacherInfoLayout.setLayoutParams(rlp);
+        teacherMiddleLayout.setLayoutParams(middleLayoutRlp);
+    }
+
+
+    //移动后发现没有达到移除屏幕位置的要求 副屏重新回到教师信息的位置
+    private void resetAuxiliaryScreenToTeacherInfo() {
+        ViewGroup.MarginLayoutParams rlp = getLayoutParamsLayout(pptParent);
+        rlp.leftMargin = 0;
+        rlp.topMargin = teacherInfoTop;
+        pptParent.setLayoutParams(rlp);
+    }
+
+    //更新教师布局底部位置的参数
+    private void updateTeacherLayoutParams(boolean add) {
+        PolyvCommonLog.d(TAG,"update teacher params is:"+teacherInfoBottom);
+        if(add){
+            teacherInfoBottom = teacherInfoTop + pptContainerHeight;
+        }else {
+            teacherInfoBottom = teacherInfoTop +teacherHeight;
+        }
+    }
+
+    public void processTeacherTouchEvent(int left, int top, int right, int bottom) {
+        if (hasFixedTeacherCamera) {//如果已经固定在头部
+
+            int tap = pptContainerHeight / 2;
+            if (teacherInfoTop - top  > tap ||
+                    bottom - teacherInfoBottom > tap) {//顶部或底部超过一半
+                removeFromTeacherInfoLayout();
+            }else if(top != teacherInfoTop){
+                resetAuxiliaryScreenToTeacherInfo();
+            }
+        } else {
+
+            if((bottom >teacherInfoTop && top <teacherInfoBottom)){
+                addAuxiliaryScreenToTeacherInfoLayout();
+            }
+        }
+    }
+
+    public void initTeacherInfo(LinearLayout teacherParent,int teacherInfoBottom, int teacherInfoTop, int pptContainerHeight, int pptContainerWidth) {
+        initTeacherView(teacherParent);
+        registerLoginEvent();
+
+        this.teacherInfoBottom = teacherInfoBottom;
+        this.teacherInfoTop = teacherInfoTop;
+
+        teacherHeight = teacherInfoBottom -teacherInfoTop;
+        this.pptContainerHeight = pptContainerHeight;
+        this.pptContainerWidth = pptContainerWidth;
+    }
+
+    private void registerLoginEvent() {
+        loginDispose = PolyvChatEventBus.get().toObservable(PolyvLoginEvent.class).
+                observeOn(AndroidSchedulers.mainThread()).
+                subscribe(new Consumer<PolyvLoginEvent>() {
+            @Override
+            public void accept(PolyvLoginEvent polyvLoginEvent) throws Exception {
+                if(onlineNumber != null){
+                    onlineNumber.setText(polyvLoginEvent.getOnlineUserNumber()+"人在线");
+                }
+            }
+        });
+    }
+    // </editor-fold>
 }

@@ -14,11 +14,32 @@
 
 
     <include
+        android:layout_below="@id/player_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/teacher_info_layout"
+        layout="@layout/polyv_runde_teacher_info"/>
+
+    <!-- 教师信息栏的上下分割线-->
+    <View
+        android:id="@+id/teacher_divide_top"
+        android:layout_above="@id/teacher_info_layout"
+        android:background="@color/gray"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+    <View
+        android:id="@+id/teacher_divide"
+        android:layout_below="@id/teacher_info_layout"
+        android:background="@color/gray"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+
+    <include
+        android:layout_below="@id/teacher_divide"
         android:id="@+id/chat_container_layout"
         layout="@layout/polyv_chat_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/player_container" />
+        android:layout_height="wrap_content" />
 
 
     <com.easefun.polyv.commonui.widget.PolyvTouchContainerView

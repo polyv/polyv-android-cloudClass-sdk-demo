@@ -13,8 +13,11 @@
     <color name="white">#ffffff</color>
     <color name="blue">#14a2f4</color>
     <color name="blue_alpha">#a214a2f4</color>
+    <color name="runde_progress">#FF8C00</color>
     <color name="video_back">#D6F2FF</color>
     <color name="top_layout_color_white">#ffffff</color>
     <color name="top_text_color_black">#000000</color>
     <color name="center_view_color_blue">#2196f3</color>
+    <color name="tv_gift_orange">#EEB422</color>
+    <color name="popup_bg">#3F000000</color>
 </resources>

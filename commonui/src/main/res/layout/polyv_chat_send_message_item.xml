@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="12dp"
     android:gravity="right"
-    android:paddingLeft="48dp"
-    android:paddingRight="8dp">
+    android:layout_marginLeft="48dp"
+    android:layout_marginRight="8dp">
 
     <ImageView
         android:id="@+id/resend_message_button"
@@ -14,46 +14,23 @@
         android:layout_height="20dp"
         android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
-        android:layout_toLeftOf="@+id/send_messsage_layout"
         android:src="@drawable/polyv_resend_button" />
 
     <FrameLayout
-        android:id="@+id/send_messsage_layout"
+
+        android:id="@+id/message_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp">
+        android:layout_toRightOf="@id/resend_message_button">
 
-        <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
-            android:id="@+id/gtv_send_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/polyv_tv_send"
-            android:gravity="center_vertical"
-            android:padding="8dp"
-            android:textColor="#ffffff"
-            android:textSize="14sp" />
-
-        <com.easefun.polyv.commonui.widget.PolyvRoundImageView
-            android:id="@+id/iv_chat_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/polyv_iv_gray"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
-
-        <com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView
-            android:id="@+id/cpv_img_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:max="100"
-            android:progress="0"
-            android:visibility="gone"
-            app:cpv_innerPadding="2dp"
-            app:cpv_outerColor="#E5ffffff"
-            app:cpv_outerSize="1dp"
-            app:cpv_progressNormalColor="#00000000"
-            app:cpv_progressReachColor="#E5ffffff"
-            app:cpv_progressStyle="FillInnerArc" />
     </FrameLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_toRightOf="@id/message_container"
+        android:id="@+id/send_avatar"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="@dimen/dm_5"
+        android:layout_marginRight="11dp"
+        android:src="@drawable/polyv_missing_face" />
 </RelativeLayout>

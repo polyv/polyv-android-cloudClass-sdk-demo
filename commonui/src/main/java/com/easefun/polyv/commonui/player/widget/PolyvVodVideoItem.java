@@ -210,6 +210,12 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
         videoView.setOnPPTShowListener(new IPolyvVideoViewListenerEvent.OnPPTShowListener() {
             @Override
             public void showPPTView(int visiable) {
+                if(visiable == VISIBLE){
+                    controller.updateSubVideoViewPosition(true);
+                }else {
+                    controller.updateSubVideoViewPosition(false);
+                }
+
                 if(polyvPPTItem != null){
                     polyvPPTItem.show(visiable);
                 }

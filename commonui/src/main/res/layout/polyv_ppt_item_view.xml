@@ -15,6 +15,8 @@
     </com.easefun.polyv.commonui.player.ppt.PolyvPPTView>
 
     <ImageView
+        android:layout_margin="@dimen/dm_8"
+        android:layout_gravity="right"
         android:id="@+id/video_subview_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -83,16 +83,26 @@
 
     <ImageView
         android:id="@+id/pb_ppt_video_switch_land"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dm_10"
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
         android:layout_above="@id/sb_playprogress_land"
         android:layout_alignParentRight="true"
         android:src="@drawable/exchange" />
-
+    <ImageView
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
+        android:layout_margin="@dimen/dm_10"
+        android:id="@+id/consult"
+        android:layout_above="@+id/pb_ppt_video_switch_land"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/controller_margin"
+        android:src="@drawable/consult" />
     <ImageView
         android:id="@+id/pb_subview_show_land"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
+        android:layout_margin="@dimen/dm_10"
         android:layout_above="@id/sb_playprogress_land"
         android:layout_alignParentRight="true"
         android:src="@drawable/ppt"

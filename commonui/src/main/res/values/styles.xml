@@ -48,4 +48,9 @@
         <attr name="cpv_outerSize" format="dimension"/>
         <attr name="cpv_reachCapRound" format="boolean"/>
     </declare-styleable>
+
+    <style name="PopupWindowAnim" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/polyv_popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/polyv_popup_exit</item>
+    </style>
 </resources>

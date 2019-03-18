@@ -10,7 +10,7 @@
       background: transparent;
       background-color: transparent;
     }
-    html,body,.wrap {
+    html,body,.answer-card-wrap {
       position: relative;
       height: 100%;
     }
@@ -47,14 +47,7 @@
     }
 
     .answer-card-wrap {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 10000;
-      display: none;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, .65);
+      padding-top: 40px;
     }
 
     .answer-show {
@@ -64,12 +57,10 @@
     .answer-card {
       display: flex;
       flex-direction: column;
-      position: absolute;
-      top: 15%;
-      bottom: 15%;
-      left: 50%;
-      width: 80%;
-      transform: translateX(-50%);
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      max-height: 100%;
       background: #fff;
       border-radius: 10px;
     }
@@ -107,13 +98,17 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      /* height: 370px; */
       padding: 80px 10px 10px;
       border-bottom: 1px solid #ededed;
     }
 
-    .answer-contain > h3 {
-      margin-bottom: 10px;
+    .answer-contain-main {
+      height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .answer-contain-main > h3 {
       color: #4d4d4d;
       font-weight: normal;
       font-size: 16px;
@@ -121,11 +116,9 @@
     }
     
     .answer-list {
-      padding: 10px 20px;
+      padding: 30px 10px;
       font-size: 14px;
       color: #656565;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
     }
 
     .answer-list > li {
@@ -133,10 +126,37 @@
       word-break: break-all;
     }
 
+    .answer-list > li .icon-answer-status {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      vertical-align: middle;
+      margin-top: -3px;
+      margin-left: 10px;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
+
     .answer-list > .answer-checked {
       color: #fe992a;
     }
-    
+
+    .answer-list > .answer-right {
+      color: rgb(1, 195, 1);
+    }
+
+    .answer-list > .answer-right .icon-answer-status {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAaCAYAAABCfffNAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQyIDc5LjE2MDkyNCwgMjAxNy8wNy8xMy0wMTowNjozOSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpFNUEwM0FCNjNCMkQxMUU5OThCMEUzNkI2OTI4MDdGNCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpFNUEwM0FCNzNCMkQxMUU5OThCMEUzNkI2OTI4MDdGNCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkU1QTAzQUI0M0IyRDExRTk5OEIwRTM2QjY5MjgwN0Y0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkU1QTAzQUI1M0IyRDExRTk5OEIwRTM2QjY5MjgwN0Y0Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+OYWBDQAAAg9JREFUeNqslksoBVEYx2fmXo9YY8HSAnlEJG8JeRR5rJSShYVkwcaCsrSxkIVQxFay0LUgITchFIoihDw2FK4i3Zv/xzeaTnNn7oz516+Ze87p/O93v+9858rypiyZKBuUgSyQBOLBA7gEp8AbKAx4jDaQDUxKQB+oksx1BoZhNmHFZAR0S9a1B5pgdmNmsg1yJft6B5Uw2lIHFGHB6j8NSNFgQ/EqcXomI5xgJ+SmghBNUm3mwEiJiKZfm5NdkPPPTc/BIyjSjH2CWIok0QGDY5CMZBfjeaAZj6BfiEwaHYggEwZ+/hwmzNe7+UTb1QlVIxng93dzFGnCmhSF24WoIdAAPgwMbkE+DHz8eUPH4DfvSDwlJ1yc4GcGoEMVJczfg3TwBBMJUaxzG9LTG0XypTMxzs9DkAcCmrk7ioAMfs6AV/EYGPydkzud8Q4wyu9HvKkq6gjX/L4EakzypiicPD11gUF+36HGB8o1X2oOVIdQHC6X3C7THVEaZAGNu8Aa3x1XPD4NWkKswAuKxGOyaIDvFVWzoM1Cma+obYXKMcFk8SR32BarPUw1qQkhIjuaQYm3KZoqWXbYgM5fj3ifNHMXdUoViOJZNHkDBeDFAYNOGGwGu34vuV3s29z8FdTBYEw88aJuuDP3Ap8FgymqJBgsWvnfRYoBtaCVO2ykZs7PkS+AeWx+GmyTbwEGAOdziaFxO/sWAAAAAElFTkSuQmCC);
+    }
+
+    .answer-list > .answer-error {
+      color: rgb(255, 1, 1);
+    }
+
+    .answer-list > .answer-error .icon-answer-status {
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyFpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQyIDc5LjE2MDkyNCwgMjAxNy8wNy8xMy0wMTowNjozOSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpFNzZGQ0FERjNCMkQxMUU5QTExMEFCNUUwQUQ0N0VCMCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpFNzZGQ0FFMDNCMkQxMUU5QTExMEFCNUUwQUQ0N0VCMCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkU3NkZDQUREM0IyRDExRTlBMTEwQUI1RTBBRDQ3RUIwIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkU3NkZDQURFM0IyRDExRTlBMTEwQUI1RTBBRDQ3RUIwIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+pp2iRAAAAeNJREFUeNqsls8rhEEYx3eoXWKTOLk4KQda7UEkJZuUUhQHf4WShIPrCqUcxAW5uO5BctgsySIH7GG1+VXy47CFKD829vWd9W6eppl3BvvW5/DO88zznXlm5plhFmMuzdcEAqDOphw8gLjNDlh1pdMpZQQuoqAbxIBlwC0YsSzLJUMWvAysGAYXOQL1OpFScP1HAUqnSoQLXOZAIEujTCQsOPH1SPwiqJiBN+ClIr2CQ5yIrxsItGZGzdiU0L5ERZKCkafNQ4Q2jfLPWFBir+KGFkXnC0EoKvEJEIFBRZw5bpx0GOUxKLFF8sEWsTVn2r8FxhxinHGHiCbffH3cwgbpI/9Dmv7v3OneYGFPQIXk4E4Y9H3mjinDLXoAGBHoN+z3lIfy9egy+4K81JH/CDg16gmlbc1IPkEDmcEoqCRV4tBkTWYdHF4z5eFHYIZshmzqCjSVIcmdehxmUEMEFiQV121vYY+93WVxQtyhEHwIhjvgJwLzigB7oMgW8ipS154NIh6mXSKwrMl5gpz6ccG2L1bhK2JMg0WwZrhNY/ZsX4R2nyjiz+FdwhlQ3YxtORKY1t3xHeDmHwLDJg8JTrHm/MjYALWy1wrTvLt8oMt+d1WDAloswDmIghDeXWFVkC8BBgDxtxER3H8NrAAAAABJRU5ErkJggg==);
+    }
+
     .answer-foot {
       text-align: center;
     }
@@ -177,7 +197,7 @@
       background-size: contain;
     }
 
-    .answer-tips {
+    /* .answer-tips {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -191,8 +211,38 @@
       text-align: center;
       background: #fff;
       border-radius: 5px;
+    } */
+
+    .answer-tips {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 242px;
+      height: 279px;
+      margin-left: -121px;
+      margin-top: -139px;
+      padding-top: 140px;
+      font-size: 14px;
+      color: #fff;
+      text-align: center;
+      background: url(./commit-success-bg.png) no-repeat;
+      background-size: contain;
     }
 
+    .answer-tips .answer-tips-main .answer-tips-text {
+      margin-bottom: 50px;
+      color: rgb(40,40,40);
+      font-size: 18px;
+    }
+    .answer-tips .btn-ensure {
+      width: 110px;
+      height: 33px;
+      border: none;
+      border-radius: 15px;
+      font-size: 14px;
+      color: #fff;
+      background: rgb(254,153,42);
+    }
   </style>
   <style media="screen">
     #log {
@@ -213,26 +263,34 @@
   </style>
 </head>
 <body>
-  <div class="wrap" id="wrap"></div>
+  <div class="answer-card-wrap" id="wrap"></div>
   <div id="log"></div>
   <!-- es6写法 -->
   <!-- <script type="text/javascript" src="./js/ans.js"></script> -->
   <script>
+    'use strict';
+
+    function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+    
     if (typeof Object.assign != 'function') {
       // Must be writable: true, enumerable: false, configurable: true
       Object.defineProperty(Object, "assign", {
-        value: function assign(target, varArgs) { // .length of function is 2
+        value: function assign(target, varArgs) {
+          // .length of function is 2
           'use strict';
-          if (target == null) { // TypeError if undefined or null
+    
+          if (target == null) {
+            // TypeError if undefined or null
             throw new TypeError('Cannot convert undefined or null to object');
           }
-
+    
           var to = Object(target);
-
+    
           for (var index = 1; index < arguments.length; index++) {
             var nextSource = arguments[index];
-
-            if (nextSource != null) { // Skip over if undefined or null
+    
+            if (nextSource != null) {
+              // Skip over if undefined or null
               for (var nextKey in nextSource) {
                 // Avoid bugs when hasOwnProperty is shadowed
                 if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
@@ -247,20 +305,15 @@
         configurable: true
       });
     }
-
-    'use strict';
-
-    function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+    
     var words = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
+    
     var tmp = {
       parseString: function parseString(str) {
-        console.log(str);
         return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
       },
       questionTypeTxt: function questionTypeTxt(type) {
-        return type === 'C' ? '多选' : '单选';
+        return type === 'C' ? '多选题' : '单选题';
       },
       isMultiSelect: function isMultiSelect(type) {
         return type === 'C';
@@ -268,6 +321,8 @@
       getStatusClass: function getStatusClass(type) {
         var cls = '';
         switch (type) {
+          case 'selectRight':
+          case 'noselect':
           case 'success':
             cls = 'answer-right';
             break;
@@ -277,18 +332,12 @@
           case 'checked':
             cls = 'answer-checked';
             break;
-          case 'selectRight':
-            cls = 'answer-right-select';
-            break;
           case 'normal':
             cls = 'answer-normal';
             break;
-          case 'noselect':
-            cls = 'no-select';
-            break;
           default:
         }
-
+    
         return cls;
       },
       option: function option(_ref) {
@@ -301,9 +350,11 @@
             index = _ref.index,
             _ref$count = _ref.count,
             count = _ref$count === undefined ? '' : _ref$count;
-
+    
         if (!contain) return '';
-        return '\n    <li class="' + this.getStatusClass(type) + '" data-options="' + index + '">\n      <div class="answer-ratio" style="width:' + ratio + '"></div>\n      <div class="answer-option">' + index + '. ' + this.parseString(contain) + '</div>\n      <span class="answer-count">' + count + '</span>\n    </li>\n    ';
+        var resultSpan = '';
+        if (type) resultSpan = '<span class="icon-answer-status"></span>';
+        return '\n    <li class="' + this.getStatusClass(type) + '" data-options="' + index + '">\n      <div class="answer-ratio" style="width:' + ratio + '"></div>\n      <div class="answer-option">' + index + '. ' + this.parseString(contain) + resultSpan + '</div>\n    </li>\n    ';
       },
       getOptions: function getOptions(options) {
         var selectsNumbers = Object.keys(options).filter(function (item) {
@@ -325,93 +376,109 @@
         var id = 'id-' + new Date().getTime();
         var el = document.createElement('div');
         el.setAttribute('class', 'answer-card ' + (options.tipsClass || ''));
-        el.innerHTML = '<div class="answer-head"></div>\n    <div class="answer-contain">\n      <h3>\u3010' + this.questionTypeTxt(options.type) + '\u3011' + this.parseString(options.title || options.name) + '</h3>\n      <ul class="answer-list">\n        ' + this.getOptions(options) + '\n      </ul>\n    </div>\n    <div class="answer-foot">\n      <span id="' + id + '" class="answer-btn ' + (options.btnClass || '') + '" data-type="' + options.submitType + '">' + options.btn + '</span>\n    </div>\n    <div>\n      <span class="answer-close" data-type="close"></span>\n    </div>';
-
+        el.innerHTML = '<div class="answer-head"></div>\n    <div class="answer-contain">\n      <div class="answer-contain-main">\n        <h3>' + this.parseString(options.title || options.name) + '\uFF08' + this.questionTypeTxt(options.type) + '\uFF09</h3>\n        <ul class="answer-list">\n          ' + this.getOptions(options) + '\n        </ul>\n      </div>\n    </div>\n    <div class="answer-foot">\n      <span id="' + id + '" class="answer-btn ' + (options.btnClass || '') + '" data-type="' + options.submitType + '">' + options.btn + '</span>\n    </div>';
+    
         return { el: el, id: id };
       },
       tips: function tips(txt) {
         var el = document.createElement('div');
-        el.textContent = txt;
+        el.innerHTML = `<div class="answer-tips-main">
+                          <div class="answer-tips-text">答题成功！</div>
+                          <div>
+                            <button type="button" class="btn-ensure" id="js-btn-ensure">确定</button>
+                          </div>
+                        </div>`.trim();
         el.classList.add('answer-tips');
         return el;
       }
     };
-
+    
     window.knowAnswer = function () {
       window.WebViewJavascriptBridge.callHandler('knowAnswer');
     };
-
+    
     window.chooseAnswer = function (dataString) {
       console.log(dataString);
       window.WebViewJavascriptBridge.callHandler('chooseAnswer', dataString);
     };
-
+    
     var AnswerCard = function () {
+      // 收到题目
       AnswerCard.prototype.updateNewQuestion = function updateNewQuestion(data) {
+        // 不处理评分题目
         if (data.type === 'S') {
           knowAnswer();
           return;
         }
-
+    
         this.currentStatus = {
           id: data.questionId,
           type: 'commit'
         };
-
+    
+        if (this.getStopMsg === data.questionId) return;
         this.selectOptions = [];
         var newData = Object.assign({
           submitType: 'commit',
-          btn: '确定',
-          tips: '答题卡'
+          btn: '确定'
         }, data);
         this.initElement(newData, true, data.questionId, tmp.isMultiSelect(newData.type));
       };
-
+    
+      // 收到答案
       AnswerCard.prototype.hasChooseAnswer = function hasChooseAnswer(select, data) {
-        // 可在此处处理答题结果
-        // 目前不处理
-        return;
+        // 不处理评分题目
         if (data.type === 'S') {
           knowAnswer();
           return;
         }
-
+    
         this.currentStatus = {
           id: data.questionId,
           type: 'close'
         };
-        // await this.delay();
-        // 没上次记录或者不是同一条问题不处理
-        // const answerData = this.data[data.questionId] || {};
+        this.getStopMsg = '';
+    
         data.result = data.data || data.result;
         var resultData = this.createResultData(select, data.result);
-        var tipsData = this.getResultTips(select, data.result.answer, data.questionId);
+        var tipsClass = this.getResultTips(data.result.answer, data.questionId);
         var newData = Object.assign({
           submitType: 'close',
           btn: '知道了',
           btnClass: 'answer-primary',
-          tips: tipsData.tips,
-          tipsClass: tipsData.tipsClass
+          tipsClass: tipsClass
         }, resultData, data, data.content);
-
+    
         this.initElement(newData, false);
       };
-
+    
+      // 答题截止
       AnswerCard.prototype.stopQuestion = function stopQuestion(data) {
-        if (this.currentStatus.type !== 'commit' || this.currentStatus.id !== data.questionId) return;
+        // 不处理评分题目
+        if (data.type === 'S') {
+          knowAnswer();
+          return;
+        }
+    
+        // if (this.currentStatus.type !== 'commit' || this.currentStatus.id !== data.questionId) return;
         this.currentStatus.type = 'stop';
-        var cls = tmp.getStatusClass('checked');
-        this.btn.classList.remove('answer-primary');
-        this.btn.textContent = '已截止';
-        this.selectOptions = [];
-        [].concat(this.el.querySelectorAll('.' + cls)).forEach(function (item) {
-          item.classList.remove(cls);
-        });
+        // const cls = tmp.getStatusClass('checked');
+        // this.btn.classList.remove('answer-primary');
+        // this.btn.textContent = '已截止';
+        // this.selectOptions = [];
+        // [...this.el.querySelectorAll(`.${cls}`)].forEach(item => {
+        //   item.classList.remove(cls);
+        // });
+        var newData = Object.assign({
+          submitType: 'close',
+          btn: '已截止'
+        }, data);
+        this.initElement(newData, false);
       };
-
+    
       AnswerCard.prototype.initElement = function initElement(newData, bindOption, questionId) {
         var isMultiSelect = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
+    
         this.removeCard();
         var card = tmp.card(newData);
         this.el = card.el;
@@ -420,30 +487,15 @@
         this.wrap.classList.add('answer-show');
         this.bindEvent(bindOption, questionId, isMultiSelect);
       };
-
-      AnswerCard.prototype.getResultTips = function getResultTips(select, answer, id) {
+    
+      AnswerCard.prototype.getResultTips = function getResultTips(select, answer) {
         var result = select || '';
-        var tips = '';
-        var tipsClass = '';
-        if (!result) {
-          tips = '未作答';
-        } else if (result === answer) {
-          tips = '回答正确';
-          tipsClass = tmp.getStatusClass('success');
-        } else {
-          tips = '回答错误';
-          tipsClass = tmp.getStatusClass('error');
-        }
-
-        return {
-          tips: tips,
-          tipsClass: tipsClass
-        };
+        return tmp.getStatusClass(result === answer ? 'success' : 'error');
       };
-
+    
       AnswerCard.prototype.createResultData = function createResultData(select, result) {
         var _this2 = this;
-
+    
         var obj = {};
         var selectOptions = select.split('');
         result.singleResult.forEach(function (item, index) {
@@ -453,10 +505,10 @@
           obj['ratio' + (index + 1)] = item / (result.total || 1) * 100 + '%';
           obj['type' + (index + 1)] = _this2.getAnswerType(result.answer, currentSelect, selectOptions.indexOf(currentSelect) !== -1, item);
         });
-
+    
         return obj;
       };
-
+    
       AnswerCard.prototype.getAnswerType = function getAnswerType(answer, currentSelect, isSelect, ratio) {
         var isRight = answer.indexOf(currentSelect) !== -1;
         if (isRight && isSelect) {
@@ -471,15 +523,15 @@
           return 'normal';
         }
       };
-
+    
       AnswerCard.prototype.bindEvent = function bindEvent(bindOption, questionId) {
         var _this3 = this;
-
+    
         var isMultiSelect = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
+    
         var _this = this;
         var currentEl = null;
-
+    
         this.el.addEventListener('click', function (event) {
           var type = event.target.getAttribute('data-type');
           if (!type) return;
@@ -487,12 +539,12 @@
             _this3.removeCard();
             knowAnswer();
           }
-
+    
           if (type === 'commit') {
             _this3.commit(questionId);
           }
         });
-
+    
         bindOption && this.el.addEventListener('click', function (event) {
           if (_this3.currentStatus.type === 'stop') return;
           var bool = true;
@@ -512,9 +564,9 @@
             target = target.parentNode;
             if (!target) break;
           }
-
+    
           if (!option) return;
-
+    
           if (isMultiSelect) {
             _this3.multiHandler(target, option);
           } else {
@@ -522,7 +574,7 @@
           }
         });
       };
-
+    
       AnswerCard.prototype.multiHandler = function multiHandler(el, option) {
         var cls = tmp.getStatusClass('checked');
         var index = this.selectOptions.indexOf(option);
@@ -531,7 +583,7 @@
         } else {
           this.selectOptions.push(option);
         }
-
+    
         if (this.selectOptions.length > 0) {
           this.btn.classList.add('answer-primary');
         } else {
@@ -539,7 +591,7 @@
         }
         el.classList.toggle(cls);
       };
-
+    
       AnswerCard.prototype.singleHandler = function singleHandler(currentEl, el, option) {
         var cls = tmp.getStatusClass('checked');
         if (currentEl) currentEl.classList.remove(cls);
@@ -548,18 +600,18 @@
         this.btn.classList.add('answer-primary');
         return el;
       };
-
+    
       AnswerCard.prototype.sortResult = function sortResult() {
         var ary = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
+    
         return ary.sort().join('');
       };
-
+    
       AnswerCard.prototype.commit = function commit(questionId) {
         var result = this.sortResult(this.selectOptions);
         if (!result) return;
         this.removeCard();
-
+        this.currentStatus.type = 'close';
         this.showTips('提交成功', 1.5, function () {
           chooseAnswer({
             answerId: result,
@@ -567,7 +619,7 @@
           });
         });
       };
-
+    
       AnswerCard.prototype.removeCard = function removeCard() {
         if (this.el) {
           this.wrap.removeChild(this.el);
@@ -575,13 +627,13 @@
           this.wrap.classList.remove('answer-show');
         }
       };
-
+    
       AnswerCard.prototype.showTips = function showTips(txt) {
         var _this4 = this;
-
+    
         var duration = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
         var cb = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
-
+    
         var tips = tmp.tips(txt);
         this.wrap.appendChild(tips);
         this.wrap.classList.add('answer-show');
@@ -592,24 +644,29 @@
             cb();
           }, duration * 1000);
         }
+        document.getElementById('js-btn-ensure').onclick = function () {
+          _this4.removeCard();
+          knowAnswer();
+        };
       };
-
+    
       function AnswerCard(wrap) {
         _classCallCheck(this, AnswerCard);
-
+    
         this.wrap = document.getElementById(wrap);
         this.isMobile = true;
         this.el = null;
         this.btn = null;
         this.selectOptions = [];
         this.currentStatus = {};
+        this.getStopMsg = '';
       }
-
+    
       return AnswerCard;
     }();
-
+    
     var card = new AnswerCard('wrap');
-
+    
     var $log = document.getElementById('log');
     var log = function log(txt) {
       return;
@@ -617,31 +674,30 @@
       a.textContent = txt;
       $log.appendChild(a);
     };
-
+    
     window.updateNewQuestion = function (data) {
       card.updateNewQuestion(JSON.parse(data));
     };
-
+    
     window.hasChooseAnswer = function (data) {
       try {
         var res = JSON.parse(data);
       } catch (e) {
         log(e);
       }
-
+    
       log(res.answerId);
       card.hasChooseAnswer(res.answerId, res.data);
     };
-
+    
     window.extraQuestionMessageHandler = function (data) {
       var res = JSON.parse(data);
-      if (res.type === 'S' || res.EVENT !== 'STOP_TEST_QUESTION') return;
       card.stopQuestion(res);
     };
-
+    
     function connectWebViewJavascriptBridge() {
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
-
+    
       log('注册');
       if (window.WebViewJavascriptBridge) {
         log('注册:type1');
@@ -653,7 +709,7 @@
         }, false);
       }
     }
-
+    
     connectWebViewJavascriptBridge(function (bridge) {
       log('注册');
       bridge.init(function (message, responseCallback) {});

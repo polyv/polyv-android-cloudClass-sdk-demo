@@ -4,17 +4,23 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -25,6 +31,13 @@ import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import java.lang.ref.WeakReference;
 import java.util.Random;
 
+import static com.easefun.polyv.commonui.widget.PolyvLikeIconView.Const.BEAT_ZOOM_RATIO;
+import static com.easefun.polyv.commonui.widget.PolyvLikeIconView.Const.BG_RATIO;
+import static com.easefun.polyv.commonui.widget.PolyvLikeIconView.Const.BOTTOM_MARGIN_DP;
+import static com.easefun.polyv.commonui.widget.PolyvLikeIconView.Const.DURATION_FLY_LOVE_ICON;
+import static com.easefun.polyv.commonui.widget.PolyvLikeIconView.Const.OFFSET_OF_HEART;
+import static com.easefun.polyv.commonui.widget.PolyvLikeIconView.Const.RIGHT_MARGIN_DP;
+
 public class PolyvLikeIconView extends RelativeLayout {
 
     private int width, height;
@@ -32,6 +45,11 @@ public class PolyvLikeIconView extends RelativeLayout {
 
     private Interpolator[] interpolators;
     private Random random = new Random();
+
+    private FrameLayout loveIconContainer;
+    private ImageView heartView;
+
+    private HeartBeatAnimation heartBeatAnimation;
 
     public PolyvLikeIconView(Context context) {
         this(context, null);
@@ -48,6 +66,58 @@ public class PolyvLikeIconView extends RelativeLayout {
 
     private void init() {
         initInterpolator();
+        initChild();
+    }
+
+    private void initChild() {
+        //漂浮爱心容器
+        loveIconContainer = new FrameLayout(getContext());
+        RelativeLayout.LayoutParams containerLp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        loveIconContainer.setLayoutParams(containerLp);
+
+
+        //圆背景
+        View bg = new View(getContext());
+        bg.setBackground(getResources().getDrawable(R.drawable.polyv_like_bg));
+        Drawable heart = getResources().getDrawable(R.drawable.runde_love_heart);
+        float d = heart.getIntrinsicWidth() * BG_RATIO;
+        RelativeLayout.LayoutParams bgLp = new RelativeLayout.LayoutParams((int) d, (int) d);
+        bgLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        bgLp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        bgLp.addRule(Gravity.CENTER);
+        bgLp.bottomMargin = PolyvScreenUtils.dip2px(getContext(), BOTTOM_MARGIN_DP);
+        bgLp.rightMargin = PolyvScreenUtils.dip2px(getContext(), RIGHT_MARGIN_DP);
+        bg.setLayoutParams(bgLp);
+        bg.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onButtonClickListener != null) {
+                    heartBeatAnimation.beat();
+                    onButtonClickListener.onClick(heartView);
+                }
+            }
+        });
+
+        //心跳
+        heartView = new ImageView(getContext());
+        //心跳动效
+        heartBeatAnimation = new HeartBeatAnimation(heartView);
+        heartView.setImageDrawable(heart);
+        LayoutParams heartLp = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        heartLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        heartLp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        heartLp.addRule(Gravity.CENTER);
+        heartLp.bottomMargin = (int) (bgLp.bottomMargin + d / 2 - heart.getIntrinsicHeight() / 2) - OFFSET_OF_HEART;
+        heartLp.rightMargin = (int) (bgLp.rightMargin + d / 2 - heart.getIntrinsicWidth() / 2);
+        heartView.setLayoutParams(heartLp);
+
+
+        //圆背景
+        addView(bg);
+        //漂浮爱心容器
+        addView(loveIconContainer);
+        //心跳爱心
+        addView(heartView);
     }
 
     private void initInterpolator() {
@@ -64,27 +134,6 @@ public class PolyvLikeIconView extends RelativeLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         width = getMeasuredWidth();
         height = getMeasuredHeight();
-        if (getChildCount() == 0) {
-//            final FloatingActionButton view = new FloatingActionButton(getContext());
-//            view.setImageResource(R.drawable.polyv_icon_like);
-//            view.setBackgroundTintList(ColorStateList.valueOf(color[2]));
-//            view.setOnClickListener(new OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (onButtonClickListener != null)
-//                        onButtonClickListener.onClick(view);
-//                }
-//            });
-//            int width = PolyvScreenUtils.px2dip(getContext(),128);
-//            LayoutParams rlp = new LayoutParams(width, width);
-//            rlp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//            rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//            rlp.bottomMargin = PolyvScreenUtils.dip2px(getContext(), 16);
-//            rlp.rightMargin = PolyvScreenUtils.dip2px(getContext(),16);
-//            view.setLayoutParams(rlp);
-//
-//            addView(view);
-        }
     }
 
     private OnClickListener onButtonClickListener;
@@ -95,6 +144,7 @@ public class PolyvLikeIconView extends RelativeLayout {
 
     @Override
     protected void onDetachedFromWindow() {
+        heartBeatAnimation.destroy();
         removeAllViews();
         super.onDetachedFromWindow();
     }
@@ -107,35 +157,37 @@ public class PolyvLikeIconView extends RelativeLayout {
         PointF pointF2 = new PointF(
                 random.nextInt(width),
                 random.nextInt(height / 2));
-        PointF pointStart = new PointF((width - iconWidth) / 1.6f,
-                height - iconHeight * 3 - PolyvScreenUtils.dip2px(getContext(), 16));
+        PointF pointStart = new PointF(heartView.getLeft() + (float) heartView.getDrawable().getIntrinsicWidth() / 2 - (float) iconWidth / 2,
+                height - heartView.getDrawable().getIntrinsicHeight() - iconHeight);
         PointF pointEnd = new PointF(random.nextInt(width), random.nextInt(height / 2));
 
         //贝塞尔估值器
         PolyvBezierEvaluator evaluator = new PolyvBezierEvaluator(pointF1, pointF2);
         ValueAnimator animator = ValueAnimator.ofObject(evaluator, pointStart, pointEnd);
         animator.setTarget(view);
-        animator.setDuration(2000);
+        animator.setDuration(DURATION_FLY_LOVE_ICON);
         animator.addUpdateListener(new UpdateListener(view));
-        animator.addListener(new AnimatorListener(view, this));
+        animator.addListener(new AnimatorListener(view, (ViewGroup) view.getParent()));
         animator.setInterpolator(interpolators[random.nextInt(4)]);
 
         animator.start();
     }
 
-    public void addLoveIcon(int resId) {
-        if (height <= 0 || width <= 0)
-            return;
-        ImageView view = new ImageView(getContext());
-        view.setImageResource(resId);
-        iconWidth = view.getDrawable().getIntrinsicWidth();
-        iconHeight = view.getDrawable().getIntrinsicHeight();
+//    public void addLoveIcon(int resId) {
+//        if (height <= 0 || width <= 0)
+//            return;
+//        ImageView view = new ImageView(getContext());
+//        view.setImageResource(resId);
+//        iconWidth = view.getDrawable().getIntrinsicWidth();
+//        iconHeight = view.getDrawable().getIntrinsicHeight();
+//
+//        addView(view);
+//        startAnimator(view);
+//    }
 
-        addView(view);
-        startAnimator(view);
-    }
+//    private int[] color = new int[]{0xFF9D86D2, 0xFFF25268, 0xFF5890FF, 0xFFFCBC71};
 
-    private int[] color = new int[]{0xFF9D86D2, 0xFFF25268, 0xFF5890FF, 0xFFFCBC71};
+    private int[] srcs = new int[]{R.drawable.like_1, R.drawable.like_2, R.drawable.like_3, R.drawable.like_4, R.drawable.like_5};
     private Random randomColor = new Random();
 
     public void addLoveIcon() {
@@ -144,24 +196,26 @@ public class PolyvLikeIconView extends RelativeLayout {
         post(new Runnable() {
             @Override
             public void run() {
-                FloatingActionButton view = new FloatingActionButton(getContext());
-                view.setImageResource(R.drawable.polyv_icon_like);
-                view.setBackgroundTintList(ColorStateList.valueOf(color[randomColor.nextInt(color.length)]));
-                iconWidth = view.getDrawable().getIntrinsicWidth();
-                iconHeight = view.getDrawable().getIntrinsicHeight();
+                for (int i = 0; i < 5; i++) {
+                    ImageButton view = new ImageButton(getContext());
+                    view.setImageResource(srcs[randomColor.nextInt(srcs.length)]);
+                    view.setBackgroundColor(Color.TRANSPARENT);
+                    iconWidth = view.getDrawable().getIntrinsicWidth();
+                    iconHeight = view.getDrawable().getIntrinsicHeight();
 
-                addView(view);
-                startAnimator(view);
+                    view.setLayoutParams(new FrameLayout.LayoutParams(iconWidth, iconHeight, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
+                    loveIconContainer.addView(view);
+                    startAnimator(view);
+                }
             }
         });
-
     }
 
-    public static class UpdateListener implements ValueAnimator.AnimatorUpdateListener {
+    private static class UpdateListener implements ValueAnimator.AnimatorUpdateListener {
 
         private WeakReference<View> iv;
 
-        public UpdateListener(View iv) {
+        UpdateListener(View iv) {
             this.iv = new WeakReference<>(iv);
         }
 
@@ -177,12 +231,12 @@ public class PolyvLikeIconView extends RelativeLayout {
         }
     }
 
-    public static class AnimatorListener extends AnimatorListenerAdapter {
+    private static class AnimatorListener extends AnimatorListenerAdapter {
 
         private WeakReference<View> iv;
-        private WeakReference<PolyvLikeIconView> parent;
+        private WeakReference<ViewGroup> parent;
 
-        public AnimatorListener(View iv, PolyvLikeIconView parent) {
+        AnimatorListener(View iv, ViewGroup parent) {
             this.iv = new WeakReference<>(iv);
             this.parent = new WeakReference<>(parent);
         }
@@ -190,11 +244,78 @@ public class PolyvLikeIconView extends RelativeLayout {
         @Override
         public void onAnimationEnd(Animator animation) {
             View view = iv.get();
-            PolyvLikeIconView parent = this.parent.get();
+            ViewGroup parent = this.parent.get();
             if (null != view
                     && null != parent) {
                 parent.removeView(view);
             }
         }
     }
+
+    static class Const {
+        //心跳在父布局的内边距
+        static final int BOTTOM_MARGIN_DP = 44 / 3;
+        static final int RIGHT_MARGIN_DP = 44 / 3;
+
+        //让心跳的圆心向下偏移一点距离（原本圆心重合），让爱心和背景的相对位置更协调。
+        static final int OFFSET_OF_HEART = 5;
+
+        //背景圆形和心跳的直径比
+        static final float BG_RATIO = 1.6f;
+
+        //心跳缩放比例
+        static final float BEAT_ZOOM_RATIO = 1.3f;
+
+        //漂浮爱心的持续时间
+        static final int DURATION_FLY_LOVE_ICON = 3000;
+    }
+
+    //心跳动画
+    private static class HeartBeatAnimation {
+        private static final int FIRST_DURATION = 50;
+        private static final int SECOND_DURATION = 300;
+
+
+        private WeakReference<View> target;
+
+        private Animation first;
+
+        HeartBeatAnimation(View view) {
+            target = new WeakReference<>(view);
+
+            //第二阶段的动画。
+            final Animation second = new ScaleAnimation(BEAT_ZOOM_RATIO, 1f, BEAT_ZOOM_RATIO, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5F);
+            second.setDuration(SECOND_DURATION);
+            //第一阶段的动画。
+            first = new ScaleAnimation(1f, BEAT_ZOOM_RATIO, 1f, BEAT_ZOOM_RATIO, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            first.setDuration(FIRST_DURATION);
+            first.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {/**/}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    target.get().startAnimation(second);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {/**/}
+            });
+        }
+
+        void beat() {
+            if (target.get() != null) {
+                target.get().startAnimation(first);
+            }
+        }
+
+        //移除引用
+        void destroy() {
+            if (target.get() != null) {
+                target.get().clearAnimation();
+                target.clear();
+            }
+        }
+    }
+
 }

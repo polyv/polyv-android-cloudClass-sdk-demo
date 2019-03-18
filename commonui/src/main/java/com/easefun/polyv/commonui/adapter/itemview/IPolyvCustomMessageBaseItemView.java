@@ -47,6 +47,9 @@ public abstract class IPolyvCustomMessageBaseItemView<T> extends FrameLayout {
     //初始化view
     public abstract void initView();
 
+    //播放动画
+    public abstract void playAnimation();
+
     /**
      * 根据图片的名称获取对应的资源id
      * @param resourceName

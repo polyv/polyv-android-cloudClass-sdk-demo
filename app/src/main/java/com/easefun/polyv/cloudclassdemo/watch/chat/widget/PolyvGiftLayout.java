@@ -29,6 +29,7 @@ public class PolyvGiftLayout extends FrameLayout {
     private OnClickListener onClickSendGiftButtonListener;
     private int selectedGiftCount;
     private PolyvGiftListAdapter giftListAdapter;
+    private PopupWindow.OnDismissListener onDismissListener;
 
     public PolyvGiftLayout(@NonNull Context context) {
         this(context, null);
@@ -131,7 +132,11 @@ public class PolyvGiftLayout extends FrameLayout {
         popupWindow.setOutsideTouchable(true);
         popupWindow.setBackgroundDrawable(new BitmapDrawable());
         popupWindow.setAnimationStyle(R.style.PopupWindowAnim);
+        popupWindow.setOnDismissListener(onDismissListener);
         popupWindow.showAtLocation(parentView, Gravity.BOTTOM, 0, 0);
+    }
+    public void setOnDismissListener(PopupWindow.OnDismissListener onDismissListener){
+        this.onDismissListener=onDismissListener;
     }
 
     public void hide() {

@@ -25,6 +25,8 @@ import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
 public class PolyvTipsMessageHolder extends ClickableViewHolder<Object, PolyvChatListAdapter> {
     public TextView tipsMessage;
 
+    private IPolyvCustomMessageBaseItemView itemView;
+
     public PolyvTipsMessageHolder(View itemView, PolyvChatListAdapter adapter) {
         super(itemView, adapter);
 
@@ -32,7 +34,8 @@ public class PolyvTipsMessageHolder extends ClickableViewHolder<Object, PolyvCha
 
     @Override
     public <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent) {
-        return PolyvItemViewFactoy.createTipItemView(baseCustomEvent.getEVENT(), context);
+        itemView = PolyvItemViewFactoy.createTipItemView(baseCustomEvent.getEVENT(), context);
+        return itemView;
     }
 
     @Override
@@ -43,10 +46,14 @@ public class PolyvTipsMessageHolder extends ClickableViewHolder<Object, PolyvCha
     public void processCustomMessage(PolyvCustomEvent item, int position) {
     }
 
+    public IPolyvCustomMessageBaseItemView getItemView() {
+        return itemView;
+    }
+
 
     private void handleTipsMessage(PolyvTipsMessageHolder tipsMessageHolder, Object object) {
         int childIndex = findReuseChildIndex(PolyvChatManager.SE_MESSAGE);
-        if(childIndex < 0){
+        if (childIndex < 0) {
             View child = View.inflate(context,
                     R.layout.polyv_chat_tip_normal_message_item, null);
             child.setTag(PolyvChatManager.SE_MESSAGE);

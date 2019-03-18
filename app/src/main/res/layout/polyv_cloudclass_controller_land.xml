@@ -60,8 +60,9 @@
 
     <ImageView
         android:id="@+id/video_ppt_change_switch_land"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
+        android:layout_margin="@dimen/dm_10"
         android:layout_above="@+id/bottom_layout"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/controller_margin"
@@ -76,4 +77,13 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/controller_margin"
         android:src="@drawable/polyv_mic_phone_selector" />
+    <ImageView
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
+        android:layout_margin="@dimen/dm_10"
+        android:id="@+id/consult"
+        android:layout_above="@+id/video_ppt_change_switch_land"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/controller_margin"
+        android:src="@drawable/consult" />
 </RelativeLayout>

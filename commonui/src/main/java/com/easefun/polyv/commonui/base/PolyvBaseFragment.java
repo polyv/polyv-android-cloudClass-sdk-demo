@@ -17,13 +17,40 @@ import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import io.reactivex.disposables.CompositeDisposable;
 
 public abstract class PolyvBaseFragment extends Fragment implements PolyvPermissionListener {
+    // <editor-fold defaultstate="collapsed" desc="成员变量">
     protected CompositeDisposable disposables;
     protected View view;
     protected PolyvPermissionManager permissionManager;
     protected PolyvToast toast;
     private final int myRequestCode = 16666;
     private boolean isCreatedFlag, isActivityCreatedFlag, isCallFirstDelay;
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="加载方式的触发逻辑">
+    private void canLoadDataAhead() {
+        if (!isActivityCreatedFlag) {
+            isActivityCreatedFlag = !isActivityCreatedFlag;
+            loadDataAhead();
+        }
+    }
+
+    private void canLoadDataDelay() {
+        if (isCreatedFlag && getUserVisibleHint()) {
+            isCreatedFlag = !isCreatedFlag;
+            loadDataDelay(isCallFirstDelay = true);
+        } else if (getUserVisibleHint() && isCallFirstDelay) {
+            loadDataDelay(false);
+        }
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="View相关">
+    protected final <T extends View> T findViewById(int id) {
+        return view.findViewById(id);
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Fragment方法"> 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,12 +68,6 @@ public abstract class PolyvBaseFragment extends Fragment implements PolyvPermiss
                 .setPermissionsListener(this);
     }
 
-    public abstract int layoutId();
-
-    public abstract void loadDataDelay(boolean isFirst);
-
-    public abstract void loadDataAhead();
-
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -58,22 +79,6 @@ public abstract class PolyvBaseFragment extends Fragment implements PolyvPermiss
         super.onActivityCreated(savedInstanceState);
         canLoadDataAhead();
         canLoadDataDelay();
-    }
-
-    private void canLoadDataAhead() {
-        if (!isActivityCreatedFlag) {
-            isActivityCreatedFlag = !isActivityCreatedFlag;
-            loadDataAhead();
-        }
-    }
-
-    private void canLoadDataDelay() {
-        if (isCreatedFlag && getUserVisibleHint()) {
-            isCreatedFlag = !isCreatedFlag;
-            loadDataDelay(isCallFirstDelay = true);
-        } else if (getUserVisibleHint() && isCallFirstDelay) {
-            loadDataDelay(false);
-        }
     }
 
     @Override
@@ -113,7 +118,17 @@ public abstract class PolyvBaseFragment extends Fragment implements PolyvPermiss
             permissionManager = null;
         }
     }
+    // </editor-fold> 
 
+    // <editor-fold defaultstate="collapsed" desc="抽象方法"> 
+    public abstract int layoutId();
+
+    public abstract void loadDataDelay(boolean isFirst);
+
+    public abstract void loadDataAhead();
+    // </editor-fold> 
+
+    // <editor-fold defaultstate="collapsed" desc="PolyvPermissionListener实现"> 
     @Override
     public void onGranted() {
     }
@@ -127,8 +142,5 @@ public abstract class PolyvBaseFragment extends Fragment implements PolyvPermiss
     public void onShowRationale(String[] permissions) {
         permissionManager.showRationaleDialog(getContext(), permissions);
     }
-
-    protected final <T extends View> T findViewById(int id) {
-        return view.findViewById(id);
-    }
+    // </editor-fold> 
 }

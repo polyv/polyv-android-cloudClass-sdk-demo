@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ececec">
+    android:background="@color/white">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/chat_pull_load"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="52dp"
         android:layout_above="@+id/fl_bottom">
 
         <com.easefun.polyv.commonui.widget.PolyvChatRecyclerView
@@ -16,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never"
-            android:paddingBottom="10dp" />
+            />
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.easefun.polyv.commonui.widget.PolyvPressedHalfBgView
@@ -86,6 +87,7 @@
         android:textSize="12sp"
         android:visibility="gone" />
 
+
     <FrameLayout
         android:id="@+id/fl_bottom"
         android:layout_width="match_parent"
@@ -102,7 +104,7 @@
                 android:id="@+id/ic_chat_edit_group"
                 layout="@layout/polyv_chat_edit_group"
                 android:layout_width="match_parent"
-                android:layout_height="48dp" />
+                android:layout_height="wrap_content" />
 
             <include
                 android:id="@+id/ic_chat_emo_list_layout"
@@ -120,9 +122,59 @@
 
     <com.easefun.polyv.commonui.widget.PolyvLikeIconView
         android:id="@+id/liv_like"
-        android:layout_width="180dp"
+        android:layout_width="80dp"
         android:layout_height="match_parent"
         android:layout_above="@id/fl_bottom"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" />
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/fl_bottom"
+        android:layout_marginBottom="@dimen/dm_10"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:id="@+id/like_icon_num"
+            android:textColor="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_above="@id/fl_bottom"
+        android:background="@color/gray" />
+
+    <FrameLayout
+        android:id="@+id/fl_only_see_teacher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fl_bottom"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="14dp">
+
+        <View
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/polyv_only_see_teacher_selector" />
+
+        <TextView
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingRight="5dp"
+            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:text="@string/only_see_teacher"
+            android:textColor="#fe992a"
+            android:textSize="12sp" />
+    </FrameLayout>
+
 </RelativeLayout>

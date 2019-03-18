@@ -88,16 +88,18 @@
 
     <ImageView
         android:id="@+id/pb_ppt_video_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dm_10"
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
         android:layout_above="@id/sb_playprogress"
         android:layout_alignParentRight="true"
         android:src="@drawable/exchange" />
 
     <ImageView
         android:id="@+id/pb_subview_show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dm_10"
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
         android:layout_above="@id/sb_playprogress"
         android:layout_alignParentRight="true"
         android:src="@drawable/ppt"

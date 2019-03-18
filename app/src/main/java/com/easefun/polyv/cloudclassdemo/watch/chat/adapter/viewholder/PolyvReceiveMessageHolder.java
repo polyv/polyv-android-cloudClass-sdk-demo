@@ -1,8 +1,6 @@
 package com.easefun.polyv.cloudclassdemo.watch.chat.adapter.viewholder;
 
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -93,8 +91,8 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
         }
         if (!TextUtils.isEmpty(actor)) {
             fillActorView(actor, authorizationBean != null ?
-                    authorizationBean.getBgColor() : PolyvChatAuthorization.BGCOLOR_DEFAULT,
-                    authorizationBean != null?authorizationBean.getFColor():PolyvChatAuthorization.FCOLOR_DEFAULT);
+                            authorizationBean.getBgColor() : PolyvChatAuthorization.BGCOLOR_DEFAULT,
+                    authorizationBean != null ? authorizationBean.getFColor() : PolyvChatAuthorization.FCOLOR_DEFAULT);
         } else {
             typeTv.setVisibility(View.GONE);
         }
@@ -199,7 +197,10 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
     }
 
 
-    private void acceptReceiveMessage(final PolyvReceiveMessageHolder receiveMessageHolder, String userType, String actor, String nick, final String pic, CharSequence message, final String chatImg, int height, int width, PolyvChatAuthorization chatAuthorization, final int position) {
+    private void acceptReceiveMessage(final PolyvReceiveMessageHolder receiveMessageHolder, String userType,
+                                      String actor, String nick, final String pic, CharSequence message,
+                                      final String chatImg, int height, int width,
+                                      PolyvChatAuthorization chatAuthorization, final int position) {
 
         if (adapter != null) {
 
@@ -224,13 +225,24 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
             receiveMessageHolder.imgLoading.setVisibility(View.GONE);
             receiveMessageHolder.receiveMessage.setVisibility(View.VISIBLE);
 
-            int length = Math.min(nick.length(),10);
-            SpannableStringBuilder spannableString = new SpannableStringBuilder(nick.substring(0,length)+"  ");
+            int length = Math.min(nick.length(), 10);
+            //昵称内容
+            String nickContent = nick.substring(0, length) + "  ";
+            //昵称和消息的总长度
+            float tvWidth = receiveMessageHolder.receiveMessage.getPaint().measureText(nickContent + message);
+            SpannableStringBuilder spannableString = new SpannableStringBuilder(nickContent);
             spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#878787")), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannableString.append(message);
-            receiveMessageHolder.receiveMessage.setText(spannableString);
-
-            receiveMessageHolder.nickTv.setVisibility(View.GONE);
+            contentContainer.post(() -> {
+                //需要换行
+                if (tvWidth > contentContainer.getMeasuredWidth()) {
+                    spannableString.append("\n");
+                }
+                spannableString.append(message);
+                receiveMessageHolder.receiveMessage.setText(spannableString);
+            });
+            if (receiveMessageHolder.nickTv.getVisibility() != View.GONE) {
+                receiveMessageHolder.nickTv.setVisibility(View.GONE);
+            }
         } else if (chatImg != null) {//设置图片类型的发言信息
             receiveMessageHolder.nickTv.setVisibility(View.VISIBLE);
 

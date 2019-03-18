@@ -165,7 +165,7 @@ public class PolyvRewardLayout extends FrameLayout {
     public PolyvCustomRewardBean getSendCustomRewardBean() {
         PolyvCustomRewardBean customGiftBean = new PolyvCustomRewardBean();
         customGiftBean.setPrice(showMoney.getText().toString());
-        customGiftBean.setUnit("￥");
+        customGiftBean.setUnit("元");
         return customGiftBean;
     }
 

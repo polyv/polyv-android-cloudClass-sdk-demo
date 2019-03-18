@@ -2,37 +2,58 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="wrap_content"
     android:background="#ffffff"
+    xmlns:tools="http://schemas.android.com/tools"
     android:padding="8dp">
 
-    <ImageView
-        android:id="@+id/iv_switch"
+    <LinearLayout
+        android:id="@+id/ll_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:src="@drawable/polyv_iv_hostonly_switch" />
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/iv_course"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/classes" />
+
+        <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+            android:id="@+id/iv_emojileft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:src="@drawable/emoji"
+            android:visibility="gone"
+            app:disabled_color="#D3D3D3"
+            app:pressed_color="#14a2f4"
+            app:selected_color="#14a2f4" />
+    </LinearLayout>
+
 
     <com.easefun.polyv.businesssdk.sub.gif.GifEditText
+        android:maxLines="2"
+        android:inputType="textMultiLine"
+        android:minHeight="36dp"
         android:id="@+id/et_talk"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
         android:layout_toLeftOf="@id/right_layout"
-        android:layout_toRightOf="@id/iv_switch"
+        android:layout_toRightOf="@id/ll_switch"
         android:background="@drawable/polyv_et_chat_corner"
-        android:hint="我也来聊几句..."
-        android:imeOptions="actionSend|flagNoFullscreen"
+        android:hint="在这里可以跟老师互动哦"
         android:paddingLeft="8dp"
-        android:paddingRight="40dp"
-        android:singleLine="true"
         android:textColor="#000000"
-        android:textColorHint="#c7c7c7"
+        android:textColorHint="#9C9C9C"
         android:textSize="16sp" />
 
     <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+        android:visibility="gone"
         android:id="@+id/iv_emoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,41 +63,83 @@
         android:clickable="true"
         android:padding="@dimen/dm_3"
         android:src="@drawable/emoji"
+        app:disabled_color="#D3D3D3"
         app:pressed_color="#14a2f4"
         app:selected_color="#14a2f4" />
 
     <LinearLayout
+        android:layout_centerVertical="true"
         android:id="@+id/right_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true">
 
-        <com.easefun.polyv.commonui.widget.PolyvPressedImageView
-            android:id="@+id/iv_flower"
+        <LinearLayout
+            android:id="@+id/flower_like_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="6dp"
-            android:src="@drawable/flower"
-            android:visibility="gone"
-            app:pressed_color="#14a2f4" />
+            android:orientation="horizontal">
 
-        <com.easefun.polyv.commonui.widget.PolyvPressedImageView
-            android:id="@+id/like"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="6dp"
-            android:src="@drawable/polyv_icon_likes"
-            android:visibility="gone"
-            app:pressed_color="#14a2f4" />
+            <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+                android:id="@+id/iv_flower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="6dp"
+                android:src="@drawable/flower"
+                android:visibility="gone"
+                app:disabled_color="#D3D3D3"
+                app:pressed_color="#14a2f4" />
 
-        <ImageView
-            android:id="@+id/add_more"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/plv_more"
-            android:visibility="gone" />
+            <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+                android:id="@+id/like"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="6dp"
+                android:src="@drawable/consult"
+                app:disabled_color="#D3D3D3"
+                app:pressed_color="#14a2f4" />
+
+            <com.easefun.polyv.commonui.widget.PolyvRotationImageView
+                android:id="@+id/add_more"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:rotation="45"
+                android:src="@drawable/polyv_more_cancel"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/q12_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_q1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@drawable/polyv_q1_bg"
+                android:gravity="center"
+                android:text="扣1"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/tv_q2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dm_5"
+                android:background="@drawable/polyv_q2_bg"
+                android:gravity="center"
+                android:text="扣2"
+                android:textColor="@color/white" />
+        </LinearLayout>
     </LinearLayout>
+
+
 </RelativeLayout>

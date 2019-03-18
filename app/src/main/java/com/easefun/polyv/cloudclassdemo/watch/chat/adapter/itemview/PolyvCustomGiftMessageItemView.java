@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.OvershootInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,8 +47,9 @@ public class PolyvCustomGiftMessageItemView extends IPolyvCustomMessageBaseItemV
 
         PolyvCustomGiftBean data = eventMessage.getData();
         PolyvCustomEvent.UserBean userBean = eventMessage.getUser();
-        giftCount.setText(getContext().getString(R.string.gift_send_count,data.getGiftCount()));
-        giftName.setText(getContext().getString(R.string.gift_send,data.getGiftName()));
+        giftCount.setText(getContext().getString(R.string.gift_send_count, data.getGiftCount()));
+        giftCount.setTag(data.getGiftCount());
+        giftName.setText(getContext().getString(R.string.gift_send, data.getGiftName()));
 
         if (PolyvCustomGiftBean.GIFTTYPE_TEA.equals(data.getGiftType())) {
             giftPic.setImageResource(R.drawable.polyv_gift_tea);
@@ -67,7 +71,6 @@ public class PolyvCustomGiftMessageItemView extends IPolyvCustomMessageBaseItemV
 
     @Override
     public void initView() {
-
         View.inflate(getContext(), R.layout.polyv_chat_custom_gift_item, this);
 
         giftAvatar = findViewById(R.id.gift_avatar);
@@ -75,5 +78,62 @@ public class PolyvCustomGiftMessageItemView extends IPolyvCustomMessageBaseItemV
         giftPic = findViewById(R.id.gift_pic);
         giftCount = findViewById(R.id.gift_count);
 
+    }
+
+    @Override
+    public void playAnimation() {
+        giftCount.post(() -> GiftCountZoomAnim.startZoom(giftCount, (Integer) giftCount.getTag()));
+    }
+
+    //礼物个数缩放动画
+    private static class GiftCountZoomAnim {
+        //缩放比例
+        private static float ZOOM_RATIO = 1.3f;
+        private static long MAGNIFY_DURATION = 200;
+        private static long SHRINK_DURATION = 100;
+
+        static void startZoom(TextView tv, int count) {
+            float width = tv.getPaint().measureText(tv.getContext().getString(R.string.gift_send_count, count));
+            tv.getLayoutParams().width = (int) width;
+            tv.setLayoutParams(tv.getLayoutParams());
+            tv.setText("");
+
+            //放大
+            Animation magnify = new ScaleAnimation(0f, ZOOM_RATIO, 0f, ZOOM_RATIO, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            magnify.setDuration(MAGNIFY_DURATION);
+            magnify.setRepeatCount(count);
+            magnify.setInterpolator(new OvershootInterpolator());
+            magnify.setAnimationListener(new Animation.AnimationListener() {
+                int i = 0;
+
+                @Override
+                public void onAnimationStart(Animation animation) {/**/}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    //缩小
+                    Animation shrink = new ScaleAnimation(ZOOM_RATIO, 1f, ZOOM_RATIO, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    shrink.setDuration(SHRINK_DURATION);
+                    tv.startAnimation(shrink);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                    tv.setText(tv.getContext().getString(R.string.gift_send_count, ++i));
+                }
+            });
+            tv.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {/**/}
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    tv.removeOnAttachStateChangeListener(this);
+                    tv.clearAnimation();
+                    tv.setText(tv.getContext().getString(R.string.gift_send_count, count));
+                }
+            });
+            tv.startAnimation(magnify);
+        }
     }
 }

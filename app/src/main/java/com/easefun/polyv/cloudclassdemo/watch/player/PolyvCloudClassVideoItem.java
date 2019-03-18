@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ScreenUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvPlayError;
 import com.easefun.polyv.businesssdk.api.common.player.listener.IPolyvVideoViewListenerEvent;
@@ -186,6 +188,15 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         controller.setDanmuFragment(danmuFragment);
     }
 
+    //设置教师占位图的url
+    public void setNoStreamImageUrl(String url) {
+        if (noStream == null) {
+            return;
+        }
+        ImageView ivPlaceholder = noStream.findViewById(R.id.iv_placeholder);
+        Glide.with(context).asBitmap().load(url).into(ivPlaceholder);
+    }
+
     private void initialVideoView() {
         polyvCloudClassVideoView = findViewById(R.id.cloudschool_videoview);
         polyvCloudClassVideoView.setMediaController(controller);
@@ -241,6 +252,9 @@ public class PolyvCloudClassVideoItem extends FrameLayout
             public void showPPTView(int visiable) {
                 if(visiable == VISIBLE){
                     controller.switchPPTToMainScreen();
+                    controller.updateSubVideoViewPosition(true);
+                }else {
+                    controller.updateSubVideoViewPosition(false);
                 }
                 if (polyvPPTItem != null) {
                     polyvPPTItem.show(visiable);
@@ -485,9 +499,10 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                     controller.changePPTVideoLocation();
                 }
 
-                if(polyvPPTItem != null){
-                    polyvPPTItem.hideSubView();
-                }
+                //不隐藏小窗口，而是显示教师的占位图
+//                if(polyvPPTItem != null){
+//                    polyvPPTItem.hideSubView();
+//                }
             }
 
         }

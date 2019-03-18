@@ -57,8 +57,9 @@
 
     <ImageView
         android:id="@+id/video_ppt_change_switch_port"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dm_10"
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
         android:layout_above="@+id/video_screen_switch_port"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/controller_margin"
