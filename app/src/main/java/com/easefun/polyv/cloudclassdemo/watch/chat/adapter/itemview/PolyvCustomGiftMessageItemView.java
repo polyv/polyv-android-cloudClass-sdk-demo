@@ -49,7 +49,7 @@ public class PolyvCustomGiftMessageItemView extends IPolyvCustomMessageBaseItemV
         PolyvCustomEvent.UserBean userBean = eventMessage.getUser();
         giftCount.setText(getContext().getString(R.string.gift_send_count, data.getGiftCount()));
         giftCount.setTag(data.getGiftCount());
-        giftName.setText(getContext().getString(R.string.gift_send, data.getGiftName()));
+        giftName.setText(getContext().getString(R.string.gift_send, PolyvCustomGiftBean.getGiftName(data.getGiftType())));
 
         if (PolyvCustomGiftBean.GIFTTYPE_TEA.equals(data.getGiftType())) {
             giftPic.setImageResource(R.drawable.polyv_gift_tea);

@@ -9,7 +9,7 @@
         android:id="@+id/chat_pull_load"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="52dp"
+        android:layout_marginBottom="65dp"
         android:layout_above="@+id/fl_bottom">
 
         <com.easefun.polyv.commonui.widget.PolyvChatRecyclerView
