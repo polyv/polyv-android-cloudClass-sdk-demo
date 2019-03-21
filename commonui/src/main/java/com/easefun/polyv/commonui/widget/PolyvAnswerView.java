@@ -1,6 +1,7 @@
 package com.easefun.polyv.commonui.widget;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -9,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.Utils;
 import com.easefun.polyv.cloudclass.PolyvSocketEvent;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionResultVO;
@@ -17,6 +20,7 @@ import com.easefun.polyv.cloudclass.video.PolyvAnswerWebView;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
+import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -140,4 +144,47 @@ public class PolyvAnswerView extends FrameLayout {
             answerWebView = null;
         }
     }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            onLandscape();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            onPortrait();
+        }
+    }
+
+    //横屏回调
+    private void onLandscape() {
+        MarginLayoutParams lp = (MarginLayoutParams) answerWebView.getLayoutParams();
+        lp.leftMargin = MarginConst.LANDSCAPE_MARGIN_LEFT;
+        lp.rightMargin = lp.leftMargin;
+        lp.topMargin = 0;
+        lp.bottomMargin = MarginConst.LANDSCAPE_MARGIN_BOTTOM;
+        answerWebView.setLayoutParams(lp);
+    }
+
+    //竖屏回调
+    private void onPortrait() {
+        MarginLayoutParams lp = (MarginLayoutParams) answerWebView.getLayoutParams();
+        lp.leftMargin = MarginConst.PORTRAIT_MARGIN_LEFT;
+        lp.rightMargin = lp.leftMargin;
+        lp.topMargin = MarginConst.PORTRAIT_MARGIN_TOP;
+        lp.bottomMargin = lp.topMargin;
+        answerWebView.setLayoutParams(lp);
+    }
+
+
+    static class MarginConst {
+        static final int LANDSCAPE_MARGIN_LEFT = toPx(80);
+        static final int LANDSCAPE_MARGIN_BOTTOM = toPx(48);
+
+        static final int PORTRAIT_MARGIN_LEFT = toPx(20);
+        static final int PORTRAIT_MARGIN_TOP = toPx(60);
+
+        private static int toPx(int dp) {
+            return PolyvScreenUtils.dip2px(Utils.getApp(), dp);
+        }
+    }
 }
+

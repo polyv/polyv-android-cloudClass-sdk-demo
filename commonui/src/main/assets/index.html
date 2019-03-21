@@ -55,11 +55,17 @@
     }
 
     .answer-card {
-      display: flex;
+      padding-top: 100px;
+      padding-bottom: 50px;
+      /* display: flex;
+      display: -webkit-box;
       flex-direction: column;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal; */
       position: relative;
       top: 50%;
       transform: translateY(-50%);
+      -webkit-transform: translateY(-50%);
       max-height: 100%;
       background: #fff;
       border-radius: 10px;
@@ -72,6 +78,7 @@
       text-align: center;
       color: #fe992a;
       transform: translateX(-50%);
+      -webkit-transform: translateX(-50%);
     }
 
     .answer-head:before {
@@ -95,10 +102,12 @@
     }
 
     .answer-contain {
-      flex-grow: 1;
+      /* flex-grow: 1;
       display: flex;
       flex-direction: column;
-      padding: 80px 10px 10px;
+      padding: 80px 10px 10px; */
+      height: 100%;
+      padding: 0 10px 10px;
       border-bottom: 1px solid #ededed;
     }
 
@@ -158,14 +167,25 @@
     }
 
     .answer-foot {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
       text-align: center;
     }
     
     .answer-foot .answer-btn {
       display: inline-block;
-      padding: 15px;
+      width: 48%;
+      padding: 5px;
       font-size: 14px;
       color: #4d4d4d;
+    }
+
+    .answer-foot .answer-btn-cancel {
+      color: #b3b3b3;
+      border-left: 1px dashed rgba(0, 0, 0, 0.3);
     }
     
     .answer-foot .answer-primary {
@@ -242,6 +262,16 @@
       font-size: 14px;
       color: #fff;
       background: rgb(254,153,42);
+    }
+
+    .answer-card-hengping > .answer-card {
+      height: 100%;
+    }
+
+    .answer-card-hengping .answer-list > li {
+      display: inline-block;
+      width: 49%;
+      vertical-align: text-top;
     }
   </style>
   <style media="screen">
@@ -375,19 +405,33 @@
       card: function card(options) {
         var id = 'id-' + new Date().getTime();
         var el = document.createElement('div');
+        var btnCls = options.btnClass || '';
+        var closeBtn = '';
+        if (options.submitType === 'commit') {
+          closeBtn = '<span class="answer-btn answer-btn-cancel ' + btnCls + '" data-type="close">取消</span>';
+        }
         el.setAttribute('class', 'answer-card ' + (options.tipsClass || ''));
-        el.innerHTML = '<div class="answer-head"></div>\n    <div class="answer-contain">\n      <div class="answer-contain-main">\n        <h3>' + this.parseString(options.title || options.name) + '\uFF08' + this.questionTypeTxt(options.type) + '\uFF09</h3>\n        <ul class="answer-list">\n          ' + this.getOptions(options) + '\n        </ul>\n      </div>\n    </div>\n    <div class="answer-foot">\n      <span id="' + id + '" class="answer-btn ' + (options.btnClass || '') + '" data-type="' + options.submitType + '">' + options.btn + '</span>\n    </div>';
+        el.innerHTML = '<div class="answer-head"></div>'+
+        '<div class="answer-contain">'+
+          '<div class="answer-contain-main">'+
+            '<h3>' + this.parseString(options.title || options.name) + '\uFF08' + this.questionTypeTxt(options.type) + '\uFF09</h3>'+
+            '<ul class="answer-list">' + this.getOptions(options) + '</ul>'+
+          '</div>'+
+        '</div>'+
+        '<div class="answer-foot">'+
+          '<span id="' + id + '" class="answer-btn ' + btnCls + '" data-type="' + options.submitType + '">' + options.btn + '</span>'+ closeBtn +
+        '</div>';
     
         return { el: el, id: id };
       },
       tips: function tips(txt) {
         var el = document.createElement('div');
-        el.innerHTML = `<div class="answer-tips-main">
-                          <div class="answer-tips-text">答题成功！</div>
-                          <div>
-                            <button type="button" class="btn-ensure" id="js-btn-ensure">确定</button>
-                          </div>
-                        </div>`.trim();
+        el.innerHTML = '<div class="answer-tips-main">' + 
+                          '<div class="answer-tips-text">答题成功！</div>' + 
+                          '<div>' + 
+                            '<button type="button" class="btn-ensure" id="js-btn-ensure">确定</button>' + 
+                          '</div>' + 
+                        '</div>'.trim();
         el.classList.add('answer-tips');
         return el;
       }
@@ -462,13 +506,6 @@
     
         // if (this.currentStatus.type !== 'commit' || this.currentStatus.id !== data.questionId) return;
         this.currentStatus.type = 'stop';
-        // const cls = tmp.getStatusClass('checked');
-        // this.btn.classList.remove('answer-primary');
-        // this.btn.textContent = '已截止';
-        // this.selectOptions = [];
-        // [...this.el.querySelectorAll(`.${cls}`)].forEach(item => {
-        //   item.classList.remove(cls);
-        // });
         var newData = Object.assign({
           submitType: 'close',
           btn: '已截止'
@@ -500,7 +537,6 @@
         var selectOptions = select.split('');
         result.singleResult.forEach(function (item, index) {
           var currentSelect = words[index];
-          console.log(currentSelect);
           obj['result' + (index + 1)] = item;
           obj['ratio' + (index + 1)] = item / (result.total || 1) * 100 + '%';
           obj['type' + (index + 1)] = _this2.getAnswerType(result.answer, currentSelect, selectOptions.indexOf(currentSelect) !== -1, item);
@@ -694,7 +730,20 @@
       var res = JSON.parse(data);
       card.stopQuestion(res);
     };
+
+    // 横竖屏
+    function hengshuping() {
+      if (window.orientation == 180 || window.orientation == 0) {
+        document.getElementById('wrap').classList.remove('answer-card-hengping');
+      }
+      if (window.orientation == 90 || window.orientation == -90) {
+        document.getElementById('wrap').classList.add('answer-card-hengping');
+      }
+    }
     
+    window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", hengshuping, false);
+    hengshuping();
+
     function connectWebViewJavascriptBridge() {
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
     
@@ -729,6 +778,110 @@
         responseCallback('收到额外消息:' + data);
       });
     });
+  </script>
+  <script>
+    var startQuestion = {
+      "EVENT": "GET_TEST_QUESTION_CONTENT",
+      "questionId": "f4g386wq20",
+      "times": 182,
+      "itemType": 0,
+      "channelId": 187002,
+      "userId": "12b5623812",
+      "name": "TEST1",
+      "type": "R",
+      "option1": "超长的答案AAAA超长的答案AAAA超长的答案AAAA超长的答案AAAA超长的答案AAAA超长的答案AAAA超长的答案AAAA超长的答案AAAA超长的答案AAAA",
+      "option2": "长的答案BBBB长的答案BBBB长的答案BBBB长的答案BBBB长的答案BBBB长的答案BBBB长的答案BBBB",
+      "option3": "2",
+      "option4": "长的答案DDD长的答案DDDD长的答案DDD",
+      "createdTime": 1535944645000,
+      "lastModified": 1552545137000,
+      "answer": "A",
+      "note": null,
+      "templateId": "f4g386wusr",
+      "status": "send",
+      "tips1": null,
+      "tips2": null,
+      "tips3": null,
+      "tips4": null,
+      "tips5": null,
+      "required": "N",
+      "scoreEnabled": "N",
+      "option6": null,
+      "option7": null,
+      "option8": null,
+      "option9": null,
+      "option10": null,
+      "score": null
+    };
+    // var stopQuestion = '{"EVENT":"STOP_TEST_QUESTION","type": "R","questionId":"f4g386wq20","times":0,"channelId":"100538","name":"按时可见度哈撒可见度和的哈萨克就德哈斯德哈卡时间的哈萨克就的话爱撒娇的哈哈撒可见度和阿克苏的哈萨克就","type":"R","answer":"A","option1":"按时可见度哈撒可见度和的哈萨克就德哈斯德哈卡时间的哈萨克就的话爱撒娇的哈哈撒可见度和阿克苏的哈萨克就","option2":"答案答案答案答案答案答案答案答案答案答案答案答案", "option3":"答案答案答案答案答案答案答案答案答案答案答案答案", "option4":"答案答案答案答案答案答案答案答案答案答案答案答案", "option5":"答案答案答案答案答案答案答案答案答案答案答案答案", "option6":"答案答案答案答案答案答案答案答案答案答案答案答案", "option7":"答案答案答案答案答案答案答案答案答案答案答案答案"}';
+    // var stopQuestion = {
+    //   "EVENT":"STOP_TEST_QUESTION",
+    //   "questionId":"f4g386wq20",
+    //   "times":208,
+    //   "itemType":0,
+    //   "channelId":187002,
+    //   "userId":"12b5623812",
+    //   "name":"TEST1",
+    //   "type":"R",
+    //   "option1":"1",
+    //   "option2":"2",
+    //   "option3":"2",
+    //   "option4":"3",
+    //   "createdTime":1535944645000,
+    //   "lastModified":1552613327000,
+    //   "answer":"A",
+    //   "note":null,
+    //   "templateId":"f4g386wusr",
+    //   "status":"send",
+    //   "tips1":null,
+    //   "tips2":null,
+    //   "tips3":null,
+    //   "tips4":null,
+    //   "tips5":null,
+    //   "required":"N",
+    //   "scoreEnabled":"N",
+    //   "option6":null,
+    //   "option7":null,
+    //   "option8":null,
+    //   "option9":null,
+    //   "option10":null,
+    //   "score":null
+    // };
+    // var questionResult = {
+    //   "EVENT":"GET_TEST_QUESTION_RESULT",
+    //   "questionId":"f4g386wq20",
+    //   "result":{
+    //     "rightUser":[],
+    //     "faultUser":[{"userid":"1548408860627","nick":"用户1152"}],
+    //     "singleResult":[0,1],
+    //     "total":1,
+    //     "answer":"A",
+    //     "type":"R",
+    //     "itemType":0
+    //   },
+    //   "content":{
+    //     "questionId":"fabpsn5x05",
+    //     "channelId":"274508",
+    //     "name":"12",
+    //     "type":"R",
+    //     "answer":"A",
+    //     "itemType":0,
+    //     "option1":"1",
+    //     "option2":"2"
+    //   }
+    // };
+    // setTimeout(() => {
+    //   updateNewQuestion(JSON.stringify(startQuestion));
+    // }, 0);
+    // setTimeout(() => {
+    //   hasChooseAnswer(JSON.stringify({
+    //     data: questionResult,
+    //     answerId: 'B'
+    //   }));
+    // }, 3000);
+    // setTimeout(() => {
+    //   extraQuestionMessageHandler(JSON.stringify(stopQuestion));
+    // }, 1000);
   </script>
 </body>
 </html>

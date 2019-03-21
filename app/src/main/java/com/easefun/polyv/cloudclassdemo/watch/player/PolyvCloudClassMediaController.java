@@ -309,10 +309,10 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         videoDanmuLand.toggle();
     }
 
-    private void updateStatus(boolean check) {
-        videoDanmuPort.setCheck(check);
-        videoDanmuLand.setCheck(check);
-    }
+//    private void updateStatus(boolean check) {
+//        videoDanmuPort.setCheck(check);
+//        videoDanmuLand.setCheck(check);
+//    }
 
     public void showCamerView() {
         showCamer = false;
@@ -468,7 +468,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 
     @Override
     public void OnChanged(View v, boolean checkState) {
-        updateStatus(checkState);
+//        updateStatus(checkState);
         if (checkState) {
             danmuFragment.show();
         } else {

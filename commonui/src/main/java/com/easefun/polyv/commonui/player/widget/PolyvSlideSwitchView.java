@@ -113,53 +113,53 @@ public class PolyvSlideSwitchView extends View implements OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        getParent().requestDisallowInterceptTouchEvent(true);
-        boolean old = nowChoose;
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:// 滑动
-                now_x = event.getX();
-                break;
-            case MotionEvent.ACTION_DOWN:// 按下
-                if (event.getX() > bg_on.getWidth() || event.getY() > bg_on.getHeight())
-                    return false;
-                onSlip = true;
-                down_x = event.getX();
-                now_x = down_x;
-                break;
-            case MotionEvent.ACTION_CANCEL: // 移到控件外部
-                onSlip = false;
-                boolean choose = nowChoose;
-                if (now_x >= (bg_on.getWidth() / 2)) {
-                    now_x = bg_on.getWidth() - slip_btn.getWidth() / 2;
-                    nowChoose = true;
-                } else {
-                    now_x = now_x - slip_btn.getWidth() / 2;
-                    nowChoose = false;
-                }
-                if (isChangeOn && (choose != nowChoose)) // 如果设置了监听器,就调用其方法..
-                    onChangedListener.OnChanged(this, nowChoose);
-                break;
-            case MotionEvent.ACTION_UP:// 松开
-                onSlip = false;
-                boolean lastChoose = nowChoose;
-                if (event.getX() >= (bg_on.getWidth() / 2)) {
-                    now_x = bg_on.getWidth() - slip_btn.getWidth() / 2;
-                    nowChoose = true;
-                } else {
-                    now_x = now_x - slip_btn.getWidth() / 2;
-                    nowChoose = false;
-                }
-                if (isChangeOn && (lastChoose != nowChoose)) // 如果设置了监听器,就调用其方法..
-                    onChangedListener.OnChanged(this, nowChoose);
-                break;
-            default:
-        }
-        if (!old && isInterceptOn) {
-
-        } else {
-            invalidate();// 重画控件
-        }
-        return true;
+//        getParent().requestDisallowInterceptTouchEvent(true);
+//        boolean old = nowChoose;
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_MOVE:// 滑动
+//                now_x = event.getX();
+//                break;
+//            case MotionEvent.ACTION_DOWN:// 按下
+//                if (event.getX() > bg_on.getWidth() || event.getY() > bg_on.getHeight())
+//                    return false;
+//                onSlip = true;
+//                down_x = event.getX();
+//                now_x = down_x;
+//                break;
+//            case MotionEvent.ACTION_CANCEL: // 移到控件外部
+//                onSlip = false;
+//                boolean choose = nowChoose;
+//                if (now_x >= (bg_on.getWidth() / 2)) {
+//                    now_x = bg_on.getWidth() - slip_btn.getWidth() / 2;
+//                    nowChoose = true;
+//                } else {
+//                    now_x = now_x - slip_btn.getWidth() / 2;
+//                    nowChoose = false;
+//                }
+//                if (isChangeOn && (choose != nowChoose)) // 如果设置了监听器,就调用其方法..
+//                    onChangedListener.OnChanged(this, nowChoose);
+//                break;
+//            case MotionEvent.ACTION_UP:// 松开
+//                onSlip = false;
+//                boolean lastChoose = nowChoose;
+//                if (event.getX() >= (bg_on.getWidth() / 2)) {
+//                    now_x = bg_on.getWidth() - slip_btn.getWidth() / 2;
+//                    nowChoose = true;
+//                } else {
+//                    now_x = now_x - slip_btn.getWidth() / 2;
+//                    nowChoose = false;
+//                }
+//                if (isChangeOn && (lastChoose != nowChoose)) // 如果设置了监听器,就调用其方法..
+//                    onChangedListener.OnChanged(this, nowChoose);
+//                break;
+//            default:
+//        }
+//        if (!old && isInterceptOn) {
+//
+//        } else {
+//            invalidate();// 重画控件
+//        }
+        return false;
     }
 
     public void setOnChangedListener(OnChangedListener listener) {// 设置监听器,当状态修改的时候
@@ -175,13 +175,14 @@ public class PolyvSlideSwitchView extends View implements OnTouchListener {
         abstract void OnChanged(View v, boolean checkState);
     }
 
-    public void setCheck(boolean isChecked) {
+    private void setCheck(boolean isChecked) {
         this.isChecked = isChecked;
         nowChoose = isChecked;
-        if (isChecked == false) {
+        if (!isChecked) {
             now_x = 0;
         }
         invalidate();
+        onChangedListener.OnChanged(this,isChecked);
     }
 
     public void setInterceptState(boolean isIntercept) {// 设置监听器,是否在重画钱拦截事件,状态由false变true时 拦截事件
