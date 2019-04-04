@@ -180,7 +180,8 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
             if (noStreamView != null) {
                 videoView.removeView(noStreamView);
-                pptContianer.addView(noStreamView);
+                pptContianer.addView(noStreamView,pptContianer.getChildCount()-2);
+//                pptContianer.addView(noStreamView);
             }
 //            playerParent.removeView(subVideoviewParent);
 //            pptContianer.addView(subVideoviewParent);

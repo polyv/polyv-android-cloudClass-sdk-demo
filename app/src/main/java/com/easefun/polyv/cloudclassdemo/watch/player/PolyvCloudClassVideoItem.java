@@ -272,11 +272,11 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         polyvCloudClassVideoView.setOnCameraShowListener(new IPolyvCloudClassListenerEvent.OnCameraShowListener() {
             @Override
             public void cameraOpen(boolean open) {
-                if(!open){
-                    if(polyvPPTItem != null){
-                        polyvPPTItem.hideSubView();
-                    }
-                }
+//                if(!open){
+//                    if(polyvPPTItem != null){
+//                        polyvPPTItem.hideSubView();
+//                    }
+//                }
             }
         });
         polyvCloudClassVideoView.setOnGestureLeftDownListener(new IPolyvVideoViewListenerEvent.OnGestureLeftDownListener() {
