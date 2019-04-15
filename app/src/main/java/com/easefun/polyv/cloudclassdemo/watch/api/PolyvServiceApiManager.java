@@ -1,8 +1,7 @@
 package com.easefun.polyv.cloudclassdemo.watch.api;
 
-import com.easefun.polyv.businesssdk.PolyvSDKClient;
 import com.easefun.polyv.businesssdk.net.PolyvCommonApiConstant;
-import com.easefun.polyv.businesssdk.net.api.PolyvVodApi;
+import com.easefun.polyv.foundationsdk.PolyvUAClient;
 import com.easefun.polyv.foundationsdk.net.PolyvRetrofitHelper;
 
 import okhttp3.OkHttpClient;
@@ -14,7 +13,7 @@ import okhttp3.OkHttpClient;
  */
 public class PolyvServiceApiManager {
     private static OkHttpClient createOkHttpClient() {
-        return PolyvRetrofitHelper.userAgentOkHttpClient(PolyvSDKClient.getUserAgent());
+        return PolyvRetrofitHelper.userAgentOkHttpClient(PolyvUAClient.getUserAgent());
     }
 
     public static PolyvDevApi getPolyvDevApi(){
