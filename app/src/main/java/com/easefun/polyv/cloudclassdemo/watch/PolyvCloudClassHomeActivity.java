@@ -531,11 +531,13 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         // TODO: 2018/9/12 videoId 为直播平台的 videopoolid为点播平台的视频id
         PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(videoId//videoId
-                , "123");
+                , "viewer_id");//此处填入用户id
         polyvBaseVideoParams.setChannelId(channelId);
         polyvBaseVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
                 .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
-                .buildOptions(polyvBaseVideoParams.IS_PPT_PLAY, true);
+                .buildOptions(polyvBaseVideoParams.IS_PPT_PLAY, true)
+                // TODO: 2019/3/25 请在此处填入用户的昵称
+                .buildOptions(PolyvBaseVideoParams.PARAMS2,"user_nick_name");
         vodVideoHelper.startPlay(polyvBaseVideoParams);
     }
 
@@ -556,9 +558,12 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         livePlayerHelper.addLinkMicLayout(linkMicLayout, linkMicLayoutParent);
 //        linkMicLayoutParent.resetFloatViewPort();
 
-        PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(channelId, userId, "123");
+        // TODO: 2019/4/22  viewer_id  填入用户id
+        PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(channelId, userId, "viewer_id");
         polyvBaseVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
-                .buildOptions(PolyvBaseVideoParams.MARQUEE, true);
+                .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
+                // TODO: 2019/3/25 请在此处填入用户的昵称
+                .buildOptions(PolyvBaseVideoParams.PARAMS2,"user_nick_name");
         livePlayerHelper.startPlay(polyvBaseVideoParams);
 
         //加载教师占位图
