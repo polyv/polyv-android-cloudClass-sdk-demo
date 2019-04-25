@@ -67,10 +67,11 @@
     <ImageView
         android:visibility="invisible"
         android:id="@+id/video_hands_up_port"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/dm_32"
+        android:layout_height="@dimen/dm_32"
         android:layout_above="@+id/video_ppt_change_switch_port"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/dm_10"
         android:layout_marginBottom="@dimen/controller_margin"
         android:src="@drawable/polyv_mic_phone_selector" />
 

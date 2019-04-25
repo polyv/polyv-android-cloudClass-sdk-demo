@@ -59,7 +59,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     protected PolyvAuxiliaryVideoview subVideoview;
     protected Q controller;
     protected View loadingView, noStreamView;
-    protected int videoViewVolume;
+    protected static int videoViewVolume;
 
     protected  static final Handler S_HANDLER;
 
@@ -248,6 +248,10 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         }
     }
 
+    public void initVolume(){
+        this.videoViewVolume = videoView.getVolume();
+    }
+
     public void restartPlay() {
         if (playOption == null) {
             return;
@@ -256,8 +260,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         startPlay(playOption);
     }
 
-    private void openVideoViewSound() {
-        if(videoView != null){
+
+    protected void openVideoViewSound() {
+        if(videoView != null && videoViewVolume >0){
             videoView.setVolume(videoViewVolume);
         }
     }

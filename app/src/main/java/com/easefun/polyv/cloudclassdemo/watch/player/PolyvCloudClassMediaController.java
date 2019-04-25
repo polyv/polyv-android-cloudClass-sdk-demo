@@ -322,6 +322,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
     private void refreshVideoView() {
+        polyvCloudClassPlayerHelper.initVolume();
         polyvCloudClassPlayerHelper.restartPlay();
     }
 
@@ -389,28 +390,28 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
     private void showStopLinkDialog(boolean joinSuccess, final boolean isExit) {
-        String message = joinSuccess ? String.format("您将断开与老师同学间的通话%s。", isExit ? "并退出" : "") :
-                "您将取消连线申请";
-        String btnMsg = joinSuccess ? String.format("挂断%s", isExit ? "并退出" : "") : "取消连线";
-        alertDialog = new AlertDialog.Builder(getContext()).setTitle(joinSuccess ? "即将退出连麦功能\n" : "您将取消连线申请\n")
-                .setNegativeButton(joinSuccess ? "继续连麦" : "继续申请", null)
-                .setPositiveButton(btnMsg, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (isExit) {
-                            context.finish();
-                            return;
-                        }
-                        videoHandsUpPort.setSelected(!videoHandsUpPort.isSelected());
-                        videoHandsUpLand.setSelected(!videoHandsUpPort.isSelected());
-                        if(joinSuccess){
-                            PolyvLinkMicWrapper.getInstance().leaveChannel();
-                        }else {
-                            polyvCloudClassPlayerHelper.leaveChannel();
-                        }
-                        startHandsUpTimer();
+        String type=polyvVideoView.getLinkMicType();
+        String joinSuccessTitle=type.equals("video")?"亲，是否中断视频连接":"亲，是否中断语音连接";
+        String joinWaitingTitle="是否确认取消连麦？";
+        String title=joinSuccess?joinSuccessTitle:joinWaitingTitle;
+
+        alertDialog=new AlertDialog.Builder(getContext())
+                .setTitle(title)
+                .setNegativeButton("是",(dialog,which)->{
+                    if (isExit) {
+                        context.finish();
+                        return;
                     }
+                    videoHandsUpPort.setSelected(!videoHandsUpPort.isSelected());
+                    videoHandsUpLand.setSelected(!videoHandsUpPort.isSelected());
+                    if(joinSuccess){
+                        PolyvLinkMicWrapper.getInstance().leaveChannel();
+                    }else {
+                        polyvCloudClassPlayerHelper.leaveChannel();
+                    }
+                    startHandsUpTimer();
                 })
+                .setPositiveButton("否",null)
                 .create();
         alertDialog.show();
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.center_view_color_blue));
@@ -484,13 +485,13 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     @Override
     public void showMicPhoneLine(int visiable) {
 
-//        if (videoHandsUpPort != null) {
-//            videoHandsUpPort.setVisibility(visiable);
-//        }
-//
-//        if (videoHandsUpLand != null) {
-//            videoHandsUpLand.setVisibility(visiable);
-//        }
+        if (videoHandsUpPort != null) {
+            videoHandsUpPort.setVisibility(visiable);
+        }
+
+        if (videoHandsUpLand != null) {
+            videoHandsUpLand.setVisibility(visiable);
+        }
     }
 
     public void updateSubVideoViewPosition(boolean add ) {

@@ -35,6 +35,9 @@ import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener2;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvJSQuestionVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionSocketVO;
+import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionnaireSocketVO;
+import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignIn2SocketVO;
+import com.easefun.polyv.cloudclass.net.PolyvApiManager;
 import com.easefun.polyv.cloudclass.video.PolyvAnswerWebView;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatBaseFragment;
@@ -58,17 +61,23 @@ import com.easefun.polyv.commonui.widget.PolyvAnswerView;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.foundationsdk.net.PolyvResponseBean;
+import com.easefun.polyv.foundationsdk.net.PolyvResponseExcutor;
+import com.easefun.polyv.foundationsdk.net.PolyvrResponseCallback;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.disposables.Disposable;
 import io.socket.client.Socket;
+import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICECONTROL;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEID;
@@ -133,6 +142,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private int teacherInfoTop, teacherInfoBottom, pptContainerWidth, pptContainerHeight;
 
     private LiveData<PolyvClassDetail> classDetailLiveData;
+    private String studentUserId = "" + Build.SERIAL;
+    private String studentNickName;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="入口">
@@ -291,6 +302,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         if (linkMicStubView == null) {
             linkMicStubView = linkMicStub.inflate();
         }
+        linkMicStubView.setVisibility(View.INVISIBLE);
         linkMicLayout = linkMicStubView.findViewById(R.id.link_mic_layout);
         if (linkMicStubView instanceof IPolyvRotateBaseView) {
             linkMicLayoutParent = (IPolyvRotateBaseView) linkMicStubView;
@@ -313,7 +325,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                 if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     rlp.topMargin = 0;
                 } else { // 若初始为竖屏
-                    rlp.topMargin = chatContainerLayout.getTop() + chatTopSelectLayout.getMeasuredHeight();
+                    rlp.topMargin = playerContainer.getBottom();
+                    linkMicLayoutParent.setOriginTop(rlp.topMargin);
+                    linkMicLayoutParent.resetFloatViewPort();
                 }
 
                 linkMicLayoutParent.setOriginTop(rlp.topMargin);
@@ -473,6 +487,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private void initialAnswer() {
         answerView = findViewById(R.id.answer_layout);
         answerContainer = answerView.findViewById(R.id.polyv_answer_web_container);
+        answerView.setStudentUserId(studentUserId);
         answerView.setAnswerJsCallback(new PolyvAnswerWebView.AnswerJsCallback() {
             @Override
             public void callOnHasAnswer(PolyvJSQuestionVO polyvJSQuestionVO) {
@@ -483,6 +498,55 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                                     channelId, chatManager.userId);
                     chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, socketVO);
                 }
+            }
+
+            @Override
+            public void callOnHasQuestionnaireAnswer(PolyvQuestionnaireSocketVO polyvQuestionnaireSocketVO) {
+                PolyvCommonLog.d(TAG, "发送调查问卷答案");
+                polyvQuestionnaireSocketVO.setNick(DEFAULT_NICKNAME);
+                polyvQuestionnaireSocketVO.setRoomId(channelId);
+                polyvQuestionnaireSocketVO.setUserId(chatManager.userId);
+                chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, polyvQuestionnaireSocketVO);
+            }
+
+            @Override
+            public void callOnSignIn(PolyvSignIn2SocketVO socketVO) {
+                socketVO.setUser(new PolyvSignIn2SocketVO.UserBean(studentNickName, studentUserId));
+                chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, socketVO);
+            }
+
+            @Override
+            public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone) {
+                PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
+                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, studentUserId, studentNickName, telephone),
+                        String.class, new PolyvrResponseCallback<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                LogUtils.d("抽奖信息上传成功" + s);
+                            }
+
+                            @Override
+                            public void onFailure(PolyvResponseBean<String> responseBean) {
+                                super.onFailure(responseBean);
+                                LogUtils.e("抽奖信息上传失败" + responseBean);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                super.onError(e);
+                                LogUtils.e("抽奖信息上传失败");
+                                if (e instanceof HttpException) {
+                                    try {
+                                        ResponseBody errorBody = ((HttpException) e).response().errorBody();
+                                        if (errorBody != null) {
+                                            LogUtils.e(errorBody.string());
+                                        }
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
             }
         });
     }
@@ -531,7 +595,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         // TODO: 2018/9/12 videoId 为直播平台的 videopoolid为点播平台的视频id
         PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(videoId//videoId
-                , "viewer_id");//此处填入用户id
+                , "viewer_id");
         polyvBaseVideoParams.setChannelId(channelId);
         polyvBaseVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
                 .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
@@ -558,7 +622,6 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         livePlayerHelper.addLinkMicLayout(linkMicLayout, linkMicLayoutParent);
 //        linkMicLayoutParent.resetFloatViewPort();
 
-        // TODO: 2019/4/22  viewer_id  填入用户id
         PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(channelId, userId, "viewer_id");
         polyvBaseVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
                 .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
@@ -574,7 +637,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                     String schema = "http";
                     try {
                         URI imageUrl = new URI(schema, null, path, null);
-                        LogUtils.d("教师头像占位图=" + imageUrl.toString());
+//                        LogUtils.d("教师头像占位图=" + imageUrl.toString());
                         cloudClassVideoItem.setNoStreamImageUrl(imageUrl.toASCIIString());
                     } catch (URISyntaxException e) {
                         LogUtils.e(e);
@@ -736,8 +799,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         //TODO 登录聊天室(userId：学员的Id(聊天室用户的唯一标识，非直播后台的userId，不同的学员应当使用不同的userId)，roomId：频道号，nickName：学员的昵称)
         //TODO 登录聊天室后一些功能才可以正常使用，例如：连麦
-        String studentUserId = "" + Build.SERIAL;
-        String studentNickName = "学员" + studentUserId;
+
+        studentNickName = "学员" + studentUserId;
         chatManager.login(studentUserId, channelId, studentNickName);
     }
 

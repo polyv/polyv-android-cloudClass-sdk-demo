@@ -2,6 +2,7 @@ package com.easefun.polyv.cloudclassdemo.watch.linkMic.widget;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -124,8 +125,9 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
 
         layoutParams.leftMargin = PolyvScreenUtils.dip2px(getContext(), 100);
         layoutParams.topMargin = 0;
+        layoutParams.width= ViewGroup.LayoutParams.WRAP_CONTENT;
         setLayoutParams(layoutParams);
-
+        setBackground(null);
     }
 
     public void resetFloatViewPort() {
@@ -144,8 +146,9 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
                 + portraitTop + "   width :" + getMeasuredWidth());
         rlp.leftMargin = 0;
         rlp.topMargin = originTop;
+        rlp.width=LayoutParams.MATCH_PARENT;
         setLayoutParams(rlp);
-
+        setBackgroundColor(Color.WHITE);
     }
 
     public ViewGroup.MarginLayoutParams getLayoutParamsLayout() {

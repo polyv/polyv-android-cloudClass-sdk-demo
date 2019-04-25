@@ -221,6 +221,7 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     @Override
     public void show() {
         show(SHOW_TIME);
+
     }
 
     @Override

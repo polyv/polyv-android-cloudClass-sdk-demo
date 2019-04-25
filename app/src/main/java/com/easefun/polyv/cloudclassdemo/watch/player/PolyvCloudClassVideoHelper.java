@@ -185,7 +185,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     }
 
     private void muteVideoView() {
-        if(videoView != null){
+        //防止连麦以后静音 然后退到后台又静音得问题
+        if(videoView != null && videoView.isPlaying()){
             videoViewVolume = videoView.getVolume();
             videoView.setVolume(0);
         }
@@ -193,9 +194,11 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     @Override
     public void resume() {
+        openVideoViewSound();
         if (joinSuccess) {
             return;
         }
+
         super.resume();
     }
 
@@ -605,7 +608,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                     sendJoinSuccess();
                     cancleLinkTimer();
                     hideSubView();
-                    pause();
+                    PolyvCloudClassVideoHelper.super.pause();
                     changeViewToRtc(true);
                     joinSuccess = true;
                 }
