@@ -3,6 +3,7 @@
     android:id="@+id/rl_top"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="false"
     android:background="#000000">
 
     <!-- 主播放器布局 -->

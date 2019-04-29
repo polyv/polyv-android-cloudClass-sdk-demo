@@ -12,31 +12,38 @@ import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
 /**
  * @author df
  * @create 2018/11/30
- * @Describe 旋转view的抽象定义
+ * @Describe 旋转view的抽象定义 (云课堂连麦与普通直播连麦的接口定义)
  */
 public interface IPolyvRotateBaseView {
 
-    public void topSubviewTo(final int top);
-
+   // <editor-fold defaultstate="collapsed" desc="set相关方法">
     public void resetSoftTo();
 
     public void resetFloatViewLand();
 
     public void resetFloatViewPort();
 
-    public ViewGroup.MarginLayoutParams getLayoutParamsLayout();
-
     public void setOriginTop(int originTop);
-
-    public void scrollToPosition(int pos, View parent);
-
-    public ViewTreeObserver getViewTreeObserver();
 
     public void setLayoutParams(ViewGroup.LayoutParams params);
 
-    public void setVisibility( int visibility);
-
-    public ViewGroup getOwnView();
+    public void setVisibility(int visibility);
 
     public void enableShow(boolean show);
+   // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="移动相关">
+    public void scrollToPosition(int pos, View parent);
+
+    public void topSubviewTo(final int top);
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="get 相关代码">
+    public ViewTreeObserver getViewTreeObserver();
+
+    public ViewGroup.MarginLayoutParams getLayoutParamsLayout();
+
+    public ViewGroup getOwnView();
+    // </editor-fold>
+
 }

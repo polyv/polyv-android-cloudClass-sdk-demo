@@ -27,6 +27,7 @@ import com.easefun.polyv.commonui.PolyvCommonMediacontroller;
 import com.easefun.polyv.commonui.player.widget.PolyvSlideSwitchView;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
+import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 
 import io.reactivex.disposables.Disposable;
@@ -281,10 +282,12 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 //                polyvCloudClassPlayerHelper.resetFloatViewPort();
 //                break;
             case R.id.video_screen_switch_port:
+                PolyvScreenUtils.unlockOrientation();
                 changeToLandscape();
                 break;
             case R.id.video_back:
                 if (ScreenUtils.isLandscape()) {
+                    PolyvScreenUtils.unlockOrientation();
                     changeToPortrait();
                 } else {
                     if (context != null) {
@@ -321,6 +324,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
     private void refreshVideoView() {
+        polyvCloudClassPlayerHelper.initVolume();
         polyvCloudClassPlayerHelper.restartPlay();
     }
 
@@ -337,12 +341,13 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         }
     }
 
-    //将ppt显示在主屏位置
+    //将ppt显示在主屏位置 因为在连麦后 要主动切换ppt到主屏
     public void switchPPTToMainScreen(){
         if(!showPPTSubView){//如果已经显示在主屏了 不再执行此逻辑
             return;
         }
-        if (polyvCloudClassPlayerHelper != null) {
+        if (polyvCloudClassPlayerHelper != null && (
+                videoHandsUpLand.isSelected() || videoHandsUpPort.isSelected())) {
             polyvCloudClassPlayerHelper.changePPTViewToVideoView(true);
             showPPTSubView = false;
         }

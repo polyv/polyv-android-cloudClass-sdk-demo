@@ -42,7 +42,7 @@ public class PolyvOrientoinListener extends OrientationEventListener {
             return;
         }
         this.orientation = orientation;
-        int screenOrientation = context.getResources().getConfiguration().orientation;
+        int screenOrientation=context.getRequestedOrientation();
         PolyvCommonLog.d(TAG,"onOrientationChanged:"+orientation);
         if (((orientation >= 0) && (orientation < 45)) || (orientation > 315)) {    //设置竖屏
             if (screenOrientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT && orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) {

@@ -21,6 +21,7 @@ import java.util.Map;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermissionListener {
+    // <editor-fold defaultstate="collapsed" desc="成员变量">
     protected CompositeDisposable disposables;
     protected PolyvPermissionManager permissionManager;
     private final int myRequestCode = 13333;
@@ -30,45 +31,45 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     protected boolean isCreateSuccess, isKick;
     //静态变量记录学员是否被踢，如果被踢后，需要结束应用后才能再次进来观看直播，这个逻辑可以更改
     private static Map<String, Boolean> kickMap = new HashMap<>();
+    // </editor-fold>
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            savedInstanceState.putParcelable("android:support:fragments", null);
-        }
-        super.onCreate(savedInstanceState);
-        isCreateSuccess = false;
-        isKick = false;
-        if (getClass().getName().equals(getLaunchActivityName()) && getTaskActivityCount() < 2 || getLaunchActivityName() == null) {
-            APP_STATUS = APP_STATUS_RUNNING;
-        }
-        if (APP_STATUS == APP_STATUS_KILLED && restartApp()) { // 非正常启动流程，直接重新初始化应用界面
-            return;
-        }
-        disposables = new CompositeDisposable();
-        permissionManager = PolyvPermissionManager.with(this)
-                .addRequestCode(myRequestCode)
-                .setPermissionsListener(this);
-        isCreateSuccess = true;
+    // <editor-fold defaultstate="collapsed" desc="处理聊天室用户被踢的相关方法">
+    public boolean isInitialize() {
+        return isCreateSuccess && !isKick;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == myRequestCode && resultCode == Activity.RESULT_CANCELED)
-            permissionManager.request();
+    public static void setKickValue(String channelId, boolean isKick) {
+        kickMap.put(channelId, isKick);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case myRequestCode:
-                permissionManager.onPermissionResult(permissions, grantResults);
-                break;
+    public static boolean checkKick(String channelId) {
+        return kickMap.containsKey(channelId) && kickMap.get(channelId);
+    }
+
+    public static boolean checkKickTips(final Activity activity, String channelId, String... message) {
+        if (checkKick(channelId)) {
+            new AlertDialog.Builder(activity)
+                    .setTitle("温馨提示")
+                    .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            activity.finish();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+            return true;
         }
+        return false;
     }
 
+    public boolean checkKickTips(String channelId, String... message) {
+        return isKick = checkKickTips(this, channelId, message);
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="处理异常启动时的相关方法">
     private String getLaunchActivityName() {
         Intent resolveIntent = new Intent(Intent.ACTION_MAIN, null);
         resolveIntent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -108,39 +109,50 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
         }
         return false;
     }
+    // </editor-fold>
 
-    public boolean isInitialize() {
-        return isCreateSuccess && !isKick;
-    }
-
-    public static void setKickValue(String channelId, boolean isKick) {
-        kickMap.put(channelId, isKick);
-    }
-
-    public static boolean checkKick(String channelId) {
-        return kickMap.containsKey(channelId) && kickMap.get(channelId);
-    }
-
-    public static boolean checkKickTips(final Activity activity, String channelId, String... message) {
-        if (checkKick(channelId)) {
-            new AlertDialog.Builder(activity)
-                    .setTitle("温馨提示")
-                    .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            activity.finish();
-                        }
-                    })
-                    .setCancelable(false)
-                    .show();
-            return true;
+    // <editor-fold defaultstate="collapsed" desc="Activity方法">
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            savedInstanceState.putParcelable("android:support:fragments", null);
         }
-        return false;
+        super.onCreate(savedInstanceState);
+        isCreateSuccess = false;
+        isKick = false;
+        boolean launchActivityItBaseActivity = false;
+        try {
+            launchActivityItBaseActivity = getLaunchActivityName() != null && PolyvBaseActivity.class.isAssignableFrom(Class.forName(getLaunchActivityName()));//父/等
+        } catch (Exception e) {
+        }
+        if (!launchActivityItBaseActivity || (getClass().getName().equals(getLaunchActivityName()) && getTaskActivityCount() < 2)) {
+            APP_STATUS = APP_STATUS_RUNNING;
+        }
+        if (APP_STATUS == APP_STATUS_KILLED && restartApp()) { // 非正常启动流程，直接重新初始化应用界面
+            return;
+        }
+        disposables = new CompositeDisposable();
+        permissionManager = PolyvPermissionManager.with(this)
+                .addRequestCode(myRequestCode)
+                .setPermissionsListener(this);
+        isCreateSuccess = true;
     }
 
-    public boolean checkKickTips(String channelId, String... message) {
-        return isKick = checkKickTips(this, channelId, message);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == myRequestCode && resultCode == Activity.RESULT_CANCELED)
+            permissionManager.request();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case myRequestCode:
+                permissionManager.onPermissionResult(permissions, grantResults);
+                break;
+        }
     }
 
     @Override
@@ -155,7 +167,9 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
             permissionManager = null;
         }
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="PolyvPermissionListener实现">
     @Override
     public void onGranted() {
     }
@@ -169,4 +183,5 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     public void onShowRationale(String[] permissions) {
         permissionManager.showRationaleDialog(this, permissions);
     }
+    // </editor-fold>
 }

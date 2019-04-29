@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_tips_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="@drawable/polyv_tv_corner_gray"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:textColor="#ffffff"
+        android:textSize="12sp" />
+</FrameLayout>

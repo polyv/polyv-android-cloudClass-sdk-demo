@@ -31,8 +31,8 @@ import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICESTART;
  */
 public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     private static final String TAG = "PolyvPPTView";
-
-
+    public static final int DELAY_TIME =  5 *1000;
+    public int delayTime = DELAY_TIME;
     protected PolyvPPTWebView polyvPPTWebView;
     protected ImageView pptLoadingView;
     private Disposable socketDispose;
@@ -92,9 +92,10 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
                 ONSLICEOPEN.equals(event) || ONSLICEID.equals(event)) {
             PolyvCommonLog.d(TAG, "receive ppt message:"+event);
             hideLoading();
-            delayDisposes.add(PolyvRxTimer.delay(2 *1000, new Consumer<Long>() {
+            delayDisposes.add(PolyvRxTimer.delay(delayTime, new Consumer<Long>() {
                 @Override
                 public void accept(Long aLong) throws Exception {
+                    PolyvCommonLog.d(TAG, "receive ppt message: delay"+delayTime);
                     sendWebMessage(polyvSocketMessageVO.getMessage());
                 }
             }));
@@ -175,5 +176,13 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     @Override
     public void addPPTCallback(PolyvPPTWebView.PolyvVideoPPTCallback polyvVideoPPTCallback) {
         polyvPPTWebView.setPolyvVideoPPTCallback(polyvVideoPPTCallback);
+    }
+
+    public void updateDelayTime(int delay_time){
+        this.delayTime = delay_time;
+    }
+
+    public void resetDelayTime(){
+        this.delayTime = DELAY_TIME;
     }
 }

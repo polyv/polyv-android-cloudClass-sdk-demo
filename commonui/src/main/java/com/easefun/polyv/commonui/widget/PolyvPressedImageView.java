@@ -10,6 +10,7 @@ import com.easefun.polyv.commonui.R;
 
 public class PolyvPressedImageView extends AppCompatImageView {
     private int pressedColor;
+    private int disabledColor;
     private int selectedColor;
 
     public PolyvPressedImageView(Context context) {
@@ -29,6 +30,7 @@ public class PolyvPressedImageView extends AppCompatImageView {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PolyvPressedImageView);
         pressedColor = typedArray.getColor(R.styleable.PolyvPressedImageView_pressed_color, 0);//0，无效
         selectedColor = typedArray.getColor(R.styleable.PolyvPressedImageView_selected_color, 0);
+        disabledColor = typedArray.getColor(R.styleable.PolyvPressedImageView_disabled_color, 0);
         typedArray.recycle();
     }
 
@@ -40,6 +42,8 @@ public class PolyvPressedImageView extends AppCompatImageView {
             setColorFilter(pressedColor);
         else if (isSelected() && selectedColor != 0)
             setColorFilter(selectedColor);
+        else if (!isEnabled() && disabledColor != 0)
+            setColorFilter(disabledColor);
         else
             clearColorFilter();
     }

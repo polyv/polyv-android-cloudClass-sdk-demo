@@ -9,8 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.adapter.PolyvBaseRecyclerViewAdapter;
+import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
+import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
 import com.easefun.polyv.commonui.utils.PolyvFaceManager;
 
 import java.util.ArrayList;
@@ -24,12 +27,30 @@ public class PolyvEmoListAdapter extends PolyvBaseRecyclerViewAdapter {
         emoLists = new ArrayList<>(PolyvFaceManager.getInstance().getFaceMap().keySet());
     }
 
-    public class EmoItemViewHolder extends PolyvBaseRecyclerViewAdapter.ClickableViewHolder {
+    public class EmoItemViewHolder extends ClickableViewHolder<Object,PolyvEmoListAdapter> {
         private ImageView emo;
 
-        public EmoItemViewHolder(View itemView) {
-            super(itemView);
+        public EmoItemViewHolder(View itemView,PolyvEmoListAdapter adapter) {
+            super(itemView, adapter);
             emo = $(R.id.iv_emo);
+        }
+
+        @Override
+        public void processNormalMessage(Object item, int position) {
+            EmoItemViewHolder emoItemViewHolder = this;
+            int id = PolyvFaceManager.getInstance().getFaceId(emoLists.get(position));
+            Drawable drawable = getContext().getResources().getDrawable(id);
+            emoItemViewHolder.emo.setImageDrawable(drawable);
+        }
+
+        @Override
+        public  void processCustomMessage(PolyvCustomEvent item, int position) {
+
+        }
+
+        @Override
+        public <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent) {
+            return null;
         }
     }
 
@@ -37,16 +58,14 @@ public class PolyvEmoListAdapter extends PolyvBaseRecyclerViewAdapter {
     @Override
     public ClickableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         bindContext(parent.getContext());
-        return new EmoItemViewHolder(LayoutInflater.from(getContext()).inflate(R.layout.polyv_chat_emo_item, parent, false));
+        return new EmoItemViewHolder
+                (LayoutInflater.from(getContext()).inflate(R.layout.polyv_chat_emo_item, parent, false),this);
     }
 
     @Override
     public void onBindViewHolder(ClickableViewHolder holder, int position) {
         if (holder instanceof EmoItemViewHolder) {
-            EmoItemViewHolder emoItemViewHolder = (EmoItemViewHolder) holder;
-            int id = PolyvFaceManager.getInstance().getFaceId(emoLists.get(position));
-            Drawable drawable = getContext().getResources().getDrawable(id);
-            emoItemViewHolder.emo.setImageDrawable(drawable);
+            holder.processNormalMessage(null,position);
             super.onBindViewHolder(holder, position);
         }
     }

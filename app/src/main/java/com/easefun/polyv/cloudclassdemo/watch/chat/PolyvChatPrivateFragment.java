@@ -12,7 +12,6 @@ import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.utils.PolyvChatEventBus;
 import com.easefun.polyv.commonui.utils.PolyvTextImageLoader;
 import com.easefun.polyv.commonui.utils.PolyvToast;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
 
 import io.reactivex.functions.Consumer;
 
@@ -20,7 +19,7 @@ import io.reactivex.functions.Consumer;
  * 私聊
  */
 public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
-
+    // <editor-fold defaultstate="collapsed" desc="初始化">
     @Override
     public int layoutId() {
         return R.layout.polyv_fragment_personchat;
@@ -35,15 +34,16 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
         addQuestionTips();
         acceptEventMessage();
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="添加问候语item">
     private void addQuestionTips() {
         //添加自定义的问候语事件
-        chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(new PolyvQuestionTipsEvent(), PolyvChatListAdapter.ChatTypeItem.TYPE_RECEIVE));
+        chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(new PolyvQuestionTipsEvent(), PolyvChatListAdapter.ChatTypeItem.TYPE_RECEIVE, PolyvChatManager.SE_MESSAGE));
     }
+    // </editor-fold>
 
-    public class PolyvQuestionTipsEvent {
-    }
-
+    // <editor-fold defaultstate="collapsed" desc="发送提问信息">
     @Override
     public void sendMessage() {
         sendQuestionMessage();
@@ -63,7 +63,7 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
 
                 //把带表情的信息解析保存下来
                 questionMessage.setObjects(PolyvTextImageLoader.messageToSpan(questionMessage.getQuestionMessage(), ConvertUtils.dp2px(14), false, getContext()));
-                chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(questionMessage, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND));
+                chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(questionMessage, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND, PolyvChatManager.SE_MESSAGE));
                 chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
                 chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
             } else {
@@ -71,7 +71,9 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
             }
         }
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="聊天室事件监听及处理">
     private void acceptEventMessage() {
         disposables.add(PolyvChatEventBus.get().toObservable(EventMessage.class).subscribe(new Consumer<EventMessage>() {
             @Override
@@ -97,7 +99,7 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
                 }
                 //把符合条件的eventObject添加到问答列表中
                 if (eventObject != null && eventType != -1) {
-                    chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(eventObject, eventType));
+                    chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(eventObject, eventType, PolyvChatManager.SE_MESSAGE));
                     chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
                     chatMessageList.scrollToBottomOrShowMore(1);
                 }
@@ -109,4 +111,10 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
             }
         }));
     }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="内部类">
+    public class PolyvQuestionTipsEvent {
+    }
+    // </editor-fold>
 }

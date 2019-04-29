@@ -41,35 +41,14 @@ public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotate
     public PolyvNormalLinkMicView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
-    @Override
-    public void topSubviewTo(int top) {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                ViewGroup.MarginLayoutParams rlp = getLayoutParamsLayout();
-                if (rlp == null) {
-                    return;
-                }
-                beforeSoftLeft = rlp.leftMargin;
-                beforeSoftTop = rlp.topMargin;
-                if (rlp.topMargin + rlp.height < top) {
-                    return;
-                }
-
-                PolyvCommonLog.d(TAG, "topSubviewTo left :" + beforeSoftLeft + "   top " + top);
-                rlp.topMargin = top - rlp.height;
-                setLayoutParams(rlp);
-            }
-        });
-    }
+// <editor-fold defaultstate="collapsed" desc="set相关方法">
 
     @Override
     public void resetSoftTo() {
         post(new Runnable() {
             @Override
             public void run() {
-                ViewGroup.MarginLayoutParams rlp = getLayoutParamsLayout();
+                MarginLayoutParams rlp = getLayoutParamsLayout();
                 if (rlp == null) {
                     return;
                 }
@@ -92,7 +71,7 @@ public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotate
         if (getParent() instanceof RelativeLayout) {
             rlp = (RelativeLayout.LayoutParams) getLayoutParams();
         } else if (getParent() instanceof LinearLayout) {
-            rlp = (LinearLayout.LayoutParams) getLayoutParams();
+            rlp = (LayoutParams) getLayoutParams();
         } else if (getParent() instanceof FrameLayout) {
             rlp = (FrameLayout.LayoutParams) getLayoutParams();
         } else {
@@ -101,24 +80,78 @@ public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotate
 
         rlp.leftMargin = 0;
         rlp.topMargin = originTop;
-        if(canShow){
+        if (canShow) {
             super.setVisibility(VISIBLE);
         }
         setLayoutParams(rlp);
     }
 
     @Override
-    public ViewGroup.MarginLayoutParams getLayoutParamsLayout() {
-        ViewGroup.MarginLayoutParams rlp = null;
+    public void enableShow(boolean canShow) {
+        this.canShow = canShow;
+    }
+
+    @Override
+    public void setOriginTop(int originTop) {
+        this.originTop = originTop;
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        if (PolyvScreenUtils.isPortrait(getContext())) {
+            super.setVisibility(visibility);
+        }
+    }
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="移动相关">
+    @Override
+    public void scrollToPosition(int pos, View parent) {
+
+    }
+    @Override
+    public void topSubviewTo(int top) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                MarginLayoutParams rlp = getLayoutParamsLayout();
+                if (rlp == null) {
+                    return;
+                }
+                beforeSoftLeft = rlp.leftMargin;
+                beforeSoftTop = rlp.topMargin;
+                if (rlp.topMargin + rlp.height < top) {
+                    return;
+                }
+
+                PolyvCommonLog.d(TAG, "topSubviewTo left :" + beforeSoftLeft + "   top " + top);
+                rlp.topMargin = top - rlp.height;
+                setLayoutParams(rlp);
+            }
+        });
+    }
+// </editor-fold>
+  // <editor-fold defaultstate="collapsed" desc="get相关">
+    @Override
+    public ViewGroup getOwnView() {
+        return this;
+    }
+
+    @Override
+    public MarginLayoutParams getLayoutParamsLayout() {
+        MarginLayoutParams rlp = null;
         if (getParent() instanceof RelativeLayout) {
             rlp = (RelativeLayout.LayoutParams) getLayoutParams();
         } else if (getParent() instanceof LinearLayout) {
-            rlp = (LinearLayout.LayoutParams) getLayoutParams();
+            rlp = (LayoutParams) getLayoutParams();
         } else if (getParent() instanceof FrameLayout) {
             rlp = (FrameLayout.LayoutParams) getLayoutParams();
         }
         return rlp;
     }
+  // </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="系统方法">
 
     @Override
     protected void onConfigurationChanged(final Configuration newConfig) {
@@ -135,31 +168,5 @@ public class PolyvNormalLinkMicView extends LinearLayout implements IPolyvRotate
         });
 
     }
-
-    @Override
-    public void setOriginTop(int originTop) {
-        this.originTop = originTop;
-    }
-
-    @Override
-    public void scrollToPosition(int pos, View parent) {
-
-    }
-
-    @Override
-    public ViewGroup getOwnView() {
-        return this;
-    }
-
-    @Override
-    public void enableShow(boolean canShow) {
-        this.canShow = canShow;
-    }
-
-    @Override
-    public void setVisibility(int visibility) {
-        if(PolyvScreenUtils.isPortrait(getContext())){
-            super.setVisibility(visibility);
-        }
-    }
+// </editor-fold>
 }

@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvPlayError;
 import com.easefun.polyv.businesssdk.api.common.player.listener.IPolyvVideoViewListenerEvent;
@@ -37,6 +39,7 @@ import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
+import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 
 import io.reactivex.disposables.Disposable;
@@ -349,6 +352,12 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 }
             }
         });
+        polyvCloudClassVideoView.setOnNoLiveAtPresentListener(new IPolyvCloudClassListenerEvent.OnNoLiveAtPresentListener() {
+            @Override
+            public void onNoLiveAtPresent() {
+                ToastUtils.showShort("暂无直播");
+            }
+        });
         polyvCloudClassVideoView.setOnGestureClickListener(onGestureClickListener);
 
     }
@@ -491,5 +500,10 @@ public class PolyvCloudClassVideoItem extends FrameLayout
             }
 
         }
+    }
+
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }

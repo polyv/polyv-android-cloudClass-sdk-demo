@@ -20,6 +20,7 @@ import master.flame.danmaku.danmaku.model.IDanmakus;
 import master.flame.danmaku.danmaku.model.IDisplayer;
 import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.model.android.Danmakus;
+import master.flame.danmaku.danmaku.model.android.SpannedCacheStuffer;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 
 /**
@@ -65,8 +66,8 @@ public class PolyvDanmuFragment extends Fragment {
         mContext = DanmakuContext.create();
         mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3).setDuplicateMergingEnabled(false)
                 .setScrollSpeedFactor(1.2f).setScaleTextSize(1.0f)
-                // .setCacheStuffer(new SpannedCacheStuffer(),
-                // mCacheStufferAdapter) // 图文混排使用SpannedCacheStuffer
+                // 图文混排使用SpannedCacheStuffer
+                .setCacheStuffer(new SpannedCacheStuffer(), null)
                 .setMaximumLines(maxLinesPair).preventOverlapping(overlappingEnablePair);
         mDanmakuView.showFPS(false);
 

@@ -2,6 +2,8 @@ package com.easefun.polyv.cloudclassdemo.watch;
 
 import android.view.ViewGroup;
 
+import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
+
 /**
  * @author df
  * @create 2018/9/27
@@ -16,4 +18,6 @@ public interface IPolyvHomeProtocol {
     ViewGroup getImageViewerContainer();
 
     ViewGroup getChatEditContainer();
+
+    PolyvChatManager getChatManager();
 }

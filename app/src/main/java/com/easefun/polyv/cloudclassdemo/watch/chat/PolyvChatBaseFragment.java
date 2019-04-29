@@ -37,6 +37,7 @@ import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvEmoListAdapter;
 import com.easefun.polyv.cloudclassdemo.watch.chat.imageScan.PolyvChatImageViewer;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.adapter.PolyvBaseRecyclerViewAdapter;
+import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
 import com.easefun.polyv.commonui.base.PolyvBaseFragment;
 import com.easefun.polyv.commonui.utils.PolyvFaceManager;
 import com.easefun.polyv.commonui.utils.PolyvToast;
@@ -50,6 +51,7 @@ import java.util.List;
 import pl.droidsonroids.gif.GifDrawable;
 
 public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
+    // <editor-fold defaultstate="collapsed" desc="成员变量">
     protected PolyvChatManager chatManager;
     //问答列表
     protected PolyvChatRecyclerView chatMessageList;
@@ -83,25 +85,17 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     protected boolean isShowPopupLayout;
     protected ViewGroup currentShowPopupLayout;
     protected int srcViewPagerHeight;
+    // </editor-fold>
 
-    @Override
-    public void loadDataAhead() {
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof IPolyvHomeProtocol) {
-            this.homePresnter = (IPolyvHomeProtocol) context;
-        }
-    }
-
+    // <editor-fold defaultstate="collapsed" desc="发送弹幕">
     protected void sendDanmu(CharSequence content) {
         if (homePresnter != null) {
             homePresnter.sendDanmu(content);
         }
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="get、set方法">
     protected ViewGroup getImageViewerContainer() {
         if (homePresnter != null) {
             return homePresnter.getImageViewerContainer();
@@ -122,10 +116,11 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         }
         return null;
     }
+    // </editor-fold>
 
-    public PolyvChatBaseFragment setChatManager(PolyvChatManager chatManager) {
-        this.chatManager = chatManager;
-        return this;
+    // <editor-fold defaultstate="collapsed" desc="初始化">
+    @Override
+    public void loadDataAhead() {
     }
 
     @Override
@@ -274,7 +269,7 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         emoListAdapter = new PolyvEmoListAdapter(emoList);
         emoListAdapter.setOnItemClickListener(new PolyvBaseRecyclerViewAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position, PolyvBaseRecyclerViewAdapter.ClickableViewHolder holder) {
+            public void onItemClick(int position, ClickableViewHolder holder) {
                 appendEmo(emoListAdapter.emoLists.get(position), false);
             }
         });
@@ -309,7 +304,9 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
             }
         });
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="输出框、键盘和弹出布局的相关处理">
     protected void togglePopupLayout(View view, ViewGroup popupLayout, ViewGroup chatEditLayout) {
         if (!view.isSelected()) {
             showPopupLayout(view, popupLayout, chatEditLayout);
@@ -449,6 +446,30 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         }
     }
 
+    private void acceptKeyboardCloseEvent(ViewGroup popupLayout, ViewGroup chatEditLayout) {
+        if (!isShowPopupLayout) {
+            resetChatEditContainer();
+        } else {
+            replaceChatEditContainer(chatEditLayout);//放在这里替换，避免布局抖动
+            popupLayout.setVisibility(View.VISIBLE);//放在这里替换，避免布局抖动
+            changeViewLayoutParams(popupLayout);//放在这里替换，避免布局抖动
+        }
+    }
+
+    protected void hideSoftInputAndEmoList() {
+        if (talk != null) {
+            KeyboardUtils.hideSoftInput(talk);
+        }
+        resetPopupBottomLayout();
+        if (isShowPopupLayout) {//isShowEmoji->键盘已隐藏
+            resetChatEditContainer();//如果键盘还没隐藏，需要交给监听器重置，不然会有问题
+            resetViewLayoutParams();
+        }
+        isShowPopupLayout = false;
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="发送表情相关">
     // 删除表情
     private void deleteEmoText() {
         int start = talk.getSelectionStart();
@@ -511,27 +532,29 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         else
             talk.getText().insert(selectionStart, span);
     }
+    // </editor-fold>
 
-    private void acceptKeyboardCloseEvent(ViewGroup popupLayout, ViewGroup chatEditLayout) {
-        if (!isShowPopupLayout) {
-            resetChatEditContainer();
-        } else {
-            replaceChatEditContainer(chatEditLayout);//放在这里替换，避免布局抖动
-            popupLayout.setVisibility(View.VISIBLE);//放在这里替换，避免布局抖动
-            changeViewLayoutParams(popupLayout);//放在这里替换，避免布局抖动
+    // <editor-fold defaultstate="collapsed" desc="返回键处理">
+    public boolean onBackPressed() {
+        if (getImageViewerContainer() != null && getImageViewerContainer().getVisibility() == View.VISIBLE) {
+            getImageViewerContainer().setVisibility(View.GONE);
+            return true;
+        } else if (popupLayoutIsVisiable()) {
+            hideSoftInputAndEmoList();
+            return true;
         }
+        return false;
     }
+    // </editor-fold>
 
-    protected void hideSoftInputAndEmoList() {
-        if (talk != null) {
-            KeyboardUtils.hideSoftInput(talk);
+    // <editor-fold defaultstate="collapsed" desc="Fragment方法">
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof IPolyvHomeProtocol) {
+            this.homePresnter = (IPolyvHomeProtocol) context;
+            this.chatManager = homePresnter.getChatManager();
         }
-        resetPopupBottomLayout();
-        if (isShowPopupLayout) {//isShowEmoji->键盘已隐藏
-            resetChatEditContainer();//如果键盘还没隐藏，需要交给监听器重置，不然会有问题
-            resetViewLayoutParams();
-        }
-        isShowPopupLayout = false;
     }
 
     @Override
@@ -550,31 +573,20 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         }
     }
 
-    public boolean onBackPressed() {
-        if (getImageViewerContainer() != null && getImageViewerContainer().getVisibility() == View.VISIBLE) {
-            getImageViewerContainer().setVisibility(View.GONE);
-            return true;
-        } else if (popupLayoutIsVisiable()) {
-            hideSoftInputAndEmoList();
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void onDestroy() {
-        if (chatListAdapter != null && chatListAdapter.getLoadImgMap() != null) {
-            for (String key : chatListAdapter.getLoadImgMap().keySet()) {
-                for (int value : chatListAdapter.getLoadImgMap().get(key)) {
-                    PolyvMyProgressManager.removeListener(key, value);
-                }
-            }
+        if(chatListAdapter != null){
+            chatListAdapter.onDestory();
         }
         super.onDestroy();
     }
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="抽象方法">
     public abstract void sendMessage();
+    // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="内部类">
     public static class ConnectStatus {
         public int status;
         public Throwable t;
@@ -588,10 +600,13 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     public static class EventMessage {
         public String message;
         public String event;
+        public String socketListen;
 
-        public EventMessage(String message, String event) {
+        public EventMessage(String message, String event, String socketListen) {
             this.message = message;
             this.event = event;
+            this.socketListen = socketListen;
         }
     }
+    // </editor-fold>
 }

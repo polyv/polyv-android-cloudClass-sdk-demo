@@ -26,4 +26,6 @@ public interface IPolyvVideoItem<T extends PolyvCommonVideoView,R extends IPolyv
     void bindPPTView(PolyvPPTItem polyvPPTItem);
 
     void destroy();
+
+    void setNickName(String studentNickName);
 }

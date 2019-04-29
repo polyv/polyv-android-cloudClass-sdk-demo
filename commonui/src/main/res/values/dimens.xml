@@ -8,10 +8,12 @@
     <dimen name="ppt_height">108dp</dimen>
     <dimen name="controller_margin">15dp</dimen>
     <dimen name="dm_3">3dp</dimen>
+    <dimen name="dm_5">5dp</dimen>
     <dimen name="dm_10">10dp</dimen>
     <dimen name="dm_12">12dp</dimen>
     <dimen name="dm_20">20dp</dimen>
     <dimen name="dm_30">30dp</dimen>
+    <dimen name="dm_32">32dp</dimen>
     <dimen name="dm_40">40dp</dimen>
     <dimen name="dm_42">42dp</dimen>
     <dimen name="dm_48">48dp</dimen>

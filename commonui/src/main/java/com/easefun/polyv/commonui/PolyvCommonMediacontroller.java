@@ -123,7 +123,8 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
         if(PolyvScreenUtils.isLandscape(context)){
             return;
         }
-        context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+//        context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        PolyvScreenUtils.setLandscape(context);
         hide();
     }
 
@@ -165,7 +166,8 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
        if(PolyvScreenUtils.isPortrait(context)){
            return;
        }
-        context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+//        context.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+       PolyvScreenUtils.setPortrait(context);
         hide();
 
     }
@@ -211,6 +213,7 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     @Override
     public void show() {
         show(SHOW_TIME);
+
     }
 
     @Override

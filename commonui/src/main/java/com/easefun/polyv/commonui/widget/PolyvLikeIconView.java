@@ -100,27 +100,30 @@ public class PolyvLikeIconView extends RelativeLayout {
     }
 
     private void startAnimator(ImageView view) {
-        //曲线的两个顶点
-        PointF pointF1 = new PointF(
-                random.nextInt(width),
-                random.nextInt(height / 2) + height / 2.5f);
-        PointF pointF2 = new PointF(
-                random.nextInt(width),
-                random.nextInt(height / 2));
-        PointF pointStart = new PointF((width - iconWidth) / 1.6f,
-                height - iconHeight * 3 - PolyvScreenUtils.dip2px(getContext(), 16));
-        PointF pointEnd = new PointF(random.nextInt(width), random.nextInt(height / 2));
+        try {
+            //曲线的两个顶点
+            PointF pointF1 = new PointF(
+                    random.nextInt(width),
+                    random.nextInt(height / 2) + height / 2.5f);
+            PointF pointF2 = new PointF(
+                    random.nextInt(width),
+                    random.nextInt(height / 2));
+            PointF pointStart = new PointF((width - iconWidth) / 1.6f,
+                    height - iconHeight * 3 - PolyvScreenUtils.dip2px(getContext(), 16));
+            PointF pointEnd = new PointF(random.nextInt(width), random.nextInt(height / 2));
 
-        //贝塞尔估值器
-        PolyvBezierEvaluator evaluator = new PolyvBezierEvaluator(pointF1, pointF2);
-        ValueAnimator animator = ValueAnimator.ofObject(evaluator, pointStart, pointEnd);
-        animator.setTarget(view);
-        animator.setDuration(2000);
-        animator.addUpdateListener(new UpdateListener(view));
-        animator.addListener(new AnimatorListener(view, this));
-        animator.setInterpolator(interpolators[random.nextInt(4)]);
+            //贝塞尔估值器
+            PolyvBezierEvaluator evaluator = new PolyvBezierEvaluator(pointF1, pointF2);
+            ValueAnimator animator = ValueAnimator.ofObject(evaluator, pointStart, pointEnd);
+            animator.setTarget(view);
+            animator.setDuration(2000);
+            animator.addUpdateListener(new UpdateListener(view));
+            animator.addListener(new AnimatorListener(view, this));
+            animator.setInterpolator(interpolators[random.nextInt(4)]);
 
-        animator.start();
+            animator.start();
+        } catch (Exception e) {
+        }
     }
 
     public void addLoveIcon(int resId) {

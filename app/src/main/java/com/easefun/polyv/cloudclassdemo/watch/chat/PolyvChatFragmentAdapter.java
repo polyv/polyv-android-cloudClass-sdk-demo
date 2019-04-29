@@ -18,6 +18,12 @@ public class PolyvChatFragmentAdapter extends FragmentPagerAdapter {
         this.fragments = fragments;
     }
 
+    public void add(Fragment fragment) {
+        if (fragments != null) {
+            fragments.add(fragment);
+        }
+    }
+
     @Override
     public Fragment getItem(int position) {
         return fragments.get(position);

@@ -28,7 +28,7 @@ public class PolyvSmoothRoundProgressView extends View {
 
     private RectF circleRectF;//绘制圆弧的矩形区域
 
-    private CircleBarAnim animStart;
+    private CircleBarAnim startAnim;
 
     private float progressNum;//可以更新的进度条数值
     private float maxNum;//进度条最大值
@@ -81,7 +81,7 @@ public class PolyvSmoothRoundProgressView extends View {
         bgPaint.setStrokeWidth(barWidth);
         bgPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        animStart = new CircleBarAnim();
+        startAnim = new CircleBarAnim();
     }
 
     @Override
@@ -197,12 +197,12 @@ public class PolyvSmoothRoundProgressView extends View {
      */
     public void setProgressNum(float progressNum, int time) {
         this.progressNum = progressNum;
-        if (!animStart.hasEnded()) {
+        if (!startAnim.hasEnded()) {
             cacheAngle = progressSweepAngle;
-            animStart.cancel();
+            startAnim.cancel();
         }
-        animStart.setDuration(time);
-        this.startAnimation(animStart);
+        startAnim.setDuration(time);
+        this.startAnimation(startAnim);
 
     }
 

@@ -257,7 +257,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
                 joinInfoEvent = joins.get(audioVolumeInfo.uid+"");
             }
             if(joinInfoEvent == null){
-                PolyvCommonLog.e(TAG,"startAudioWave error useid ："+joinInfoEvent.getUserId());
+                PolyvCommonLog.e(TAG,"startAudioWave error useid ："+audioVolumeInfo.uid);
                 return;
             }
             PolyvCommonLog.e(TAG,"startAudioWave uid:"+audioVolumeInfo.uid+"  progess:"+audioVolumeInfo.volume);

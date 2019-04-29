@@ -41,6 +41,7 @@
             android:id="@+id/personal_chat_item_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:layout_weight="1">
 
             <TextView
