@@ -38,6 +38,7 @@ import com.easefun.polyv.cloudclass.video.PolyvAnswerWebView;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBaseTransformer;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
+import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.google.gson.Gson;
 
@@ -124,13 +125,21 @@ public class PolyvAnswerView extends FrameLayout {
         answerWebView.loadUrl("file:///android_asset/index.html");
 
         messageDispose = PolyvRxBus.get().toObservable(PolyvSocketMessageVO.class)
-                .delay(DELAY_SOCKET_MSG, TimeUnit.MILLISECONDS)
                 .compose(new PolyvRxBaseTransformer<PolyvSocketMessageVO, PolyvSocketMessageVO>())
                 .subscribe(new Consumer<PolyvSocketMessageVO>() {
                     @Override
                     public void accept(final PolyvSocketMessageVO polyvSocketMessage) throws Exception {
-                        String event = polyvSocketMessage.getEvent();
-                        processSocketMessage(polyvSocketMessage, event);
+                        final String event = polyvSocketMessage.getEvent();
+                        if(event.contains("SIGN_IN") || event.contains("Lottery") || event.contains("LOTTERY")){
+                            processSocketMessage(polyvSocketMessage, event);
+                        }else{
+                            PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer<Long>() {
+                                @Override
+                                public void accept(Long aLong) throws Exception {
+                                    processSocketMessage(polyvSocketMessage, event);
+                                }
+                            });
+                        }
                     }
                 });
 
