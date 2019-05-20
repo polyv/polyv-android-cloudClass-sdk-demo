@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/playback_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/playback_layout"
-    android:visibility="gone"
     android:layout_marginLeft="@dimen/dm_20"
     android:layout_marginRight="@dimen/dm_20"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:visibility="gone">
 
     <EditText
-        android:textColorHint="@color/place_holder_color"
-        android:textSize="16sp"
         android:id="@+id/playback_video_id"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
         android:hint="@string/login_vid"
-        android:textCursorDrawable="@null" />
+        android:textColorHint="@color/place_holder_color"
+        android:textCursorDrawable="@null"
+        android:textSize="16sp" />
 
     <EditText
-        android:textColorHint="@color/place_holder_color"
-        android:textSize="16sp"
         android:id="@+id/playback_app_id"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
         android:hint="@string/login_appId"
-        android:textCursorDrawable="@null" />
+        android:textColorHint="@color/place_holder_color"
+        android:textCursorDrawable="@null"
+        android:textSize="16sp" />
 
     <EditText
-    android:visibility="gone"
-    android:textColorHint="@color/place_holder_color"
-    android:textSize="16sp"
-    android:id="@+id/playback_app_secert"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/dm_42"
-    android:layout_margin="@dimen/dm_10"
-    android:hint="@string/login_appSecert"
-    android:textCursorDrawable="@null" />
+        android:id="@+id/playback_app_secert"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dm_42"
+        android:layout_margin="@dimen/dm_10"
+        android:hint="@string/login_appSecert"
+        android:textColorHint="@color/place_holder_color"
+        android:textCursorDrawable="@null"
+        android:textSize="16sp"
+        android:visibility="gone" />
 
 </LinearLayout>
