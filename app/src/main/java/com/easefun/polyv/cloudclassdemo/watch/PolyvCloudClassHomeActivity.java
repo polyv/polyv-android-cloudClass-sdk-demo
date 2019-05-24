@@ -516,9 +516,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             }
 
             @Override
-            public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone) {
+            public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone,String realName) {
                 PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
-                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, studentUserId, studentNickName, telephone),
+                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, studentUserId, realName, telephone),
                         String.class, new PolyvrResponseCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
@@ -535,6 +535,40 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                             public void onError(Throwable e) {
                                 super.onError(e);
                                 LogUtils.e("抽奖信息上传失败");
+                                if (e instanceof HttpException) {
+                                    try {
+                                        ResponseBody errorBody = ((HttpException) e).response().errorBody();
+                                        if (errorBody != null) {
+                                            LogUtils.e(errorBody.string());
+                                        }
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+            }
+
+            @Override
+            public void callOnAbandonLottery() {
+                PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
+                                .postLotteryAbandon(channelId, studentUserId), String.class,
+                        new PolyvrResponseCallback<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                LogUtils.d("放弃领奖信息上传成功 " + s);
+                            }
+
+                            @Override
+                            public void onFailure(PolyvResponseBean<String> responseBean) {
+                                super.onFailure(responseBean);
+                                LogUtils.d("放弃领奖信息上传失败 " + responseBean);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                super.onError(e);
+                                LogUtils.e("放弃领奖信息上传失败");
                                 if (e instanceof HttpException) {
                                     try {
                                         ResponseBody errorBody = ((HttpException) e).response().errorBody();

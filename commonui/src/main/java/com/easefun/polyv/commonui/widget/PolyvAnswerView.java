@@ -45,6 +45,7 @@ import com.google.gson.Gson;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -65,6 +66,7 @@ public class PolyvAnswerView extends FrameLayout {
     private ViewGroup answerContainer;
     //    private ImageView close;
     private Disposable messageDispose;
+    private CompositeDisposable delayDispose = new CompositeDisposable();
 
     private static final int DELAY_SOCKET_MSG = 2 * 1000;
 
@@ -133,12 +135,12 @@ public class PolyvAnswerView extends FrameLayout {
                         if(event.contains("SIGN_IN") || event.contains("Lottery") || event.contains("LOTTERY")){
                             processSocketMessage(polyvSocketMessage, event);
                         }else{
-                            PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer<Long>() {
+                            delayDispose.add(PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer<Long>() {
                                 @Override
                                 public void accept(Long aLong) throws Exception {
                                     processSocketMessage(polyvSocketMessage, event);
                                 }
-                            });
+                            }));
                         }
                     }
                 });
@@ -237,9 +239,6 @@ public class PolyvAnswerView extends FrameLayout {
             //未领奖的中奖人信息
             case PolyvSocketEvent.LOTTERY_WINNER:
                 PolyvLotteryWinnerVO winnerVO = PolyvGsonUtil.fromJson(PolyvLotteryWinnerVO.class, msg);
-                if (isLotteryAbandon(notNull(winnerVO).getSessionId(), winnerVO.getLotteryId())) {
-                    break;
-                }
                 showAnswerContainer();
                 PolyvLottery2JsVO winnerJsonVO = new PolyvLottery2JsVO(true, notNull(winnerVO).getPrize(), winnerVO.getWinnerCode());
                 String winnerJson2 = winnerJsonVO.toJson();
@@ -271,11 +270,6 @@ public class PolyvAnswerView extends FrameLayout {
                 }
                 break;
         }
-    }
-
-    private boolean isLotteryAbandon(String sessionId, String lotteryId) {
-        SPUtils sp = SPUtils.getInstance(PolyvAnswerWebView.SP_KEY_LOTTERY_ABANDON_RECORD_PREFIX + sessionId);
-        return sp.getBoolean(lotteryId, false);
     }
 
     private void showAnswerContainer() {
@@ -315,6 +309,15 @@ public class PolyvAnswerView extends FrameLayout {
     public void destroy() {
         if (answerWebView != null) {
             answerWebView = null;
+        }
+
+        if(messageDispose != null){
+            messageDispose.dispose();
+            messageDispose = null;
+        }
+        if(delayDispose != null){
+            delayDispose.dispose();
+            delayDispose = null;
         }
     }
 
