@@ -156,9 +156,11 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         activity.startActivity(intent);
     }
 
-    public static void startActivityForPlayBack(Activity activity, String videoId, boolean isNormalLivePlayBack) {
+    public static void startActivityForPlayBack(Activity activity, String videoId,String channelId, String userId,boolean isNormalLivePlayBack) {
         Intent intent = new Intent(activity, PolyvCloudClassHomeActivity.class);
         intent.putExtra(VIDEOID_KEY, videoId);
+        intent.putExtra(USERID_KEY, userId);
+        intent.putExtra(CHANNELID_KEY, channelId);
         intent.putExtra(NORMALLIVE_PLAYBACK, isNormalLivePlayBack);
         intent.putExtra(PLAY_TYPE_KEY, PolyvPlayOption.PLAYMODE_VOD);
         activity.startActivity(intent);
@@ -516,9 +518,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             }
 
             @Override
-            public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone) {
+            public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone,String realName) {
                 PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
-                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, studentUserId, studentNickName, telephone),
+                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, studentUserId, realName, telephone),
                         String.class, new PolyvrResponseCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
@@ -535,6 +537,40 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                             public void onError(Throwable e) {
                                 super.onError(e);
                                 LogUtils.e("抽奖信息上传失败");
+                                if (e instanceof HttpException) {
+                                    try {
+                                        ResponseBody errorBody = ((HttpException) e).response().errorBody();
+                                        if (errorBody != null) {
+                                            LogUtils.e(errorBody.string());
+                                        }
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+            }
+
+            @Override
+            public void callOnAbandonLottery() {
+                PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
+                                .postLotteryAbandon(channelId, studentUserId), String.class,
+                        new PolyvrResponseCallback<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                LogUtils.d("放弃领奖信息上传成功 " + s);
+                            }
+
+                            @Override
+                            public void onFailure(PolyvResponseBean<String> responseBean) {
+                                super.onFailure(responseBean);
+                                LogUtils.d("放弃领奖信息上传失败 " + responseBean);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                super.onError(e);
+                                LogUtils.e("放弃领奖信息上传失败");
                                 if (e instanceof HttpException) {
                                     try {
                                         ResponseBody errorBody = ((HttpException) e).response().errorBody();
@@ -594,8 +630,10 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         vodVideoHelper.addPPT(videoPptContainer);
 
         // TODO: 2018/9/12 videoId 为直播平台的 videopoolid为点播平台的视频id
-        PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(videoId//videoId
-                , "viewer_id");
+        PolyvBaseVideoParams polyvBaseVideoParams = new PolyvBaseVideoParams(videoId,//videoId
+                channelId,
+                userId,"viewer_id"//viewerid
+                 );
         polyvBaseVideoParams.setChannelId(channelId);
         polyvBaseVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
                 .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
@@ -802,6 +840,13 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         studentNickName = "学员" + studentUserId;
         chatManager.login(studentUserId, channelId, studentNickName);
+
+        if(livePlayerHelper != null){
+            livePlayerHelper.setNickName(studentNickName);
+        }
+        if(vodVideoHelper !=  null){
+            vodVideoHelper.setNickName(studentNickName);
+        }
     }
 
     // </editor-fold>

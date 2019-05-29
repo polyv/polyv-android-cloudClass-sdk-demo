@@ -6,15 +6,25 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="@dimen/dm_20"
     android:layout_marginRight="@dimen/dm_20"
-    android:orientation="vertical"
-    android:visibility="gone">
+    android:visibility="gone"
+    android:orientation="vertical">
 
     <EditText
-        android:id="@+id/playback_video_id"
+        android:id="@+id/playback_channel_id"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
-        android:hint="@string/login_vid"
+        android:hint="@string/login_channelId"
+        android:textColorHint="@color/place_holder_color"
+        android:textCursorDrawable="@null"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/playback_user_id"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dm_42"
+        android:layout_margin="@dimen/dm_10"
+        android:hint="@string/login_userId"
         android:textColorHint="@color/place_holder_color"
         android:textCursorDrawable="@null"
         android:textSize="16sp" />
@@ -30,14 +40,14 @@
         android:textSize="16sp" />
 
     <EditText
-        android:id="@+id/playback_app_secert"
+        android:id="@+id/playback_video_id"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
-        android:hint="@string/login_appSecert"
+        android:hint="@string/login_vid"
         android:textColorHint="@color/place_holder_color"
         android:textCursorDrawable="@null"
-        android:textSize="16sp"
-        android:visibility="gone" />
+        android:textSize="16sp" />
+
 
 </LinearLayout>

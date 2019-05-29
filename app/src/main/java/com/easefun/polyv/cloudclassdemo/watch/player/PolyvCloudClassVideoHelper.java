@@ -482,7 +482,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             S_HANDLER.post(new Runnable() {
                 @Override
                 public void run() {
-                    ToastUtils.showLong("关闭连麦");
+                    ToastUtils.showLong("老师已挂断");
                     controller.updateLinkMicStatus(false);
                     startLinkTimer(true);
                 }

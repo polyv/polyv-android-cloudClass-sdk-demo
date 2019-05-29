@@ -18,6 +18,10 @@ import com.easefun.polyv.businesssdk.api.auxiliary.IPolyvAuxiliaryVideoViewListe
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvPlayError;
 import com.easefun.polyv.businesssdk.api.common.player.listener.IPolyvVideoViewListenerEvent;
+import com.easefun.polyv.businesssdk.model.video.PolyvLiveMarqueeVO;
+import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeItem;
+import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeUtils;
+import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
@@ -53,6 +57,14 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
     private PolyvPPTItem polyvPPTItem;
     private View noStreamView;
 
+    /**
+     * 跑马灯控件
+     */
+    private PolyvMarqueeView marqueeView = null;
+    private PolyvMarqueeItem marqueeItem = null;
+    private PolyvMarqueeUtils marqueeUtils = null;
+    private String nickName;
+
     public PolyvVodVideoItem(@NonNull Context context) {
         this(context, null);
     }
@@ -83,6 +95,8 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
         tipsviewProgress = (PolyvProgressTipsView) findViewById(R.id.tipsview_progress);
         tvCountdown = (TextView) findViewById(R.id.tv_countdown);
         tvSkip = (TextView) findViewById(R.id.tv_skip);
+        marqueeView = findViewById(R.id.polyv_marquee_view);
+
         tvSkip.setOnClickListener(this);
 //        sub_hud_view = (TableLayout) findViewById(R.id.sub_hud_view);
         preparingview = findViewById(R.id.preparingview);
@@ -204,17 +218,15 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
     }
 
     private void initVideoView() {
+        // 设置跑马灯
+        videoView.setMarqueeView(marqueeView, marqueeItem = new PolyvMarqueeItem());
         videoView.setKeepScreenOn(true);
         videoView.setPlayerBufferingIndicator(loadingview);
         videoView.setNeedGestureDetector(true);
         videoView.setOnPPTShowListener(new IPolyvVideoViewListenerEvent.OnPPTShowListener() {
             @Override
             public void showPPTView(int visiable) {
-                if(visiable == VISIBLE){
-                    controller.updateSubVideoViewPosition(true);
-                }else {
-                    controller.updateSubVideoViewPosition(false);
-                }
+                controller.updateSubVideoViewPosition(visiable == VISIBLE);
 
                 if(polyvPPTItem != null){
                     polyvPPTItem.show(visiable);
@@ -400,6 +412,17 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
 
 
         });
+
+        videoView.setOnGetMarqueeVoListener(new IPolyvVideoViewListenerEvent.OnGetMarqueeVoListener() {
+            @Override
+            public void onGetMarqueeVo(PolyvLiveMarqueeVO marqueeVo) {
+                if (marqueeUtils == null)
+                    marqueeUtils = new PolyvMarqueeUtils();
+                // 更新为后台设置的跑马灯类型
+                marqueeUtils.updateMarquee(context, marqueeVo,
+                        marqueeItem, nickName);
+            }
+        });
     }
 
     @Override
@@ -455,6 +478,11 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
         if(videoView != null && polyvPPTItem != null){
             videoView.bindPPTView(polyvPPTItem.getPPTView());
         }
+    }
+
+    @Override
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     @Override

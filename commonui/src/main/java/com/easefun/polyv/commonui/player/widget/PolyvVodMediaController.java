@@ -111,13 +111,18 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
     }
 
     @Override
-    public void updateSubVideoViewPosition(boolean add) {
+    public void updateSubVideoViewPosition(final boolean add) {
         if(polyvVodVideoHelper != null){
-            if(add){
-                polyvVodVideoHelper.addAuxiliaryScreenToTeacherInfoLayout();
-            }else {
-                polyvVodVideoHelper.removeFromTeacherInfoLayout();
-            }
+            noLeakHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(add){
+                        polyvVodVideoHelper.addAuxiliaryScreenToTeacherInfoLayout();
+                    }else {
+                        polyvVodVideoHelper.removeFromTeacherInfoLayout();
+                    }
+                }
+            });
         }
     }
 

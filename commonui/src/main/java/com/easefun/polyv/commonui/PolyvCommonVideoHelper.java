@@ -261,6 +261,12 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
 
 
+    public void setNickName(String studentNickName) {
+        if(videoItem != null){
+            videoItem.setNickName(studentNickName);
+        }
+    }
+
     protected void openVideoViewSound() {
         if(videoView != null && videoViewVolume >0){
             videoView.setVolume(videoViewVolume);

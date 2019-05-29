@@ -53,8 +53,8 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     private TextView loginTv;
     private PolyvSoftView softLayout;
     private LinearLayout playbackLayout, liveLayout;
-    private EditText playbackVideoId;
-    private EditText playbackAppId, playbackAppSecrect;
+    private EditText playbackVideoId,playbackChannelId;
+    private EditText playbackAppId, playbackUserId;
     private RelativeLayout liveGroupLayout;
     private RelativeLayout playbackGroupLayout;
     private Disposable getTokenDisposable,verifyDispose;
@@ -139,12 +139,14 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     private void initialPlayBackVideoView() {
         playbackLayout = findViewById(R.id.playback_layout);
         playbackVideoId = findViewById(R.id.playback_video_id);
+        playbackChannelId = findViewById(R.id.playback_channel_id);
         playbackAppId = findViewById(R.id.playback_app_id);
-        playbackAppSecrect = findViewById(R.id.playback_app_secert);
+        playbackUserId = findViewById(R.id.playback_user_id);
 
         playbackVideoId.addTextChangedListener(textWatcher);
+        playbackChannelId.addTextChangedListener(textWatcher);
         playbackAppId.addTextChangedListener(textWatcher);
-        playbackAppSecrect.addTextChangedListener(textWatcher);
+        playbackUserId.addTextChangedListener(textWatcher);
     }
 
     private void intialLogoView() {
@@ -172,6 +174,8 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         userId.setText("");
         channelId.setText("");
 
+        playbackChannelId.setText("");
+        playbackUserId.setText("");
         playbackVideoId.setText("");
         playbackAppId.setText("");
     }
@@ -251,7 +255,9 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         } else {
             loginTv.setSelected(!isEmpty(playbackVideoId)
                     && !isEmpty(playbackAppId)
-            );//&& !isEmpty(playbackAppSecrect)
+                    && !isEmpty(playbackUserId)
+                    && !isEmpty(playbackChannelId)
+            );//
         }
     }
 
@@ -269,12 +275,16 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         loginTv.setEnabled(false);
         progress.show();
         if (liveGroupLayout.isSelected()) {
-            checkToken(userId.getText().toString().trim(), appSecert.getText().toString().trim(),
-                    channelId.getText().toString().trim(), null, appId.getText().toString().trim());
+            checkToken(getTrim(userId), getTrim(appSecert),
+                    getTrim(channelId), null, getTrim(appId));
         } else {
-            checkToken(null, null, null,
-                    playbackVideoId.getText().toString().trim(), playbackAppId.getText().toString().trim());
+            checkToken(getTrim(playbackUserId), null, getTrim(playbackChannelId),
+                    getTrim(playbackVideoId), getTrim(playbackAppId));
         }
+    }
+
+    private String getTrim(EditText playbackUserId) {
+        return playbackUserId.getText().toString().trim();
     }
 
     private void checkToken(String userId, String appSecret, String channel, String vid, String appId) {
@@ -289,9 +299,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
                         PolyvVodSDKClient.getInstance().initConfig(appId, appSecert.getText().toString());
 
                         if(playbackGroupLayout.isSelected()){
-
-//                            startActivityForPlayback(false);
-                            requestPlayBackStatus(vid);
+                            requestPlayBackStatus(userId,vid);
                             return;
                         }
                         requestLiveStatus(userId);
@@ -313,7 +321,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
                 });
     }
 
-    private void requestPlayBackStatus(String vid) {
+    private void requestPlayBackStatus(String userId, String vid) {
         if(TextUtils.isEmpty(vid)){
             return;
         }
@@ -321,7 +329,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
             @Override
             public void onSuccess(PolyvPlayBackVO playBack) {
                 boolean isLivePlayBack = playBack.getLiveType() == 0;
-                startActivityForPlayback(isLivePlayBack);
+                startActivityForPlayback(userId,isLivePlayBack);
             }
 
            @Override
@@ -393,13 +401,13 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     // <editor-fold defaultstate="collapsed" desc="startActivity">
     private void startActivityForLive(String userId, boolean isAlone) {
         PolyvCloudClassHomeActivity.startActivityForLive(PolyvCloudClassLoginActivity.this,
-                channelId.getText().toString().trim(), userId, isAlone);
+                getTrim(channelId), userId, isAlone);
     }
 
-    private void startActivityForPlayback(boolean isNormalLivePlayBack) {
+    private void startActivityForPlayback(String userId, boolean isNormalLivePlayBack) {
         progress.dismiss();
         PolyvCloudClassHomeActivity.startActivityForPlayBack(PolyvCloudClassLoginActivity.this,
-                playbackVideoId.getText().toString().trim(),isNormalLivePlayBack);
+                getTrim(playbackVideoId),getTrim(playbackChannelId),getTrim(playbackUserId),isNormalLivePlayBack);
     }
     // </editor-fold>
 

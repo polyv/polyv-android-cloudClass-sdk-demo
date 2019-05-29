@@ -432,6 +432,11 @@ public class PolyvCloudClassVideoItem extends FrameLayout
     }
 
     @Override
+    public void setNickName(String studentNickName) {
+        this.nickName = studentNickName;
+    }
+
+    @Override
     public void onClick(View v) {
 
         int id = v.getId();

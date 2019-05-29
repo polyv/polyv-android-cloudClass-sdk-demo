@@ -24,7 +24,7 @@ allprojects {
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
         }
-        maven { url 'https://dl.bintray.com/polyv/abn' }
+        maven { url 'https://dl.bintray.com/polyv/runde' }
     }
 }
 
@@ -32,8 +32,8 @@ ext {
     compileSdkVersion = 27
     minSdkVersion = 16
     targetSdkVersion = 27
-    versionCode = 56
-    versionName = "0.5.6"
+    versionCode = 58
+    versionName = "0.5.8"
 }
 
 task clean(type: Delete) {
