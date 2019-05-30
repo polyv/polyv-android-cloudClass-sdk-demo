@@ -48,6 +48,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -68,13 +69,14 @@ public class PolyvAnswerView extends FrameLayout {
     private ViewGroup answerContainer;
     //    private ImageView close;
     private Disposable messageDispose;
+    private CompositeDisposable disposables = new CompositeDisposable();
 
     private static final int DELAY_SOCKET_MSG = 2 * 1000;
 
     //学员Id
     private String studentUserId;
 
-    //中奖信息是否显示
+    //中奖信息是否显示o
     private boolean isWinLotteryShow = false;
     //答题卡是否回答了
     private boolean isQuestionAnswer = false;
@@ -144,12 +146,12 @@ public class PolyvAnswerView extends FrameLayout {
     }
 
     private void delay(final Runnable runnable) {
-        PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer() {
+        disposables.add(PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer() {
             @Override
             public void accept(Object o) {
                 runnable.run();
             }
-        });
+        }));
     }
 
     private void handleKeyboardOrientation() {
@@ -265,9 +267,6 @@ public class PolyvAnswerView extends FrameLayout {
             //未领奖的中奖人信息
             case PolyvSocketEvent.LOTTERY_WINNER:
                 PolyvLotteryWinnerVO winnerVO = PolyvGsonUtil.fromJson(PolyvLotteryWinnerVO.class, msg);
-                if (isLotteryAbandon(notNull(winnerVO).getSessionId(), winnerVO.getLotteryId())) {
-                    break;
-                }
                 showAnswerContainer();
                 PolyvLottery2JsVO winnerJsonVO = new PolyvLottery2JsVO(true, notNull(winnerVO).getPrize(), winnerVO.getWinnerCode());
                 String winnerJson2 = winnerJsonVO.toJson();
@@ -324,11 +323,6 @@ public class PolyvAnswerView extends FrameLayout {
         PolyvScreenUtils.lockOrientation();
     }
 
-    private boolean isLotteryAbandon(String sessionId, String lotteryId) {
-        SPUtils sp = SPUtils.getInstance(PolyvAnswerWebView.SP_KEY_LOTTERY_ABANDON_RECORD_PREFIX + sessionId);
-        return sp.getBoolean(lotteryId, false);
-    }
-
     private void showAnswerContainer() {
         KeyboardUtils.hideSoftInput(this);
         answerWebView.requestFocusFromTouch();
@@ -372,6 +366,14 @@ public class PolyvAnswerView extends FrameLayout {
     public void destroy() {
         if (answerWebView != null) {
             answerWebView = null;
+        }
+        if(messageDispose != null){
+            messageDispose.dispose();
+            messageDispose = null;
+        }
+        if(disposables != null){
+            disposables.dispose();
+            disposables = null;
         }
     }
 
