@@ -173,15 +173,13 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     @Override
     public void pause() {
-        if(!showPPT){
-            muteVideoView();
+        if(joinSuccess ){
+            if(showPPT){
+                super.pause();
+            }
             return;
         }
-
-        if (joinSuccess) {
-            return;
-        }
-        super.pause();
+        muteVideoView();
     }
 
     private void muteVideoView() {
