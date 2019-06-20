@@ -71,11 +71,24 @@
             android:textSize="12dp"
             android:visibility="gone" />
     </LinearLayout>
-    <ImageView
+
+    <FrameLayout
         android:visibility="invisible"
-        android:src="@drawable/back"
-        android:id="@+id/sub_video_back_land"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/fl_sub_back_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/polyv_video_top_gradient" />
+        <ImageView
+            android:src="@drawable/back"
+            android:id="@+id/sub_video_back_land"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+
 
 </RelativeLayout>

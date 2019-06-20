@@ -10,6 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/iv_screenshot"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include layout="@layout/polyv_cloudclass_audio_mode_layout" />
 
         <!-- 主播放器载入状态指示器 -->
         <ProgressBar

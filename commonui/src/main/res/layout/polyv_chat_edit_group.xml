@@ -52,7 +52,7 @@
         android:textColorHint="#c7c7c7"
         android:textSize="16sp" />
 
-    <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+    <ImageView
         android:id="@+id/iv_emoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,10 +61,8 @@
         android:layout_marginRight="6dp"
         android:clickable="true"
         android:padding="@dimen/dm_3"
-        android:src="@drawable/emoji"
-        app:disabled_color="#D3D3D3"
-        app:pressed_color="#14a2f4"
-        app:selected_color="#14a2f4" />
+        android:src="@drawable/polyv_selector_emoji"
+        />
 
     <LinearLayout
         android:id="@+id/right_layout"
@@ -78,32 +76,30 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+            <ImageView
                 android:id="@+id/iv_flower"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="6dp"
                 android:src="@drawable/flower"
                 android:visibility="gone"
-                app:disabled_color="#D3D3D3"
-                app:pressed_color="#14a2f4" />
+                 />
 
-            <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+            <ImageView
                 android:id="@+id/like"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="6dp"
                 android:src="@drawable/polyv_icon_likes"
                 android:visibility="gone"
-                app:disabled_color="#D3D3D3"
-                app:pressed_color="#14a2f4" />
+                />
 
             <ImageView
                 android:id="@+id/add_more"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/plv_more"
                 android:visibility="gone" />

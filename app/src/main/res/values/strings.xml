@@ -11,6 +11,6 @@
     <string name="login_appId">APP ID</string>
     <string name="login_appSecert">APP Secert</string>
     <string name="login_waiting">正在登录中，请稍等...</string>
-    <string name="login_copyright">2013 - 2018 广州易方信息科技有限公司 版权所有</string>
+    <string name="login_copyright">2013 - 2019 广州易方信息科技股份有限公司 版权所有</string>
 
 </resources>

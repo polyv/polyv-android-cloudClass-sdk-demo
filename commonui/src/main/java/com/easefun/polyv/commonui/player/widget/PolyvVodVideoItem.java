@@ -479,6 +479,11 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
     }
 
     @Override
+    public PolyvPPTItem getPPTItem() {
+        return polyvPPTItem;
+    }
+
+    @Override
     public void setNickName(String nickName) {
         this.nickName = nickName;
     }

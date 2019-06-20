@@ -53,6 +53,7 @@ import com.easefun.polyv.commonui.utils.PolyvPictureUtils;
 import com.easefun.polyv.commonui.utils.PolyvTextImageLoader;
 import com.easefun.polyv.commonui.utils.PolyvToast;
 import com.easefun.polyv.commonui.utils.PolyvUriPathHelper;
+import com.easefun.polyv.commonui.widget.PolyvAnswerView;
 import com.easefun.polyv.commonui.widget.PolyvCornerBgTextView;
 import com.easefun.polyv.commonui.widget.PolyvGreetingTextView;
 import com.easefun.polyv.commonui.widget.PolyvLikeIconView;
@@ -60,6 +61,7 @@ import com.easefun.polyv.commonui.widget.PolyvMarqueeTextView;
 import com.easefun.polyv.foundationsdk.permission.PolyvOnGrantedListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBaseTransformer;
+import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvSDCardUtils;
 
 import org.json.JSONArray;
@@ -94,7 +96,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     //连接状态ui
     private PolyvCornerBgTextView bgStatus;
     //只看讲师、送花、点赞、更多、选择照片按钮、拍摄按钮
-    private ImageView onlyHostSwitch, flower, like, more, selectPhotoButton, openCameraButton;
+    private ImageView onlyHostSwitch, flower, like, more, selectPhotoButton, openCameraButton,openBulletinButton;
     private File takePhotosFilePath;
     //添加更多的布局
     private LinearLayout moreLayout;
@@ -272,6 +274,12 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                     toast.makeText(getContext(), "请允许存储和相机权限后再拍摄", PolyvToast.LENGTH_SHORT).show(true);
                 }
             }
+        });
+        openBulletinButton=findViewById(R.id.open_bulletin_button);
+        openBulletinButton.setOnClickListener(v -> {
+            //用Bus发送消息到AnswerView显示公告
+            PolyvRxBus.get().post(new PolyvAnswerView.BUS_EVENT(PolyvAnswerView.BUS_EVENT.TYPE_SHOW_BULLETIN));
+            hidePopupLayout(more, moreLayout);
         });
         //重发图片的按钮监听
         chatListAdapter.setOnResendMessageViewClickListener(new PolyvChatListAdapter.OnResendMessageViewClickListener() {
@@ -650,6 +658,34 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
             }
         }
     }
+
+    //发送的弹幕消息一起发送到聊天室
+    public void sendChatMessageByDanmu(String sendMessage){
+        if (sendMessage.trim().length() == 0) {
+            toast.makeText(getContext(), "发送内容不能为空！", Toast.LENGTH_SHORT).show(true);
+        } else {
+            PolyvLocalMessage localMessage = new PolyvLocalMessage(sendMessage);
+            int sendValue = chatManager.sendChatMessage(localMessage);
+            //添加到列表中
+            if (sendValue > 0 || sendValue == PolyvLocalMessage.SENDVALUE_BANIP) {//被禁言后还会显示，但不会广播给其他用户
+                talk.setText("");
+                hideSoftInputAndEmoList();
+
+                //把带表情的信息解析保存下来
+                localMessage.setObjects(PolyvTextImageLoader.messageToSpan(localMessage.getSpeakMessage(), ConvertUtils.dp2px(14), false, getContext()));
+                PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(localMessage, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND, PolyvChatManager.SE_MESSAGE);
+                chatTypeItems.add(chatTypeItem);
+                teacherItems.add(chatTypeItem);
+                chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
+                chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
+                //发送弹幕
+                sendDanmu((CharSequence) localMessage.getObjects()[0]);
+            } else {
+                toast.makeText(getContext(), "发送失败：" + sendValue, PolyvToast.LENGTH_SHORT).show(true);
+            }
+        }
+    }
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="聊天室状态、事件监听及处理">

@@ -30,6 +30,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api 'com.android.support:design:27.1.1'
-    api 'com.easefun.polyv:polyvSDKCloudClass:0.6.2'
+    api 'com.easefun.polyv:polyvSDKCloudClass:0.7.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 }

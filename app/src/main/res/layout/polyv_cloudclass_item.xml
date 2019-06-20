@@ -43,7 +43,7 @@
         android:layout_height="match_parent" />
 
     <!-- 控制栏 -->
-    <com.easefun.polyv.cloudclassdemo.watch.player.PolyvCloudClassMediaController
+    <com.easefun.polyv.cloudclassdemo.watch.player.live.PolyvCloudClassMediaController
         android:id="@+id/controller"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

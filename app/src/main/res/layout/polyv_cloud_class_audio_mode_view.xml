@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF212121"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <ImageView
+        android:id="@+id/iv_animation"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/tv_play_video"
+        android:layout_width="96dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:background="@drawable/polyv_audio_mode_textview"
+        android:gravity="center"
+        android:text="播放画面"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+</merge>

@@ -3,7 +3,7 @@
     android:id="@+id/polyv_answer_web_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_alpha"
+    android:background="#4D000000"
     android:clickable="true"
     android:visibility="invisible">
 

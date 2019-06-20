@@ -3,21 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/video_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/back" />
-
     <include layout="@layout/polyv_cloudclass_controller_port" />
 
     <include layout="@layout/polyv_cloudclass_controller_land" />
 
-    <!-- 码率选择布局 -->
+    <!--更多-->
     <include
-        layout="@layout/polyv_bitrate_list"
-        android:layout_width="match_parent"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        layout="@layout/polyv_cloudclass_controller_more"
         android:layout_height="match_parent"
-        android:layout_alignParentRight="true" />
+        android:layout_width="match_parent"
+        />
 
 </RelativeLayout>

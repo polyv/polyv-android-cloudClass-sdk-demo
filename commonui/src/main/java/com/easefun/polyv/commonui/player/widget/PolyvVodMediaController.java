@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -24,7 +23,6 @@ import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.player.IPolyvBusinessMediaController;
 import com.easefun.polyv.commonui.player.PolyvVodVideoHelper;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
-import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvTimeUtils;
 
 public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVodVideoView> implements
@@ -42,7 +40,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
     private SeekBar sbPlayprogress, sbPlayprogressLand;
     //speed layout
     private RelativeLayout rlSpeed, definitionLayout;
-    private LinearLayout speedContainer;
+    private RelativeLayout speedContainer;
     private Button btSpeedPort, btSpeedLand, bt_speed_10, bt_speed_12, bt_speed_15, bt_speed_20;
     private PolyvVodVideoHelper polyvVodVideoHelper;
 
@@ -52,9 +50,11 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
     private ImageView pbPptVideoSwitchLand;
     private ImageView pbSubviewShowLand;
 
+    private ImageView ivBackPort;
+    private ImageView ivBackLand;
+
     private PolyvNoLeakHandler noLeakHandler;
-    private int speedPos;
-    private View speedChild;
+    private View curSelectedSpeedView;
 
     // 更新显示的播放进度，以及暂停/播放按钮
     private void showProgress() {
@@ -107,7 +107,6 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
     protected void initialView() {
         initalHandler();
         initView(getContext());
-        initialBitrate();
     }
 
     private void initalHandler() {
@@ -138,8 +137,10 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         videoControllerLand = (RelativeLayout) findViewById(R.id.rl_land);
         videoControllerLand.setVisibility(View.GONE);
 
-        videoBack = findViewById(R.id.video_back);
-        videoBack.setOnClickListener(this);
+        ivBackLand = findViewById(R.id.iv_back_land);
+        ivBackPort = findViewById(R.id.iv_back_port);
+        ivBackLand.setOnClickListener(this);
+        ivBackPort.setOnClickListener(this);
 
         ivPlaypause = findViewById(R.id.iv_playpause);
         ivPlaypauseLand = findViewById(R.id.iv_playpause_land);
@@ -159,10 +160,8 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         sbPlayprogressLand.setOnSeekBarChangeListener(this);
 
 
-        bitrateChange = findViewById(R.id.bitrate_change);
         pbPptVideoSwitch = findViewById(R.id.pb_ppt_video_switch);
         pbSubviewShow = findViewById(R.id.pb_subview_show);
-        bitrateChangeLand = findViewById(R.id.bitrate_change_land);
 
         pbPptVideoSwitchLand = findViewById(R.id.pb_ppt_video_switch_land);
         pbSubviewShowLand = findViewById(R.id.pb_subview_show_land);
@@ -171,15 +170,10 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
     }
 
     private void addListener() {
-        bitrateChange.setOnClickListener(this);
-        bitrateChangeLand.setOnClickListener(this);
         pbPptVideoSwitch.setOnClickListener(this);
         pbPptVideoSwitchLand.setOnClickListener(this);
         pbSubviewShow.setOnClickListener(this);
         pbSubviewShowLand.setOnClickListener(this);
-        bitrateChange.setOnClickListener(this);
-        bitrateChangeLand.setOnClickListener(this);
-
     }
 
     public void addOtherContolLayout(View view) {
@@ -199,6 +193,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         bt_speed_15.setOnClickListener(this);
         bt_speed_20 = (Button) view.findViewById(R.id.bt_speed_20);
         bt_speed_20.setOnClickListener(this);
+        switchSelectSpeedView(bt_speed_10);
     }
 
 
@@ -221,8 +216,6 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         int totalTime = polyvVideoView.getDuration();
         tvTotaltime.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
         tvTotaltimeLand.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
-        btSpeedPort.setText("1.0x");
-        btSpeedLand.setText("1.0x");
         videoControllerPort.setVisibility(VISIBLE);
     }
 
@@ -349,44 +342,30 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
             hide();
             visibleWithAnimation(rlSpeed);
         } else if (id == R.id.bt_speed_10) {
-            speedPos = 0;
+            switchSelectSpeedView(v);
             polyvVideoView.setSpeed(1.0f);
-            btSpeedPort.setText("1.0x");
-            btSpeedLand.setText("1.0x");
             goneWithAnimation(rlSpeed);
-
         } else if (id == R.id.bt_speed_12) {
-            speedPos = 1;
+            switchSelectSpeedView(v);
             polyvVideoView.setSpeed(1.2f);
-            btSpeedPort.setText("1.25x");
-            btSpeedLand.setText("1.25x");
             goneWithAnimation(rlSpeed);
-
         } else if (id == R.id.bt_speed_15) {
-            speedPos = 2;
+            switchSelectSpeedView(v);
             polyvVideoView.setSpeed(1.5f);
-            btSpeedPort.setText("1.5x");
-            btSpeedLand.setText("1.5x");
             goneWithAnimation(rlSpeed);
-
         } else if (id == R.id.bt_speed_20) {
-            speedPos = 3;
+            switchSelectSpeedView(v);
             polyvVideoView.setSpeed(2.0f);
-            btSpeedPort.setText("2x");
-            btSpeedLand.setText("2x");
             goneWithAnimation(rlSpeed);
-
         } else if (id == R.id.pb_ppt_video_switch || id == R.id.pb_ppt_video_switch_land) {
             changePPTVideoLocation();
         } else if (id == R.id.pb_subview_show || id == R.id.pb_subview_show_land) {
             showSubView();
-        } else if (id == R.id.video_back) {
-            if (ScreenUtils.isLandscape()) {
-                changeToPortrait();
-            } else {
-                if (context != null) {
-                    context.finish();
-                }
+        } else if (id == R.id.iv_back_port) {
+            changeToPortrait();
+        } else if (id == R.id.iv_back_land) {
+            if (context != null) {
+                context.finish();
             }
         } else if (id == R.id.rl_speed) {
             goneWithAnimation(rlSpeed);
@@ -460,14 +439,12 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
             ViewGroup.LayoutParams layoutParams = rlSpeed.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            speedContainer.setOrientation(LinearLayout.HORIZONTAL);
         } else {
-            speedContainer.setOrientation(LinearLayout.VERTICAL);
-            speedContainer.requestLayout();
             ViewGroup.LayoutParams layoutParams = rlSpeed.getLayoutParams();
-            layoutParams.width = PolyvScreenUtils.dip2px(getContext(), 200);
+            layoutParams.width = Math.max(ScreenUtils.getScreenWidth(), ScreenUtils.getScreenHeight()) / 2;
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         }
+        speedContainer.requestLayout();
     }
 
     @Override
@@ -514,17 +491,11 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         }
     }
 
-    @Override
-    protected void visibleWithAnimation(View view) {
-        super.visibleWithAnimation(view);
-        if (speedContainer != null) {
-            if (speedChild != null) {
-                speedChild.setSelected(false);
-            }
-            speedChild = speedContainer.getChildAt(speedPos);
-            if (speedChild != null) {
-                speedChild.setSelected(true);
-            }
+    private void switchSelectSpeedView(View selectedSpeedView) {
+        if (curSelectedSpeedView!=null){
+            curSelectedSpeedView.setSelected(false);
         }
+        selectedSpeedView.setSelected(true);
+        curSelectedSpeedView=selectedSpeedView;
     }
 }

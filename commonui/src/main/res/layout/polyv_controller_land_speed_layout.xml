@@ -1,58 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_speed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#dd404040"
     android:clickable="true"
-    android:visibility="invisible">
+    android:visibility="invisible"
+    tools:visibility="visible">
 
-    <ScrollView
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
 
-        <LinearLayout
+        <RelativeLayout
+            android:layout_gravity="center"
             android:id="@+id/speed_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginLeft="27dp"
+            android:layout_marginRight="27dp">
+
+            <TextView
+                android:gravity="center"
+                android:id="@+id/tv_speed_title"
+                android:layout_width="64dp"
+                android:layout_height="26dp"
+                android:text="倍速"
+                android:textColor="#99FFFFFF"
+                android:textSize="12sp" />
 
             <Button
+                android:layout_toRightOf="@id/tv_speed_title"
                 android:id="@+id/bt_speed_10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="26dp"
                 android:layout_weight="1"
-                android:background="@drawable/polyv_bt_pressed_gray"
+                android:background="@drawable/selector_controller_more_tv"
                 android:text="1x"
-                android:textColor="@drawable/polyv_speed_text_selector" />
+                android:textColor="@color/white" />
 
             <Button
+                android:layout_toRightOf="@id/bt_speed_10"
                 android:id="@+id/bt_speed_12"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="26dp"
                 android:layout_weight="1"
-                android:background="@drawable/polyv_bt_pressed_gray"
+                android:background="@drawable/selector_controller_more_tv"
                 android:text="1.25x"
-                android:textColor="@drawable/polyv_speed_text_selector" />
+                android:textColor="@color/white"  />
 
             <Button
+                android:layout_toRightOf="@id/bt_speed_12"
                 android:id="@+id/bt_speed_15"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="26dp"
                 android:layout_weight="1"
-                android:background="@drawable/polyv_bt_pressed_gray"
+                android:background="@drawable/selector_controller_more_tv"
                 android:text="1.5x"
-                android:textColor="@drawable/polyv_speed_text_selector" />
+                android:textColor="@color/white" />
 
             <Button
+                android:layout_marginTop="24dp"
+                android:layout_alignLeft="@id/bt_speed_10"
+                android:layout_below="@id/bt_speed_10"
                 android:id="@+id/bt_speed_20"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="64dp"
+                android:layout_height="26dp"
                 android:layout_weight="1"
-                android:background="@drawable/polyv_bt_pressed_gray"
+                android:background="@drawable/selector_controller_more_tv"
                 android:text="2x"
-                android:textColor="@drawable/polyv_speed_text_selector" />
-        </LinearLayout>
-    </ScrollView>
+                android:textColor="@color/white"  />
+        </RelativeLayout>
+    </HorizontalScrollView>
+
+    <ImageView
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/close" />
 </RelativeLayout>

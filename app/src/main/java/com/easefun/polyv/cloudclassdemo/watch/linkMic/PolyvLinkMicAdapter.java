@@ -208,7 +208,6 @@ public class PolyvLinkMicAdapter extends RecyclerView.Adapter<PolyvLinkMicAdapte
             PolyvCommonLog.e(TAG,"update :"+requestSEvent.getUserType());
             arrangeDataPos();
 
-            Thread.sleep(200);
         } catch (Exception e) {
             PolyvCommonLog.e(TAG,e.getMessage());
         }

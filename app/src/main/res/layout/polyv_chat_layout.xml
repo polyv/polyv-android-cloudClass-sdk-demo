@@ -9,7 +9,6 @@
         android:id="@+id/chat_top_select_layout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@drawable/tab_bg"
         android:orientation="horizontal"
         >
 

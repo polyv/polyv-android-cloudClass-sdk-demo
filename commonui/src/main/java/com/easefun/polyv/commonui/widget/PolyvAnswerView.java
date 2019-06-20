@@ -25,15 +25,17 @@ import android.widget.ScrollView;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.cloudclass.PolyvSocketEvent;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionResultVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionSResult;
+import com.easefun.polyv.cloudclass.model.bulletin.PolyvBulletinVO;
 import com.easefun.polyv.cloudclass.model.lottery.PolyvLottery2JsVO;
 import com.easefun.polyv.cloudclass.model.lottery.PolyvLotteryEndVO;
 import com.easefun.polyv.cloudclass.model.lottery.PolyvLotteryWinnerVO;
+import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignIn2JsVO;
+import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignInVO;
 import com.easefun.polyv.cloudclass.video.PolyvAnswerWebView;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBaseTransformer;
@@ -41,6 +43,7 @@ import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +68,9 @@ public class PolyvAnswerView extends FrameLayout {
 
     private static final String TAG = "PolyvAnswerView";
 
+    //为true加载web url资源，为false加载本地url资源
+    private static final boolean LOAD_WEB_URL =true;
+
     private PolyvAnswerWebView answerWebView;
     private ViewGroup answerContainer;
     //    private ImageView close;
@@ -76,12 +82,14 @@ public class PolyvAnswerView extends FrameLayout {
     //学员Id
     private String studentUserId;
 
-    //中奖信息是否显示o
+    //中奖信息是否显示
     private boolean isWinLotteryShow = false;
     //答题卡是否回答了
     private boolean isQuestionAnswer = false;
     //当前的答题id
     private String curQuestionId;
+    //公告消息
+    private PolyvBulletinVO bulletinVO = new PolyvBulletinVO();
 
     private ScrollView scrollView;
     private LinearLayout ll;
@@ -124,7 +132,12 @@ public class PolyvAnswerView extends FrameLayout {
                 isQuestionAnswer = true;
             }
         });
-        answerWebView.loadWeb();
+
+        if (LOAD_WEB_URL){
+            answerWebView.loadWeb();
+        }else {
+            answerWebView.loadUrl("file:///android_asset/index.html");
+        }
 
         messageDispose = PolyvRxBus.get().toObservable(PolyvSocketMessageVO.class)
                 .compose(new PolyvRxBaseTransformer<PolyvSocketMessageVO, PolyvSocketMessageVO>())
@@ -135,6 +148,7 @@ public class PolyvAnswerView extends FrameLayout {
                         processSocketMessage(polyvSocketMessage, event);
                     }
                 });
+        acceptBusEvent();
 
         ivClose.setOnClickListener(new OnClickListener() {
             @Override
@@ -152,6 +166,20 @@ public class PolyvAnswerView extends FrameLayout {
                 runnable.run();
             }
         }));
+    }
+
+    private void acceptBusEvent() {
+        disposables.add(PolyvRxBus.get().toObservable(BUS_EVENT.class)
+                .compose(new PolyvRxBaseTransformer<BUS_EVENT, BUS_EVENT>())
+                .subscribe(new Consumer<BUS_EVENT>() {
+                    @Override
+                    public void accept(BUS_EVENT event) throws Exception {
+                        if (event.type == BUS_EVENT.TYPE_SHOW_BULLETIN) {
+                            showAnswerContainer();
+                            answerWebView.callBulletinShow(bulletinVO);
+                        }
+                    }
+                }));
     }
 
     private void handleKeyboardOrientation() {
@@ -181,6 +209,7 @@ public class PolyvAnswerView extends FrameLayout {
                         }
                         curQuestionId = notNull(polyvQuestionSResult).getQuestionId();
                         isQuestionAnswer = false;
+                        lockToPortrait();//讲师发题
                         showAnswerContainer();
                         answerWebView.callUpdateNewQuestion(msg);
                     }
@@ -199,6 +228,7 @@ public class PolyvAnswerView extends FrameLayout {
                         if (socketVO.getResult() != null && "S".equals(socketVO.getResult().getType())) {
                             return;
                         }
+                        lockToPortrait();//答题结果
                         showAnswerContainer();
                         answerWebView.callHasChooseAnswer(socketVO.getQuestionId(), msg);
                     }
@@ -218,6 +248,7 @@ public class PolyvAnswerView extends FrameLayout {
                             e.printStackTrace();
                         }
                         if (!isQuestionAnswer && questionId.equals(curQuestionId)) {
+                            lockToPortrait();//截止答题
                             showAnswerContainer();
                             answerWebView.callStopQuestion();
                         }
@@ -226,12 +257,13 @@ public class PolyvAnswerView extends FrameLayout {
                 break;
             //开始问卷调查
             case PolyvSocketEvent.START_QUESTIONNAIRE:
-//                showAnswerContainer();
-//                answerWebView.callStartQuestionnaire(msg);
+                showAnswerContainer();
+                answerWebView.callStartQuestionnaire(msg);
+                lockToPortrait();//问卷调查
                 break;
             //停止问卷调查
             case PolyvSocketEvent.STOP_QUESTIONNAIRE:
-//                answerWebView.callStopQuestionnaire(msg);
+                answerWebView.callStopQuestionnaire(msg);
                 break;
             //开始抽奖
             case PolyvSocketEvent.LOTTERY_START:
@@ -279,18 +311,30 @@ public class PolyvAnswerView extends FrameLayout {
                 break;
             //开始签到
             case PolyvSocketEvent.START_SIGN_IN:
-//                showAnswerContainer();
-//                PolyvSignInVO signInVO = PolyvGsonUtil.fromJson(PolyvSignInVO.class, msg);
-//                PolyvSignIn2JsVO signIn2JsVO = new PolyvSignIn2JsVO(notNull(signInVO).getData().getLimitTime(), signInVO.getData().getMessage());
-//                String signJson;
-//                Gson gson = new Gson();
-//                signJson = gson.toJson(signIn2JsVO);
-//                LogUtils.json(signJson);
-//                answerWebView.startSignIn(signJson,signInVO);
+                showAnswerContainer();
+                PolyvSignInVO signInVO = PolyvGsonUtil.fromJson(PolyvSignInVO.class, msg);
+                PolyvSignIn2JsVO signIn2JsVO = new PolyvSignIn2JsVO(notNull(signInVO).getData().getLimitTime(), signInVO.getData().getMessage());
+                String signJson;
+                Gson gson = new Gson();
+                signJson = gson.toJson(signIn2JsVO);
+                LogUtils.json(signJson);
+                answerWebView.startSignIn(signJson, signInVO);
                 break;
             //停止签到
             case PolyvSocketEvent.STOP_SIGN_IN:
-//                answerWebView.stopSignIn();
+                answerWebView.stopSignIn();
+                break;
+            //显示公告
+            case PolyvSocketEvent.BULLETIN_SHOW:
+                showAnswerContainer();
+                bulletinVO = PolyvGsonUtil.fromJson(PolyvBulletinVO.class, msg);
+                answerWebView.callBulletinShow(bulletinVO);
+                break;
+            //移除公告
+            case PolyvSocketEvent.BULLETIN_REMOVE:
+                hideAnswerContainer();
+                answerWebView.callBulletinRemove();
+                bulletinVO.setContent("");
                 break;
             //其他
             default:
@@ -367,34 +411,15 @@ public class PolyvAnswerView extends FrameLayout {
         if (answerWebView != null) {
             answerWebView = null;
         }
-        if(messageDispose != null){
+        if (messageDispose != null) {
             messageDispose.dispose();
             messageDispose = null;
         }
-        if(disposables != null){
+        if (disposables != null) {
             disposables.dispose();
             disposables = null;
         }
     }
-
-//    @Override
-//    protected void onConfigurationChanged(Configuration newConfig) {
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            onLandscape();
-//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            onPortrait();
-//        }
-//    }
-//
-//    //横屏回调
-//    private void onLandscape() {
-//        LogUtils.d("横屏");
-//    }
-//
-//    //竖屏回调
-//    private void onPortrait() {
-//        LogUtils.d("竖屏");
-//    }
 
     /**
      * 横屏全屏键盘遮挡帮助类
@@ -480,6 +505,7 @@ public class PolyvAnswerView extends FrameLayout {
             return;
         }
         hideAnswerContainer();
+        PolyvScreenUtils.unlockOrientation();
     }
 
     private static class PolyvNoLeakWebChromeClient extends WebChromeClient {
@@ -515,6 +541,18 @@ public class PolyvAnswerView extends FrameLayout {
             dialog.setCancelable(false);
             dialog.show();
             return true;
+        }
+    }
+
+    //RxBus的事件
+    public static class BUS_EVENT {
+        //显示公告
+        public static final int TYPE_SHOW_BULLETIN = 1;
+
+        int type;
+
+        public BUS_EVENT(int type) {
+            this.type = type;
         }
     }
 }

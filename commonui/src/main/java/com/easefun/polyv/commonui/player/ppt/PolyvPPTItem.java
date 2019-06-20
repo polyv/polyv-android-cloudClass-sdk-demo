@@ -62,6 +62,10 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
         ((ViewGroup) pptContiner.getParent()).setVisibility(show);
     }
 
+    public void resetStatus() {
+        hasClosed = false;
+    }
+
     @Override
     public void onClick(View v) {
 

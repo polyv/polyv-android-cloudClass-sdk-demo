@@ -33,6 +33,11 @@ public class PolyvVodVideoHelper extends PolyvCommonVideoHelper<PolyvVodVideoIte
         }
     }
 
+    @Override
+    public void resetView(boolean isNoramlLivePlayBack) {
+
+    }
+
     public void pause() {
         videoView.pause();
     }

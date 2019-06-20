@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.easefun.polyv.cloudclassdemo.watch.player.live.widget.OrientationSensibleLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:id="@+id/ll_send_danmu"
+    android:background="#B3000000"
+    android:paddingLeft="142dp">
+
+    <EditText
+        android:id="@+id/et_send_danmu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:layout_gravity="top"
+        android:layout_weight="1"
+        android:background="@drawable/shape_et_send_danmu"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:imeOptions="flagNoFullscreen|flagNoExtractUi"
+        android:maxLines="4"
+        android:minHeight="32dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        tools:text="好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好"
+         />
+
+    <TextView
+        android:id="@+id/tv_send_danmu"
+        android:enabled="false"
+        android:layout_width="64dp"
+        android:layout_height="32dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="26dp"
+        android:layout_toRightOf="@id/et_send_danmu"
+        android:background="@drawable/selector_send_danmu_btn"
+        android:gravity="center"
+        android:text="发送"
+        android:textColor="@drawable/text_color_send_danmu_btn" />
+
+    <ImageView
+        android:id="@+id/iv_send_danmu_close"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="62dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="40dp"
+        android:src="@drawable/close" />
+
+</com.easefun.polyv.cloudclassdemo.watch.player.live.widget.OrientationSensibleLinearLayout>

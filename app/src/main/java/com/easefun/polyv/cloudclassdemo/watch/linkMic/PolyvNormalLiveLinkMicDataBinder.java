@@ -376,7 +376,6 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
             PolyvCommonLog.e(TAG, "update :" + requestSEvent.getUserType());
             arrangeDataPos();
 
-            Thread.sleep(200);
         } catch (Exception e) {
             PolyvCommonLog.e(TAG, e.getMessage());
         }
@@ -422,7 +421,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
             if(parentView.getChildAt(pos) != null){
                 parentView.removeViewAt(pos);
             }else {
-                ToastUtils.showLong("notifyItemRemoved:is null"+pos);
+//                ToastUtils.showLong("notifyItemRemoved:is null"+pos);
             }
         }
     }

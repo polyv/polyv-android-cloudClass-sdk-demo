@@ -15,6 +15,7 @@ import com.easefun.polyv.businesssdk.api.common.player.PolyvBaseVideoView;
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
 import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView;
+import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackVideoView;
 import com.easefun.polyv.cloudclass.video.api.IPolyvCloudClassVideoView;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
@@ -45,7 +46,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     protected PolyvBaseVideoParams playOption;
     protected PolyvAuxiliaryVideoview subVideoview;
     protected Q controller;
-    protected View loadingView, noStreamView;
+    protected View loadingView, noStreamView, audioModeView,screenShotView;
     protected static int videoViewVolume;
 
     protected  static final Handler S_HANDLER;
@@ -61,8 +62,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         this.videoView = videoItem.getVideoView();
         this.controller = videoItem.getController();
         this.subVideoview = videoItem.getSubVideoView();
-        this.subVideoviewParent = (ViewGroup) subVideoview.getParent();
-
+        if (subVideoview != null) {
+            this.subVideoviewParent = (ViewGroup) subVideoview.getParent();
+        }
 
         this.playerParent = videoItem.getView().findViewById(R.id.rl_top);
         this.playerView = playerParent.findViewById(PolyvBaseVideoView.IJK_VIDEO_ID);
@@ -104,7 +106,10 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     public abstract void initConfig(boolean isNormalLive);
 
+    public abstract void resetView(boolean isNoramlLivePlayBack);
+
     public void addPPT(PolyvTouchContainerView container) {
+        pptParent = container;
         if(pptContianer == null){
             return;
         }
@@ -113,8 +118,6 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         if (viewGroup != null)
             viewGroup.removeView(pptContianer);
         container.addView(pptContianer);
-
-        pptParent = container;
     }
 
     /**
@@ -134,7 +137,8 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         return true;
     }
 
-    private void changeView(boolean changeToVideoView) {
+    //true：ppt在主屏，false：ppt在副屏
+    public void changeView(boolean changeToVideoView) {
         if(pptContianer == null || pptView == null){
             return;
         }
@@ -149,6 +153,15 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
         if (changeToVideoView) {
 
+            if (audioModeView != null) {
+                videoView.removeView(audioModeView);
+                pptContianer.addView(audioModeView);
+            }
+            if (screenShotView!=null){
+                videoView.removeView(screenShotView);
+                pptContianer.addView(screenShotView);
+            }
+
             if (loadingView != null) {
                 videoView.removeView(loadingView);
                 pptContianer.addView(loadingView);
@@ -161,6 +174,16 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 //            playerParent.removeView(subVideoviewParent);
 //            pptContianer.addView(subVideoviewParent);
         } else {
+
+            if (audioModeView != null) {
+                pptContianer.removeView(audioModeView);
+                videoView.addView(audioModeView);
+            }
+
+            if (screenShotView!=null){
+                pptContianer.removeView(screenShotView);
+                videoView.addView(screenShotView);
+            }
 
             if (loadingView != null) {
                 pptContianer.removeView(loadingView);
@@ -201,6 +224,10 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         if(pptParent != null){
             pptParent.setVisibility(View.VISIBLE);
         }
+        PolyvPPTItem pptItem = videoItem.getPPTItem();
+        if (pptItem != null) {
+            pptItem.resetStatus();
+        }
     }
 
     public void changeToLandscape() {
@@ -220,7 +247,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         playOption = polyvBaseVideoParams;
         if (videoView instanceof IPolyvCloudClassVideoView) {
             videoView.playByMode(polyvBaseVideoParams, PolyvPlayOption.PLAYMODE_LIVE);
-        } else if (videoView instanceof PolyvVodVideoView) {
+        } else if (videoView instanceof PolyvVodVideoView || videoView instanceof PolyvPlaybackVideoView) {
             videoView.playByMode(polyvBaseVideoParams, PolyvPlayOption.PLAYMODE_VOD);
         }
     }
@@ -261,9 +288,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
 
     public void resume(){
-        if(videoView != null && !videoView.isPlaying()){
-            videoView.start();
-        }
+//        if(videoView != null && !videoView.isPlaying()){
+//            videoView.start();
+//        }
 //
 //        if(subVideoview != null && !subVideoview.isPlaying() && subVideoview.isShow()){
 //            subVideoview.start();

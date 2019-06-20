@@ -1,79 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/video_controller_land"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <FrameLayout
+
+        android:id="@+id/fl_gradient_bar_land"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/polyv_video_top_gradient" />
+
+        <ImageView
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/polyv_video_bottom_gradient" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/iv_video_back_land"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/back" />
+
+    <ImageView
+        android:id="@+id/iv_video_pause_land"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="34dp"
+        android:src="@drawable/selector_controller_play_and_pause" />
 
     <ImageView
         android:id="@+id/video_refresh_land"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignTop="@id/iv_video_pause_land"
+        android:layout_toRightOf="@id/iv_video_pause_land"
         android:src="@drawable/refresh" />
 
-    <LinearLayout
-
-        android:id="@+id/bottom_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dm_48"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/video_refresh_land"
-        android:gravity="right|center_vertical"
-        android:orientation="horizontal">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:shadowColor="#FF000000"
-            android:shadowDx="3"
-            android:shadowDy="3"
-            android:shadowRadius="2"
-            android:text="@string/danmu"
-            android:textColor="@color/white" />
-
-        <com.easefun.polyv.commonui.player.widget.PolyvSlideSwitchView
-            android:id="@+id/video_danmu_land"
-            android:layout_width="36dp"
-            android:layout_height="16dp"
-            android:layout_marginRight="@dimen/controller_margin"
-            android:layout_toLeftOf="@id/bitrate_change_land" />
-
-        <TextView
-            android:visibility="gone"
-            android:layout_marginRight="@dimen/dm_10"
-            android:id="@+id/bitrate_change_land"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dm_48"
-            android:gravity="center"
-            android:shadowColor="#FF000000"
-            android:shadowDx="3"
-            android:shadowDy="3"
-            android:shadowRadius="2"
-            android:src="@drawable/brate"
-            android:text="@string/most_definition"
-
-            android:textColor="@color/white" />
-    </LinearLayout>
 
     <ImageView
         android:id="@+id/video_ppt_change_switch_land"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/bottom_layout"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/controller_margin"
-        android:src="@drawable/exchange" />
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="48dp"
+        android:layout_marginBottom="34dp"
+        android:src="@drawable/controller_exchange" />
 
     <ImageView
-        android:visibility="invisible"
+        android:id="@+id/video_danmu_land"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="34dp"
+        android:layout_toLeftOf="@id/video_ppt_change_switch_land"
+        android:src="@drawable/selector_controller_danmu_switch"
+        android:textSize="18sp" />
+
+    <ImageView
         android:id="@+id/video_hands_up_land"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/video_ppt_change_switch_land"
-        android:layout_alignParentRight="true"
+        android:layout_alignLeft="@id/video_ppt_change_switch_land"
         android:layout_marginBottom="@dimen/controller_margin"
-        android:src="@drawable/polyv_mic_phone_selector" />
+        android:src="@drawable/polyv_mic_phone_selector"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/iv_more_land"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="40dp"
+        android:src="@drawable/controller_more" />
+
+
+    <TextView
+        android:id="@+id/tv_start_send_danmu_land"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_alignTop="@id/video_refresh_land"
+        android:layout_marginLeft="35dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginRight="35dp"
+        android:layout_toLeftOf="@id/video_danmu_land"
+        android:layout_toRightOf="@id/video_refresh_land"
+        android:background="@drawable/shape_et_send_danmu"
+        android:gravity="center"
+        android:imeOptions="flagNoFullscreen|flagNoExtractUi"
+        android:text="发个弹幕呗"
+        android:textColor="#7FFFFFFF"
+        android:textSize="12sp" />
+
+
 </RelativeLayout>
