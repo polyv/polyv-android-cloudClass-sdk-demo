@@ -32,6 +32,7 @@ import com.easefun.polyv.businesssdk.model.video.PolyvCloudClassVideoParams;
 import com.easefun.polyv.businesssdk.model.video.PolyvPlaybackVideoParams;
 import com.easefun.polyv.cloudclass.chat.PolyvChatApiRequestHelper;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
+import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
 import com.easefun.polyv.cloudclass.chat.PolyvConnectStatusListener;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener2;
@@ -807,6 +808,11 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             public void onDestroy() {
             }
         });
+
+        //设置字体聊天室字体颜色
+        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_ASSISTANT, Color.BLUE);
+        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_MANAGER,Color.BLUE);
+        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_TEACHER,Color.BLUE);
 
         //TODO 登录聊天室(userId：学员的Id(聊天室用户的唯一标识，非直播后台的userId，不同的学员应当使用不同的userId)，roomId：频道号，nickName：学员的昵称)
         //TODO 登录聊天室后一些功能才可以正常使用，例如：连麦

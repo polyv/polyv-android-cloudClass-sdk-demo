@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide;
 import com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView;
 import com.easefun.polyv.cloudclass.chat.PolyvChatAuthorization;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
+import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvSpeakEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvTAnswerEvent;
@@ -32,6 +33,7 @@ import com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView;
  * @Describe 接受消息item
  */
 public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object,PolyvChatListAdapter> {
+
     public ImageView avatar;
     public TextView typeTv/*头衔*/, nickTv;
     public GifSpanTextView receiveMessage;
@@ -198,6 +200,27 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object,PolyvC
         } else {
             receiveMessageHolder.typeTv.setVisibility(View.GONE);
         }
+
+        //设置不同用户类型的字体颜色
+        int fontColor;
+        switch (userType){
+            case PolyvChatManager.USERTYPE_TEACHER:
+                fontColor= PolyvChatUIConfig.FontColor.color_teacher;
+                break;
+            case PolyvChatManager.USERTYPE_ASSISTANT:
+                fontColor=PolyvChatUIConfig.FontColor.color_assistant;
+                break;
+            case PolyvChatManager.USERTYPE_STUDENT:
+                fontColor=PolyvChatUIConfig.FontColor.color_student;
+                break;
+            case PolyvChatManager.USERTYPE_MANAGER:
+                fontColor=PolyvChatUIConfig.FontColor.color_manager;
+                break;
+            default:
+                fontColor=PolyvChatUIConfig.FontColor.color_student;
+        }
+        receiveMessageHolder.receiveMessage.setTextColor(fontColor);
+
         //设置其发言信息
         if (message != null) {//设置文本类型的发言信息
             receiveMessageHolder.chatImg.setVisibility(View.GONE);
