@@ -1,7 +1,6 @@
 package com.easefun.polyv.commonui.adapter.viewholder;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -13,10 +12,8 @@ import android.widget.ProgressBar;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.commonui.R;
@@ -68,26 +65,26 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
     public abstract void processNormalMessage(M item, int position);
 
     //处理自定义消息
-    public abstract  void processCustomMessage(PolyvCustomEvent item, int position);
+    public abstract void processCustomMessage(PolyvCustomEvent item, int position);
 
     //创建itemview
-    public abstract  <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent) ;
+    public abstract <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent);
     // </editor-fold>
 
     //是否需要复用container里的childview
-    public int findReuseChildIndex(String type){
-       int childIndex = -1;
+    public int findReuseChildIndex(String type) {
+        int childIndex = -1;
         int count = contentContainer.getChildCount();
         for (int i = 0; i < count; i++) {
             View child = contentContainer.getChildAt(i);
-            if(type.equals(child.getTag())){
-                PolyvCommonLog.d(TAG,"findReuseChildIndex");
-                if(child.getVisibility() != View.VISIBLE){
+            if (type.equals(child.getTag())) {
+                PolyvCommonLog.d(TAG, "findReuseChildIndex");
+                if (child.getVisibility() != View.VISIBLE) {
                     child.setVisibility(View.VISIBLE);
                 }
                 childIndex = i;
-            }else {
-                if(child.getVisibility() != View.GONE){
+            } else {
+                if (child.getVisibility() != View.GONE) {
                     child.setVisibility(View.GONE);
                 }
             }
@@ -151,12 +148,13 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
             }
 
             @Override
-            public void onFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+            public void onFailed(@Nullable Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                 if ((int) imgLoading.getTag() != position)
                     return;
                 imgLoading.setVisibility(View.GONE);
                 imgLoading.setProgress(0);
             }
+
         };
         PolyvMyProgressManager.addListener(chatImg, position, onProgressListener);
         putImgUrl(chatImg, position);
@@ -206,16 +204,16 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
     private void loadChatImg(final String chatImg, final PolyvOnProgressListener onProgressListener, final ImageView view, final int position) {
         Glide.with(parentView.getContext())
                 .load(chatImg)
-                .apply(new RequestOptions().error(com.easefun.polyv.commonui.R.drawable.polyv_image_load_err))//dontAnimate，不显示gif
-                .listener(new RequestListener<Drawable>() {
+                .error(com.easefun.polyv.commonui.R.drawable.polyv_image_load_err)
+                .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                         onProgressListener.onFailed(e, model, target, isFirstResource);
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         PolyvMyProgressManager.removeListener(chatImg, position);
                         removeImgUrl(chatImg, position);
                         onProgressListener.onProgress(chatImg, true, 100, 0, 0);

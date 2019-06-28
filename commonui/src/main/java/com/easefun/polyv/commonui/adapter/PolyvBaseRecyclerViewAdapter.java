@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.bumptech.glide.request.RequestOptions;
 import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
 import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
 
@@ -23,8 +22,6 @@ public abstract class PolyvBaseRecyclerViewAdapter extends
 
     private List<RecyclerView.OnScrollListener> mListeners = new ArrayList<>();
 
-    protected RequestOptions requestOptions_t;
-    protected RequestOptions requestOptions_s;
     protected Map<String, List<Integer>> loadImgMap = new HashMap<>();
 
     public PolyvBaseRecyclerViewAdapter(RecyclerView recyclerView) {
@@ -63,13 +60,6 @@ public abstract class PolyvBaseRecyclerViewAdapter extends
     }
 
 
-    public RequestOptions getRequestOptions_t() {
-        return requestOptions_t;
-    }
-
-    public RequestOptions getRequestOptions_s() {
-        return requestOptions_s;
-    }
 
     public  void onDestory(){
         if (getLoadImgMap() != null) {

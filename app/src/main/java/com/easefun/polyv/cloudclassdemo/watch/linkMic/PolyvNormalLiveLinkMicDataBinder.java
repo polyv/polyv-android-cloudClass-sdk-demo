@@ -13,10 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatGroupFragment;
@@ -63,8 +61,6 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
     private ViewGroup parentView;
     private ViewGroup linkMicFrontView,frontParentView;//直播连麦时，前面两个连麦者的视图
 
-    private RequestOptions requestOptions_t;
-    private RequestOptions requestOptions_s;
 
     public PolyvNormalLiveLinkMicDataBinder(String myUid) {
         this.myUid = myUid;
@@ -176,22 +172,23 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
 
     public void loadAvtar(String pic,String userType,CircleImageView circleImageView) {
         //加载头像
-        if (requestOptions_t == null) {
-            requestOptions_t = new RequestOptions()
+        if (PolyvChatGroupFragment.isTeacherType(userType)){
+            //老师
+            Glide.with(parentView.getContext())
+                    .load(pic)
                     .placeholder(com.easefun.polyv.commonui.R.drawable.polyv_default_teacher)
                     .error(com.easefun.polyv.commonui.R.drawable.polyv_default_teacher)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE);
-        }
-        if (requestOptions_s == null) {
-            requestOptions_s = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(circleImageView);
+        }else {
+            //学生
+            Glide.with(parentView.getContext())
+                    .load(pic)
                     .placeholder(com.easefun.polyv.commonui.R.drawable.polyv_missing_face)
                     .error(com.easefun.polyv.commonui.R.drawable.polyv_missing_face)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE);
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(circleImageView);
         }
-        Glide.with(parentView.getContext())
-                .load(pic)
-                .apply(PolyvChatGroupFragment.isTeacherType(userType) ? requestOptions_t : requestOptions_s)
-                .into(circleImageView);
     }
 
     private void addTeacher(String teacherId, PolyvJoinInfoEvent teacherEvent) {

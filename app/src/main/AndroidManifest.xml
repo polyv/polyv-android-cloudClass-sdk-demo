@@ -24,6 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:replace="android:icon,android:theme">
+        <meta-data
+            android:name="com.easefun.polyv.commonui.utils.glide.progress.PolyvProgressLibraryGlideModule"
+            android:value="GlideModule" />
         <activity
             android:name=".login.PolyvCloudClassLoginActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">

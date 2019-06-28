@@ -74,6 +74,10 @@
 -keepclassmembers class * {
     void *(**On*Event);
 }
+
+#glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+
 #----------------------------------------------------------------------------
 
 #---------------------------------webview------------------------------------

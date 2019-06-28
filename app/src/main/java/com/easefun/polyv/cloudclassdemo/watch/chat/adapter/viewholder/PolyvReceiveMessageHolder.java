@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView;
 import com.easefun.polyv.cloudclass.chat.PolyvChatAuthorization;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
@@ -184,11 +185,24 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object,PolyvC
     private void acceptReceiveMessage(final PolyvReceiveMessageHolder receiveMessageHolder, String userType, String actor, String nick, final String pic, CharSequence message, final String chatImg, int height, int width, PolyvChatAuthorization chatAuthorization, final int position) {
 
         if(adapter != null){
+            if (PolyvChatGroupFragment.isTeacherType(userType)){
+                //教师
+                Glide.with(parentView.getContext())
+                        .load(pic)
+                        .placeholder(com.easefun.polyv.commonui.R.drawable.polyv_default_teacher)
+                        .error(com.easefun.polyv.commonui.R.drawable.polyv_default_teacher)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(receiveMessageHolder.avatar);
+            }else {
+                //学生
+                Glide.with(parentView.getContext())
+                        .load(pic)
+                        .placeholder(com.easefun.polyv.commonui.R.drawable.polyv_missing_face)
+                        .error(com.easefun.polyv.commonui.R.drawable.polyv_missing_face)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .into(receiveMessageHolder.avatar);
 
-            Glide.with(parentView.getContext())
-                    .load(pic)
-                    .apply(PolyvChatGroupFragment.isTeacherType(userType) ?adapter.getRequestOptions_t() : adapter.getRequestOptions_s())
-                    .into(receiveMessageHolder.avatar);
+            }
         }
         //设置昵称
         receiveMessageHolder.nickTv.setText(nick);

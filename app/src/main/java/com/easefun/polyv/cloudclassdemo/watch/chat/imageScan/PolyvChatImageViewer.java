@@ -2,6 +2,7 @@ package com.easefun.polyv.cloudclassdemo.watch.chat.imageScan;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -15,7 +16,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.ImageUtils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
@@ -110,11 +113,14 @@ public class PolyvChatImageViewer extends FrameLayout {
                                         }
                                     } catch (Exception e) {
                                     }
-                                    return Glide.with(getContext())
-                                            .asFile()
+                                    File file = new File(savePath, fileName);
+                                    Bitmap bitmap = Glide.with(getContext())
                                             .load(imgUrl)
-                                            .submit()
+                                            .asBitmap()
+                                            .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                                             .get();
+                                    ImageUtils.save(bitmap, file, Bitmap.CompressFormat.PNG);
+                                    return file;
                                 }
                             })
                             .map(new Function<File, Boolean>() {
