@@ -46,9 +46,9 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
     private void initialView() {
         rootView = View.inflate(getContext(), R.layout.polyv_ppt_item_view, this);
 
-        polyvPptView = findViewById(R.id.polyv_ppt_view);
-        pptContiner = findViewById(R.id.polyv_ppt_container);
-        videoSubviewClose = findViewById(R.id.video_subview_close);
+        polyvPptView = (PolyvPPTView) findViewById(R.id.polyv_ppt_view);
+        pptContiner = (FrameLayout) findViewById(R.id.polyv_ppt_container);
+        videoSubviewClose = (ImageView) findViewById(R.id.video_subview_close);
         videoSubviewClose.setOnClickListener(this);
     }
 

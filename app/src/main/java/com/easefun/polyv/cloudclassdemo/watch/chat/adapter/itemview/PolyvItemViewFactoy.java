@@ -52,7 +52,7 @@ public class PolyvItemViewFactoy {
             public void initView() {
 
                 View.inflate(context, R.layout.polyv_chat_default_message,this);
-                defaultView = findViewById(R.id.chat_message_default_tip);
+                defaultView = (TextView) findViewById(R.id.chat_message_default_tip);
             }
         };
     }

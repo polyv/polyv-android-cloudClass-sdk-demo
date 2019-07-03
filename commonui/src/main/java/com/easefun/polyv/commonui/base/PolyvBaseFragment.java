@@ -46,7 +46,7 @@ public abstract class PolyvBaseFragment extends Fragment implements PolyvPermiss
 
     // <editor-fold defaultstate="collapsed" desc="View相关">
     protected final <T extends View> T findViewById(int id) {
-        return view.findViewById(id);
+        return (T) view.findViewById(id);
     }
     // </editor-fold>
 

@@ -112,11 +112,11 @@ public class PolyvAnswerView extends FrameLayout {
 
     private void initialView(Context context) {
         View.inflate(context, R.layout.polyv_answer_web_layout, this);
-        answerWebView = findViewById(R.id.polyv_question_web);
-        answerContainer = findViewById(R.id.polyv_answer_web_container);
-        scrollView = findViewById(R.id.polyv_answer_scroll);
-        ll = findViewById(R.id.polyv_answer_ll);
-        ivClose = findViewById(R.id.polyv_answer_close);
+        answerWebView = (PolyvAnswerWebView) findViewById(R.id.polyv_question_web);
+        answerContainer = (ViewGroup) findViewById(R.id.polyv_answer_web_container);
+        scrollView = (ScrollView) findViewById(R.id.polyv_answer_scroll);
+        ll = (LinearLayout) findViewById(R.id.polyv_answer_ll);
+        ivClose = (ImageView) findViewById(R.id.polyv_answer_close);
 
         answerWebView.setWebChromeClient(new PolyvNoLeakWebChromeClient(getContext()));
         answerWebView.setAnswerContainer(answerContainer);
@@ -433,7 +433,7 @@ public class PolyvAnswerView extends FrameLayout {
         private View bottomPlaceHolder;
 
         private PolyvAnswerKeyboardHelper(Activity activity) {
-            FrameLayout content = activity.findViewById(android.R.id.content);
+            FrameLayout content = (FrameLayout) activity.findViewById(android.R.id.content);
             mChildOfContent = content.getChildAt(0);
             mChildOfContent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 public void onGlobalLayout() {

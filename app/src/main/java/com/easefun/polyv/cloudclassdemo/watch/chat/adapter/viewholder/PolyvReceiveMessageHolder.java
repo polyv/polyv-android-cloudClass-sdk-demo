@@ -57,7 +57,7 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object,PolyvC
     }
 
     private void initCommonView() {
-        avatar = parentView.findViewById(com.easefun.polyv.commonui.R.id.iv_avatar);
+        avatar = (ImageView) parentView.findViewById(com.easefun.polyv.commonui.R.id.iv_avatar);
         typeTv = $(com.easefun.polyv.commonui.R.id.tv_type);
         nickTv =  $(com.easefun.polyv.commonui.R.id.tv_nick);
     }

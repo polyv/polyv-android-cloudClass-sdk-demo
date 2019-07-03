@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
@@ -118,27 +119,27 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 
     private void initialOtherView() {
         //竖屏
-        videoControllerPort = findViewById(R.id.video_controller_port);
-        videoRefreshPort = findViewById(R.id.video_refresh_port);
-        videoScreenSwitchPort = findViewById(R.id.video_screen_switch_port);
-        videoDanmuPort = findViewById(R.id.video_danmu_port);
-        videoPptChangeSwitchPort = findViewById(R.id.video_ppt_change_switch_port);
-        videoHandsUpPort = findViewById(R.id.video_hands_up_port);
-        videoBackPort = findViewById(R.id.iv_video_back_portrait);
-        ivMorePortrait = findViewById(R.id.iv_more_portrait);
-        ivVideoPausePortrait = findViewById(R.id.iv_video_pause_portrait);
-        flGradientBarPort = findViewById(R.id.fl_gradient_bar_port);
+        videoControllerPort = (RelativeLayout) findViewById(R.id.video_controller_port);
+        videoRefreshPort = (ImageView) findViewById(R.id.video_refresh_port);
+        videoScreenSwitchPort = (ImageView) findViewById(R.id.video_screen_switch_port);
+        videoDanmuPort = (ImageView) findViewById(R.id.video_danmu_port);
+        videoPptChangeSwitchPort = (ImageView) findViewById(R.id.video_ppt_change_switch_port);
+        videoHandsUpPort = (ImageView) findViewById(R.id.video_hands_up_port);
+        videoBackPort = (ImageView) findViewById(R.id.iv_video_back_portrait);
+        ivMorePortrait = (ImageView) findViewById(R.id.iv_more_portrait);
+        ivVideoPausePortrait = (ImageView) findViewById(R.id.iv_video_pause_portrait);
+        flGradientBarPort = (FrameLayout) findViewById(R.id.fl_gradient_bar_port);
 
         //横屏
-        videoControllerLand = findViewById(R.id.video_controller_land);
-        videoRefreshLand = findViewById(R.id.video_refresh_land);
-        videoDanmuLand = findViewById(R.id.video_danmu_land);
-        videoScreenSwitchLand = findViewById(R.id.video_ppt_change_switch_land);
-        videoHandsUpLand = findViewById(R.id.video_hands_up_land);
-        videoBackLand = findViewById(R.id.iv_video_back_land);
-        ivMoreLand = findViewById(R.id.iv_more_land);
-        ivVideoPauseLand = findViewById(R.id.iv_video_pause_land);
-        flGradientBarLand = findViewById(R.id.fl_gradient_bar_land);
+        videoControllerLand = (RelativeLayout) findViewById(R.id.video_controller_land);
+        videoRefreshLand = (ImageView) findViewById(R.id.video_refresh_land);
+        videoDanmuLand = (ImageView) findViewById(R.id.video_danmu_land);
+        videoScreenSwitchLand = (ImageView) findViewById(R.id.video_ppt_change_switch_land);
+        videoHandsUpLand = (ImageView) findViewById(R.id.video_hands_up_land);
+        videoBackLand = (ImageView) findViewById(R.id.iv_video_back_land);
+        ivMoreLand = (ImageView) findViewById(R.id.iv_more_land);
+        ivVideoPauseLand = (ImageView) findViewById(R.id.iv_video_pause_land);
+        flGradientBarLand = (FrameLayout) findViewById(R.id.fl_gradient_bar_land);
 
         //更多
         moreLayout = new PolyvCloudClassMoreLayout(context, this);
@@ -164,7 +165,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             }
         });
 
-        tvStartSendDanmuLand = findViewById(R.id.tv_start_send_danmu_land);
+        tvStartSendDanmuLand = (TextView) findViewById(R.id.tv_start_send_danmu_land);
 
         videoControllerLand.setVisibility(View.GONE);
 

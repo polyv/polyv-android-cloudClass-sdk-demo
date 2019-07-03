@@ -166,13 +166,13 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
     private void initialSubView() {
 
-        subVideoview = findViewById(R.id.sub_videoview);
-        flSubBackAndGradient=findViewById(R.id.fl_sub_back_gradient);
-        subBackLand = findViewById(R.id.sub_video_back_land);
-        subLoadingview = findViewById(R.id.sub_loadingview);
-        subPreparingview = findViewById(R.id.sub_preparingview);
-        tvCountdown = findViewById(R.id.tv_countdown);
-        tvSkip = findViewById(R.id.tv_skip);
+        subVideoview = (PolyvAuxiliaryVideoview) findViewById(R.id.sub_videoview);
+        flSubBackAndGradient= (FrameLayout) findViewById(R.id.fl_sub_back_gradient);
+        subBackLand = (ImageView) findViewById(R.id.sub_video_back_land);
+        subLoadingview = (ProgressBar) findViewById(R.id.sub_loadingview);
+        subPreparingview = (TextView) findViewById(R.id.sub_preparingview);
+        tvCountdown = (TextView) findViewById(R.id.tv_countdown);
+        tvSkip = (TextView) findViewById(R.id.tv_skip);
 
         subBackLand.setOnClickListener(this);
         subVideoview.setOnGestureClickListener(onGestureClickListener);
@@ -190,16 +190,16 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
         rootView = View.inflate(context, R.layout.polyv_cloudclass_item, this);
 
-        ivScreenshot =findViewById(R.id.iv_screenshot);
+        ivScreenshot = (ImageView) findViewById(R.id.iv_screenshot);
 
-        rlTop = findViewById(R.id.rl_top);
-        loadingview = findViewById(R.id.loadingview);
-        preparingview = findViewById(R.id.preparingview);
-        tipsviewLight = findViewById(R.id.tipsview_light);
-        tipsviewVolume = findViewById(R.id.tipsview_volume);
+        rlTop = (RelativeLayout) findViewById(R.id.rl_top);
+        loadingview = (ProgressBar) findViewById(R.id.loadingview);
+        preparingview = (TextView) findViewById(R.id.preparingview);
+        tipsviewLight = (PolyvLightTipsView) findViewById(R.id.tipsview_light);
+        tipsviewVolume = (PolyvVolumeTipsView) findViewById(R.id.tipsview_volume);
         noStream = findViewById(R.id.no_stream);
-        audioModeLayoutRoot = findViewById(R.id.fl_audio_mode_layout_root);
-        marqueeView = findViewById(R.id.polyv_marquee_view);
+        audioModeLayoutRoot = (FrameLayout) findViewById(R.id.fl_audio_mode_layout_root);
+        marqueeView = (PolyvMarqueeView) findViewById(R.id.polyv_marquee_view);
 
         FragmentTransaction fragmentTransaction = context.getSupportFragmentManager().beginTransaction();
         danmuFragment = new PolyvDanmuFragment();
@@ -207,7 +207,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
         landscapeDanmuSender=new PolyvLandscapeDanmuSendPanel(context,this);
 
-        controller = findViewById(R.id.controller);
+        controller = (PolyvCloudClassMediaController) findViewById(R.id.controller);
         controller.setOnClickOpenStartSendDanmuListener(()->{
             controller.hide();
            landscapeDanmuSender.openDanmuSender();
@@ -228,7 +228,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
     }
 
     private void initialVideoView() {
-        polyvCloudClassVideoView = findViewById(R.id.cloudschool_videoview);
+        polyvCloudClassVideoView = (PolyvCloudClassVideoView) findViewById(R.id.cloudschool_videoview);
         polyvCloudClassVideoView.setAudioModeView(audioModeView);
         polyvCloudClassVideoView.setMediaController(controller);
         polyvCloudClassVideoView.setNoStreamIndicator(noStream);

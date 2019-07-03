@@ -42,7 +42,7 @@ public class PolyvToast {
         View view = toast.getView();
         if (view != null) {
             view.setBackgroundColor(Color.parseColor("#00000000"));
-            TextView message = view.findViewById(android.R.id.message);
+            TextView message = (TextView) view.findViewById(android.R.id.message);
             message.setBackgroundResource(R.drawable.polyv_tv_status);
             message.setGravity(Gravity.CENTER);
             message.setPadding(ConvertUtils.dp2px(12), message.getPaddingTop(), ConvertUtils.dp2px(12), message.getPaddingBottom());

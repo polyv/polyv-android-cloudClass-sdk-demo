@@ -95,7 +95,7 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
         tipsviewProgress = (PolyvProgressTipsView) findViewById(R.id.tipsview_progress);
         tvCountdown = (TextView) findViewById(R.id.tv_countdown);
         tvSkip = (TextView) findViewById(R.id.tv_skip);
-        marqueeView = findViewById(R.id.polyv_marquee_view);
+        marqueeView = (PolyvMarqueeView) findViewById(R.id.polyv_marquee_view);
 
         tvSkip.setOnClickListener(this);
 //        sub_hud_view = (TableLayout) findViewById(R.id.sub_hud_view);

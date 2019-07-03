@@ -200,9 +200,11 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             return;
         }
         if (livePlayerHelper != null) {
+            livePlayerHelper.onActivityResume();
             livePlayerHelper.resume();
         }
         if (playbackVideoHelper != null) {
+            playbackVideoHelper.onActivityResume();
             playbackVideoHelper.resume();
         }
 
@@ -218,9 +220,11 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             return;
         }
         if (livePlayerHelper != null) {
+            livePlayerHelper.onActivityPause();
             livePlayerHelper.pause();
         }
         if (playbackVideoHelper != null) {
+            playbackVideoHelper.onActivityPause();
             playbackVideoHelper.pause();
         }
 
@@ -231,8 +235,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     @Override
     protected void onDestroy() {
         PolyvCommonLog.d(TAG, "home ondestory");
-        super.onDestroy();
+
         if (!isInitialize()) {
+            super.onDestroy();
             //未初始化时，不执行以下代码，避免出现空指针异常
             return;
         }
@@ -259,6 +264,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         PolyvLinkMicWrapper.getInstance().destroy(linkMicLayout);
         PolyvChatEventBus.clear();
+
+        super.onDestroy();
     }
     // </editor-fold>
 
@@ -300,14 +307,14 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             return;
         }
         if (isNormalLive) {
-            linkMicStub = findViewById(R.id.polyv_normal_live_link_mic_stub);
+            linkMicStub = (ViewStub) findViewById(R.id.polyv_normal_live_link_mic_stub);
         } else {
-            linkMicStub = findViewById(R.id.polyv_link_mic_stub);
+            linkMicStub = (ViewStub) findViewById(R.id.polyv_link_mic_stub);
         }
         if (linkMicStubView == null) {
             linkMicStubView = linkMicStub.inflate();
         }
-        linkMicLayout = linkMicStubView.findViewById(R.id.link_mic_layout);
+        linkMicLayout = (LinearLayout) linkMicStubView.findViewById(R.id.link_mic_layout);
         if (linkMicStubView instanceof IPolyvRotateBaseView) {
             linkMicLayoutParent = (IPolyvRotateBaseView) linkMicStubView;
         }
@@ -345,13 +352,13 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     }
 
     private void initialChatRoom() {
-        imageViewerContainer = findViewById(R.id.image_viewer_container);
-        chatEditContainer = findViewById(R.id.chat_edit_container);
-        chatTopSelectLayout = findViewById(R.id.chat_top_select_layout);
-        chatContainerLayout = findViewById(R.id.chat_container_layout);
-        personalChatItemLayout = findViewById(R.id.personal_chat_item_layout);
-        groupChatItemLayout = findViewById(R.id.group_chat_item_layout);
-        chatViewPager = findViewById(R.id.chat_viewpager);
+        imageViewerContainer = (FrameLayout) findViewById(R.id.image_viewer_container);
+        chatEditContainer = (FrameLayout) findViewById(R.id.chat_edit_container);
+        chatTopSelectLayout = (LinearLayout) findViewById(R.id.chat_top_select_layout);
+        chatContainerLayout = (LinearLayout) findViewById(R.id.chat_container_layout);
+        personalChatItemLayout = (RelativeLayout) findViewById(R.id.personal_chat_item_layout);
+        groupChatItemLayout = (RelativeLayout) findViewById(R.id.group_chat_item_layout);
+        chatViewPager = (ViewPager) findViewById(R.id.chat_viewpager);
         if (playMode == PolyvPlayOption.PLAYMODE_LIVE) {//直播
             chatContainerLayout.setVisibility(View.VISIBLE);
             personalChatItemLayout.setOnClickListener(this);
@@ -409,7 +416,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     }
 
     private void intialPpt() {
-        videoPptContainer = findViewById(R.id.video_ppt_container);
+        videoPptContainer = (PolyvTouchContainerView) findViewById(R.id.video_ppt_container);
 
         videoPptContainer.setOriginLeft(ScreenUtils.getScreenWidth() - PolyvScreenUtils.dip2px
                 (PolyvCloudClassHomeActivity.this, 144));
@@ -446,8 +453,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
      * 答题相关
      */
     private void initialAnswer() {
-        answerView = findViewById(R.id.answer_layout);
-        answerContainer = answerView.findViewById(R.id.polyv_answer_web_container);
+        answerView = (PolyvAnswerView) findViewById(R.id.answer_layout);
+        answerContainer = (ViewGroup) answerView.findViewById(R.id.polyv_answer_web_container);
         answerView.setStudentUserId(studentUserId);
         answerView.setAnswerJsCallback(new PolyvAnswerWebView.AnswerJsCallback() {
             @Override
@@ -550,7 +557,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         PolyvCommonLog.d(TAG, "initialVodVideo");
 
         // 播放器
-        playerContainer = findViewById(R.id.player_container);
+        playerContainer = (FrameLayout) findViewById(R.id.player_container);
         ViewGroup.LayoutParams vlp = playerContainer.getLayoutParams();
         vlp.width = ViewGroup.LayoutParams.MATCH_PARENT;
         vlp.height = PolyvScreenUtils.getHeight();

@@ -65,9 +65,9 @@ public class PolyvChatImageViewer extends FrameLayout {
 
     private void init(Context context) {
         view = LayoutInflater.from(context).inflate(R.layout.polyv_image_viewpager, this);
-        vpImageViewer = view.findViewById(R.id.vp_image_viewer);
-        tvPage = view.findViewById(R.id.tv_page);
-        ivDownload = view.findViewById(R.id.iv_download);
+        vpImageViewer = (ViewPager) view.findViewById(R.id.vp_image_viewer);
+        tvPage = (TextView) view.findViewById(R.id.tv_page);
+        ivDownload = (ImageView) view.findViewById(R.id.iv_download);
         ivDownload.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

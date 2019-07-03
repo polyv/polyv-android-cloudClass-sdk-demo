@@ -70,7 +70,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
     public void bindLinkMicFrontView(ViewGroup linkMicLayoutParent) {
         super.bindLinkMicFrontView(linkMicFrontView);
         this.frontParentView = linkMicLayoutParent;
-        ViewGroup frontView = linkMicLayoutParent.findViewById(R.id.link_mic_fixed_position);
+        ViewGroup frontView = (ViewGroup) linkMicLayoutParent.findViewById(R.id.link_mic_fixed_position);
         this.linkMicFrontView = frontView;
     }
 
@@ -150,7 +150,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
                 startShowTimer();
             }
         }
-        SurfaceView surfaceView = holder.normalLinkMicView.findViewById(CAMERA_VIEW_ID);
+        SurfaceView surfaceView = (SurfaceView) holder.normalLinkMicView.findViewById(CAMERA_VIEW_ID);
         PolyvCommonLog.d(TAG, "onBindViewHolder:uid :" + uid + "  pos :" + position);
 
         if (teacher != null && teacher.getUserId().equals(uid)) {
@@ -227,7 +227,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
         }else{
             child = parentView.getChildAt(pos-2);
         }
-        SurfaceView surfaceView = child.findViewById(CAMERA_VIEW_ID);
+        SurfaceView surfaceView = (SurfaceView) child.findViewById(CAMERA_VIEW_ID);
         surfaceView.setVisibility(mute ? View.INVISIBLE : View.VISIBLE);
     }
 
@@ -262,7 +262,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
             ViewGroup soundRound = null;
             if(joinInfoEvent.getUserId().equals(teacherId)){//|| pos == 1
                 soundRound = (ViewGroup) linkMicFrontView.getChildAt(pos);
-                PolyvSmoothRoundProgressView polyvSmoothRoundProgressView = soundRound.findViewById(R.id.link_mic_sound_around);
+                PolyvSmoothRoundProgressView polyvSmoothRoundProgressView = (PolyvSmoothRoundProgressView) soundRound.findViewById(R.id.link_mic_sound_around);
                 polyvSmoothRoundProgressView.setMaxNum(totalVolume);
                 polyvSmoothRoundProgressView.setProgressNum(audioVolumeInfo.volume,5000);
             }
@@ -313,11 +313,11 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder{
         }
         public PolyvMicHodler(View itemView) {
             super(itemView);
-            normalLinkMicView = itemView.findViewById(R.id.normal_live_link_mic_container);
-            cover = itemView.findViewById(R.id.link_mic_cover);
-            soundRoundView = itemView.findViewById(R.id.link_mic_sound_around);
-            polyvLinkNick = itemView.findViewById(R.id.link_mic_nick);
-            cameraSwitch = itemView.findViewById(R.id.normal_live_camera_switch);
+            normalLinkMicView = (RelativeLayout) itemView.findViewById(R.id.normal_live_link_mic_container);
+            cover = (CircleImageView) itemView.findViewById(R.id.link_mic_cover);
+            soundRoundView = (PolyvSmoothRoundProgressView) itemView.findViewById(R.id.link_mic_sound_around);
+            polyvLinkNick = (TextView) itemView.findViewById(R.id.link_mic_nick);
+            cameraSwitch = (ImageView) itemView.findViewById(R.id.normal_live_camera_switch);
             cameraSwitch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

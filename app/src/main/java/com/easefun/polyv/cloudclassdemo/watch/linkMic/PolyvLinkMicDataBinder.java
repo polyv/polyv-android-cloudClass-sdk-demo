@@ -124,7 +124,7 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
         } else if (polyvJoinRequestSEvent != null) {
             holder.polyvLinkNick.setText(polyvJoinRequestSEvent.getNick());
         }
-        SurfaceView surfaceView = holder.camerLayout.findViewById(CAMERA_VIEW_ID);
+        SurfaceView surfaceView = (SurfaceView) holder.camerLayout.findViewById(CAMERA_VIEW_ID);
         PolyvCommonLog.d(TAG, "onBindViewHolder:uid :" + uid + "  pos :" + position);
         if (polyvJoinRequestSEvent != null) {
             surfaceView.setVisibility(polyvJoinRequestSEvent.isMute() ? View.INVISIBLE : View.VISIBLE);
@@ -186,7 +186,7 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
 
     public void notifyItemChanged(int pos, boolean mute) {
         View child = parentView.getChildAt(pos);
-        SurfaceView surfaceView = child.findViewById(CAMERA_VIEW_ID);
+        SurfaceView surfaceView = (SurfaceView) child.findViewById(CAMERA_VIEW_ID);
         surfaceView.setVisibility(mute ? View.INVISIBLE : View.VISIBLE);
     }
 
@@ -260,9 +260,9 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
         public PolyvMicHodler(View itemView) {
             super(itemView);
             camer = itemView.findViewById(R.id.polyv_link_camera_switch_container);
-            cameraSwitch = itemView.findViewById(R.id.polyv_camera_switch);
-            polyvLinkNick = itemView.findViewById(R.id.polyv_link_nick);
-            camerLayout = itemView.findViewById(R.id.polyv_link_mic_camera_layout);
+            cameraSwitch = (ImageView) itemView.findViewById(R.id.polyv_camera_switch);
+            polyvLinkNick = (TextView) itemView.findViewById(R.id.polyv_link_nick);
+            camerLayout = (FrameLayout) itemView.findViewById(R.id.polyv_link_mic_camera_layout);
             cameraSwitch.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

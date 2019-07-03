@@ -55,8 +55,8 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     protected void initialView(Context context) {
 
         View.inflate(context, R.layout.polyv_ppt_webview_layout, this);
-        polyvPPTWebView = findViewById(R.id.polyv_ppt_web);
-        pptLoadingView = findViewById(R.id.polyv_ppt_default_icon);
+        polyvPPTWebView = (PolyvPPTWebView) findViewById(R.id.polyv_ppt_web);
+        pptLoadingView = (ImageView) findViewById(R.id.polyv_ppt_default_icon);
         loadWeb();
 
     }

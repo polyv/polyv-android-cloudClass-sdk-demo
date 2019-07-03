@@ -41,7 +41,7 @@ public class PolyvCustomQMessageItemView extends IPolyvCustomMessageBaseItemView
 
     public void initView() {
         View.inflate(getContext(), R.layout.polyv_chat_message_q_item, this);
-        ivQ = findViewById(R.id.message_q_iv);
+        ivQ = (ImageView) findViewById(R.id.message_q_iv);
     }
 
 }

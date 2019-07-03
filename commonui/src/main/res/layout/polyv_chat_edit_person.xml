@@ -24,14 +24,12 @@
         android:textColorHint="#c7c7c7"
         android:textSize="16sp" />
 
-    <com.easefun.polyv.commonui.widget.PolyvPressedImageView
+    <ImageView
         android:id="@+id/iv_emoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:clickable="true"
-        android:src="@drawable/emoji"
-        app:pressed_color="#14a2f4"
-        app:selected_color="#14a2f4" />
+        android:src="@drawable/polyv_selector_emoji" />
 </RelativeLayout>

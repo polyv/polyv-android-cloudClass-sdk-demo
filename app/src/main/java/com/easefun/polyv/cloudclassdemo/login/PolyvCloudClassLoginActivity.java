@@ -97,8 +97,8 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     }
 
     private void initialTopLayout() {
-        liveGroupLayout = findViewById(R.id.live_group_layout);
-        playbackGroupLayout = findViewById(R.id.playback_group_layout);
+        liveGroupLayout = (RelativeLayout) findViewById(R.id.live_group_layout);
+        playbackGroupLayout = (RelativeLayout) findViewById(R.id.playback_group_layout);
 
         liveGroupLayout.setOnClickListener(this);
         playbackGroupLayout.setOnClickListener(this);
@@ -124,11 +124,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     }
 
     private void initialLiveVideoView() {
-        liveLayout = findViewById(R.id.live_layout);
-        userId = findViewById(R.id.user_id);
-        channelId = findViewById(R.id.channel_id);
-        appId = findViewById(R.id.app_id);
-        appSecert = findViewById(R.id.app_secert);
+        liveLayout = (LinearLayout) findViewById(R.id.live_layout);
+        userId = (EditText) findViewById(R.id.user_id);
+        channelId = (EditText) findViewById(R.id.channel_id);
+        appId = (EditText) findViewById(R.id.app_id);
+        appSecert = (EditText) findViewById(R.id.app_secert);
 
         userId.addTextChangedListener(textWatcher);
         channelId.addTextChangedListener(textWatcher);
@@ -137,11 +137,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     }
 
     private void initialPlayBackVideoView() {
-        playbackLayout = findViewById(R.id.playback_layout);
-        playbackVideoId = findViewById(R.id.playback_video_id);
-        playbackChannelId = findViewById(R.id.playback_channel_id);
-        playbackAppId = findViewById(R.id.playback_app_id);
-        playbackUserId = findViewById(R.id.playback_user_id);
+        playbackLayout = (LinearLayout) findViewById(R.id.playback_layout);
+        playbackVideoId = (EditText) findViewById(R.id.playback_video_id);
+        playbackChannelId = (EditText) findViewById(R.id.playback_channel_id);
+        playbackAppId = (EditText) findViewById(R.id.playback_app_id);
+        playbackUserId = (EditText) findViewById(R.id.playback_user_id);
 
         playbackVideoId.addTextChangedListener(textWatcher);
         playbackChannelId.addTextChangedListener(textWatcher);
@@ -150,11 +150,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     }
 
     private void intialLogoView() {
-        loginLogo = findViewById(R.id.login_logo);
-        loginLogoText = findViewById(R.id.login_logo_text);
-        loginTv = findViewById(R.id.login);
+        loginLogo = (ImageView) findViewById(R.id.login_logo);
+        loginLogoText = (TextView) findViewById(R.id.login_logo_text);
+        loginTv = (TextView) findViewById(R.id.login);
 
-        softLayout = findViewById(R.id.polyv_soft_listener_layout);
+        softLayout = (PolyvSoftView) findViewById(R.id.polyv_soft_listener_layout);
         softLayout.setOnKeyboardStateChangedListener(new PolyvSoftView.IOnKeyboardStateChangedListener() {
             @Override
             public void onKeyboardStateChanged(int state) {
@@ -169,15 +169,15 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
 
     // <editor-fold defaultstate="collapsed" desc="设置测试数据">
     private void setTestData() {
-        appId.setText("");
-        appSecert.setText("");
-        userId.setText("");
-        channelId.setText("");
+        appId.setText("f9syxhkrbn");
+        appSecert.setText("3a942aa2d1c94371971cfbbc01ac3632");
+        userId.setText("14da40e138");
+        channelId.setText("333328");
 
-        playbackChannelId.setText("");
-        playbackUserId.setText("");
-        playbackVideoId.setText("");
-        playbackAppId.setText("");
+        playbackChannelId.setText("297136");
+        playbackUserId.setText("14da40e138");
+        playbackVideoId.setText("14da40e138e3ff0b65e947abb65314f5_1");
+        playbackAppId.setText("f9syxhkrbn");
     }
     // </editor-fold>
 

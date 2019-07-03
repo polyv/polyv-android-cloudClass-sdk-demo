@@ -61,8 +61,8 @@ public class PolyvCloudClassAudioModeView extends FrameLayout implements IPolyvC
     }
 
     private void initView() {
-        ivAnimation = findViewById(R.id.iv_animation);
-        tvPlayVideo = findViewById(R.id.tv_play_video);
+        ivAnimation = (ImageView) findViewById(R.id.iv_animation);
+        tvPlayVideo = (TextView) findViewById(R.id.tv_play_video);
 
         tvPlayVideo.setOnClickListener(v -> {
             if (onChangeVideoModeListener != null) {

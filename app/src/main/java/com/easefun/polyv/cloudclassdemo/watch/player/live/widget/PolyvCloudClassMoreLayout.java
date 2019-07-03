@@ -173,19 +173,19 @@ public class PolyvCloudClassMoreLayout {
 
 
     private void initView(View root) {
-        flMoreRoot = root.findViewById(R.id.fl_more_root);
+        flMoreRoot = (FrameLayout) root.findViewById(R.id.fl_more_root);
         flMoreRoot.setOnClickListener(v -> hide());
 
-        llMoreVertical = root.findViewById(R.id.ll_more_vertical);
+        llMoreVertical = (OrientationSensibleLinearLayout) root.findViewById(R.id.ll_more_vertical);
         llMoreVertical.onLandscape = this::onLandscape;
         llMoreVertical.onPortrait = this::onPortrait;
 
-        rvBitrate = root.findViewById(R.id.rv_more_bitrate);
+        rvBitrate = (RecyclerView) root.findViewById(R.id.rv_more_bitrate);
         rvAdapter = new RvMoreAdapter();
         rvBitrate.setAdapter(rvAdapter);
         rvBitrate.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL,false));
 
-        tvOnlyAudioSwitch = root.findViewById(R.id.cb_only_audio_switch);
+        tvOnlyAudioSwitch = (TextView) root.findViewById(R.id.cb_only_audio_switch);
         tvOnlyAudioSwitch.setSelected(false);
         tvOnlyAudioSwitch.setOnClickListener(v -> {
             //点击后，将要生效的模式
@@ -211,10 +211,10 @@ public class PolyvCloudClassMoreLayout {
             hide();
         });
 
-        ivCloseMore = root.findViewById(R.id.iv_close_more);
+        ivCloseMore = (ImageView) root.findViewById(R.id.iv_close_more);
         ivCloseMore.setOnClickListener(v -> hide());
 
-        llBitrate = root.findViewById(R.id.fl_bitrate);
+        llBitrate = (FrameLayout) root.findViewById(R.id.fl_bitrate);
     }
 
     private void showMediaController() {
@@ -330,7 +330,7 @@ public class PolyvCloudClassMoreLayout {
 
             RvMoreViewHolder(View itemView) {
                 super(itemView);
-                tvBitrate = itemView.findViewById(R.id.tv_bitrate);
+                tvBitrate = (TextView) itemView.findViewById(R.id.tv_bitrate);
             }
         }
 

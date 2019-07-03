@@ -66,8 +66,8 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
             this.subVideoviewParent = (ViewGroup) subVideoview.getParent();
         }
 
-        this.playerParent = videoItem.getView().findViewById(R.id.rl_top);
-        this.playerView = playerParent.findViewById(PolyvBaseVideoView.IJK_VIDEO_ID);
+        this.playerParent = (ViewGroup) videoItem.getView().findViewById(R.id.rl_top);
+        this.playerView = (ViewGroup) playerParent.findViewById(PolyvBaseVideoView.IJK_VIDEO_ID);
         this.loadingView = playerParent.findViewById(R.id.loadingview);
         this.noStreamView = playerParent.findViewById(R.id.no_stream);
         this.context = playerView.getContext();
@@ -81,7 +81,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     public void initPPT(T videoItem, PolyvPPTItem polyvPPTItem) {
         if(polyvPPTItem != null){
             pptView = (PolyvPPTView) polyvPPTItem.getPPTView();
-            pptContianer = polyvPPTItem.getItemRootView().findViewById(R.id.polyv_ppt_container);
+            pptContianer = (ViewGroup) polyvPPTItem.getItemRootView().findViewById(R.id.polyv_ppt_container);
             polyvPPTItem.addMediaController(controller);
             videoItem.bindPPTView(polyvPPTItem);
 
@@ -295,6 +295,13 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 //        if(subVideoview != null && !subVideoview.isPlaying() && subVideoview.isShow()){
 //            subVideoview.start();
 //        }
+    }
+
+    public void onActivityResume(){
+        videoView.onActivityResume();
+    }
+    public void onActivityPause(){
+        videoView.onActivityPause();
     }
 
     public void destory() {

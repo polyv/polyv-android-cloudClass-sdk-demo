@@ -1,6 +1,5 @@
 package com.easefun.polyv.cloudclassdemo.watch.player.live.widget;
 
-import android.arch.lifecycle.GenericLifecycleObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,7 +13,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.KeyboardUtils;
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.cloudclassdemo.R;
 
@@ -52,13 +50,6 @@ public class PolyvLandscapeDanmuSendPanel implements IPolyvLandscapeDanmuSender 
         window.setWidth(width);
         window.setHeight(height);
 
-        activity.getLifecycle().addObserver((GenericLifecycleObserver) (source, event) -> {
-            switch (event) {
-                case ON_DESTROY:
-                    window.dismiss();
-                    break;
-            }
-        });
         initView(root);
     }
 
@@ -76,10 +67,10 @@ public class PolyvLandscapeDanmuSendPanel implements IPolyvLandscapeDanmuSender 
     }
 
     private void initView(View root) {
-        llSendDanmu = root.findViewById(R.id.ll_send_danmu);
-        tvSendDanmu = root.findViewById(R.id.tv_send_danmu);
-        etSendDanmu = root.findViewById(R.id.et_send_danmu);
-        ivSendDanmuClose = root.findViewById(R.id.iv_send_danmu_close);
+        llSendDanmu = (OrientationSensibleLinearLayout) root.findViewById(R.id.ll_send_danmu);
+        tvSendDanmu = (TextView) root.findViewById(R.id.tv_send_danmu);
+        etSendDanmu = (EditText) root.findViewById(R.id.et_send_danmu);
+        ivSendDanmuClose = (ImageView) root.findViewById(R.id.iv_send_danmu_close);
         llSendDanmu.setOnClickListener(this::onClick);
         tvSendDanmu.setOnClickListener(this::onClick);
         ivSendDanmuClose.setOnClickListener(this::onClick);

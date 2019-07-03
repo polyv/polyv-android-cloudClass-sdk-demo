@@ -44,7 +44,7 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
     public ClickableViewHolder(View itemView, Q adapter) {
         super(itemView);
         this.parentView = itemView;
-        this.contentContainer = parentView.findViewById(R.id.message_container);
+        this.contentContainer = (FrameLayout) parentView.findViewById(R.id.message_container);
         resendMessageButton = $(com.easefun.polyv.commonui.R.id.resend_message_button);
         this.adapter = adapter;
         this.context = parentView.getContext();
@@ -57,7 +57,7 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
 
     @SuppressWarnings("unchecked")
     public <T extends View> T $(@IdRes int id) {
-        return parentView.findViewById(id);
+        return (T) parentView.findViewById(id);
     }
 
     // <editor-fold defaultstate="collapsed" desc=""抽象方法>

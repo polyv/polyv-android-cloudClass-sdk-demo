@@ -137,34 +137,34 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         videoControllerLand = (RelativeLayout) findViewById(R.id.rl_land);
         videoControllerLand.setVisibility(View.GONE);
 
-        ivBackLand = findViewById(R.id.iv_back_land);
-        ivBackPort = findViewById(R.id.iv_back_port);
+        ivBackLand = (ImageView) findViewById(R.id.iv_back_land);
+        ivBackPort = (ImageView) findViewById(R.id.iv_back_port);
         ivBackLand.setOnClickListener(this);
         ivBackPort.setOnClickListener(this);
 
-        ivPlaypause = findViewById(R.id.iv_playpause);
-        ivPlaypauseLand = findViewById(R.id.iv_playpause_land);
+        ivPlaypause = (ImageView) findViewById(R.id.iv_playpause);
+        ivPlaypauseLand = (ImageView) findViewById(R.id.iv_playpause_land);
         ivPlaypause.setOnClickListener(this);
         ivPlaypauseLand.setOnClickListener(this);
-        ivOrientation = findViewById(R.id.iv_orientation);
+        ivOrientation = (ImageView) findViewById(R.id.iv_orientation);
         ivOrientation.setOnClickListener(this);
 
-        tvCurrenttime = findViewById(R.id.tv_currenttime);
-        tvCurrenttimeLand = findViewById(R.id.tv_currenttime_land);
-        tvTotaltime = findViewById(R.id.tv_totaltime);
-        tvTotaltimeLand = findViewById(R.id.tv_totaltime_land);
-        sbPlayprogress = findViewById(R.id.sb_playprogress);
-        sbPlayprogressLand = findViewById(R.id.sb_playprogress_land);
+        tvCurrenttime = (TextView) findViewById(R.id.tv_currenttime);
+        tvCurrenttimeLand = (TextView) findViewById(R.id.tv_currenttime_land);
+        tvTotaltime = (TextView) findViewById(R.id.tv_totaltime);
+        tvTotaltimeLand = (TextView) findViewById(R.id.tv_totaltime_land);
+        sbPlayprogress = (SeekBar) findViewById(R.id.sb_playprogress);
+        sbPlayprogressLand = (SeekBar) findViewById(R.id.sb_playprogress_land);
 
         sbPlayprogress.setOnSeekBarChangeListener(this);
         sbPlayprogressLand.setOnSeekBarChangeListener(this);
 
 
-        pbPptVideoSwitch = findViewById(R.id.pb_ppt_video_switch);
-        pbSubviewShow = findViewById(R.id.pb_subview_show);
+        pbPptVideoSwitch = (ImageView) findViewById(R.id.pb_ppt_video_switch);
+        pbSubviewShow = (ImageView) findViewById(R.id.pb_subview_show);
 
-        pbPptVideoSwitchLand = findViewById(R.id.pb_ppt_video_switch_land);
-        pbSubviewShowLand = findViewById(R.id.pb_subview_show_land);
+        pbPptVideoSwitchLand = (ImageView) findViewById(R.id.pb_ppt_video_switch_land);
+        pbSubviewShowLand = (ImageView) findViewById(R.id.pb_subview_show_land);
 
         addListener();
     }
@@ -180,9 +180,9 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         //speed layout
         rlSpeed = (RelativeLayout) view.findViewById(R.id.rl_speed);
         rlSpeed.setOnClickListener(this);
-        speedContainer = view.findViewById(R.id.speed_container);
+        speedContainer = (RelativeLayout) view.findViewById(R.id.speed_container);
         btSpeedPort = (Button) view.findViewById(R.id.bt_speed_port);
-        btSpeedLand = findViewById(R.id.bt_speed_land);
+        btSpeedLand = (Button) findViewById(R.id.bt_speed_land);
         btSpeedPort.setOnClickListener(this);
         btSpeedLand.setOnClickListener(this);
         bt_speed_10 = (Button) view.findViewById(R.id.bt_speed_10);

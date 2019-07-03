@@ -15,7 +15,8 @@ android {
         //依赖的包可能支持很多类型的ABI
         //为了避免打包了我们没有支持的ABI，指定需要打包的ABI目录
         ndk {
-            abiFilters 'arm64-v8a', "armeabi-v7a", "x86" // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
+            abiFilters 'arm64-v8a', "armeabi-v7a", "x86"
+            // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
         }
     }
     lintOptions {
@@ -50,11 +51,20 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation rootProject.ext.support.appCompatV7
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:multidex:1.0.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':commonui')
+}
+configurations.all {
+    resolutionStrategy.force rootProject.ext.support.appCompatV7
+    resolutionStrategy.force rootProject.ext.support.appCompat
+    resolutionStrategy.force rootProject.ext.support.design
+    resolutionStrategy.force rootProject.ext.support.coreUi
+    resolutionStrategy.force rootProject.ext.support.coreUtils
+    resolutionStrategy.force rootProject.ext.support.annotations
+    resolutionStrategy.force rootProject.ext.support.fragment
 }

@@ -40,7 +40,7 @@ public class PolyvProgressTipsView extends FrameLayout {
         hide();
         tv_currenttime = (TextView) view.findViewById(R.id.tv_currenttime);
         tv_totaltime = (TextView) view.findViewById(R.id.tv_totaltime);
-        seekBar = view.findViewById(R.id.sb_playprogress);
+        seekBar = (SeekBar) view.findViewById(R.id.sb_playprogress);
     }
 
     public void hide() {
