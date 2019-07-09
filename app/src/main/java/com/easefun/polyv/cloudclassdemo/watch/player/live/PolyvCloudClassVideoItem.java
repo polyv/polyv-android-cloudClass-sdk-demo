@@ -408,6 +408,10 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         });
 
         polyvCloudClassVideoView.setOnDanmuServerOpenListener(open -> controller.onServerDanmuOpen(open));
+
+        polyvCloudClassVideoView.setOnLinesChangedListener(pos ->{
+            controller.updateMoreLayout(pos);
+        });
     }
 
     public void showDefaultIcon() {

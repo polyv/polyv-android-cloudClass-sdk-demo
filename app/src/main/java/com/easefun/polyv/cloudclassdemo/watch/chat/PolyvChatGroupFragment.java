@@ -33,6 +33,7 @@ import com.easefun.polyv.cloudclass.chat.event.PolyvGongGaoEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvKickEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLikesEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLoginEvent;
+import com.easefun.polyv.cloudclass.chat.event.PolyvReloginEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvRemoveContentEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvRemoveHistoryEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvSpeakEvent;
@@ -933,6 +934,19 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                             //解除禁言
                             case PolyvChatManager.EVENT_UNSHIELD:
                                 PolyvUnshieldEvent unshieldEvent = PolyvEventHelper.getEventObject(PolyvUnshieldEvent.class, message, event);
+                                break;
+                            case PolyvChatManager.EVENT_RELOGIN:
+                                PolyvReloginEvent reloginEvent = PolyvEventHelper.getEventObject(PolyvReloginEvent.class, message, event);
+                                if (reloginEvent != null) {
+                                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (chatManager.userId.equals(reloginEvent.getUser().getUserId())) {
+                                                PolyvBaseActivity.showReloginTip(getActivity(), reloginEvent.getChannelId(), "该账号已在其他设备登录！");
+                                            }
+                                        }
+                                    }));
+                                }
                                 break;
                         }
                     }

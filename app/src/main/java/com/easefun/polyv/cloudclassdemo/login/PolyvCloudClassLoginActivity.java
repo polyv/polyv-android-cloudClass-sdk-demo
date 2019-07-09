@@ -15,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.easefun.polyv.businesssdk.PolyvChatDomainManager;
+import com.easefun.polyv.businesssdk.model.chat.PolyvChatDomain;
 import com.easefun.polyv.businesssdk.model.video.PolyvPlayBackVO;
 import com.easefun.polyv.businesssdk.service.PolyvLoginManager;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient;
@@ -169,15 +171,15 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
 
     // <editor-fold defaultstate="collapsed" desc="设置测试数据">
     private void setTestData() {
-        appId.setText("f9syxhkrbn");
-        appSecert.setText("3a942aa2d1c94371971cfbbc01ac3632");
-        userId.setText("14da40e138");
-        channelId.setText("333328");
+        appId.setText("");
+        appSecert.setText("");
+        userId.setText("");
+        channelId.setText("");
 
-        playbackChannelId.setText("297136");
-        playbackUserId.setText("14da40e138");
-        playbackVideoId.setText("14da40e138e3ff0b65e947abb65314f5_1");
-        playbackAppId.setText("f9syxhkrbn");
+        playbackChannelId.setText("");
+        playbackUserId.setText("");
+        playbackVideoId.setText("");
+        playbackAppId.setText("");
     }
     // </editor-fold>
 
@@ -291,9 +293,9 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         //请求token接口
         getTokenDisposable = PolyvLoginManager.checkLoginToken(userId, appSecret, appId,
                 channel, vid,
-                new PolyvrResponseCallback<PolyvResponseBean>() {
+                new PolyvrResponseCallback<PolyvChatDomain>() {
                     @Override
-                    public void onSuccess(PolyvResponseBean responseBean) {
+                    public void onSuccess(PolyvChatDomain responseBean) {
                         PolyvLinkMicClient.getInstance().setAppIdSecret(appId, appSecert.getText().toString());
                         PolyvLiveSDKClient.getInstance().setAppIdSecret(appId, appSecert.getText().toString());
                         PolyvVodSDKClient.getInstance().initConfig(appId, appSecert.getText().toString());
@@ -304,10 +306,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
                         }
                         requestLiveStatus(userId);
 
+                        PolyvChatDomainManager.getInstance().setChatDomain(responseBean);
                     }
 
                     @Override
-                    public void onFailure(PolyvResponseBean<PolyvResponseBean> responseBean) {
+                    public void onFailure(PolyvResponseBean<PolyvChatDomain> responseBean) {
                         super.onFailure(responseBean);
                         failedStatus(responseBean.getMessage());
                     }

@@ -24,16 +24,16 @@ allprojects {
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
         }
-        maven { url 'https://dl.bintray.com/polyv/zhengbao' }
+        maven { url 'https://dl.bintray.com/polyv/zhengbao'}
     }
 }
 
 ext {
-    compileSdkVersion = 25
+    compileSdkVersion = 27
     minSdkVersion = 16
-    targetSdkVersion = 25
-    versionCode = 71
-    versionName = "0.7.1"
+    targetSdkVersion = 27
+    versionCode = 72
+    versionName = "0.7.2"
 
     support = [
             appCompatV7: 'com.android.support:appcompat-v7:25.3.1',

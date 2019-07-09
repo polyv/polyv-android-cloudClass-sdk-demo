@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
@@ -62,6 +64,21 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
             return true;
         }
         return false;
+    }
+
+    public static boolean showReloginTip(final Activity activity, String channelId, String... message) {
+            new AlertDialog.Builder(activity)
+                    .setTitle("温馨提示")
+                    .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            activity.finish();
+                        }
+                    })
+                    .setCancelable(false)
+                    .show();
+            return true;
     }
 
     public boolean checkKickTips(String channelId, String... message) {
@@ -166,6 +183,12 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
             permissionManager.destroy();
             permissionManager = null;
         }
+    }
+
+    //新增的findViewById()方法，用于兼容support 25
+    @SuppressWarnings("unchecked")
+    public <T extends View> T findView(@IdRes int id) {
+        return (T)super.findViewById(id);
     }
     // </editor-fold>
 

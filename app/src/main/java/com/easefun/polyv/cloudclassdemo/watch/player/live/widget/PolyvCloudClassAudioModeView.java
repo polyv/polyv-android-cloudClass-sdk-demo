@@ -86,7 +86,7 @@ public class PolyvCloudClassAudioModeView extends FrameLayout implements IPolyvC
                 .observeOn(Schedulers.io())
                 .doOnNext(s -> {
                     LogUtils.d(Thread.currentThread().getName());
-                    int drawableCount = 60;
+                    int drawableCount = 30;
                     for (int i = 1; i <= drawableCount; i++) {
                         String drawableName = "sound" + String.valueOf(10000 + i).substring(1);
                         int drawableId = getResources().getIdentifier(drawableName, "drawable", getContext().getPackageName());
