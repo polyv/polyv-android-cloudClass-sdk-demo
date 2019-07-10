@@ -80,7 +80,7 @@ public class PolyvAnswerView extends FrameLayout {
     private static final int DELAY_SOCKET_MSG = 2 * 1000;
 
     //学员Id
-    private String studentUserId;
+    private String viewerId;
 
     //中奖信息是否显示
     private boolean isWinLotteryShow = false;
@@ -283,31 +283,44 @@ public class PolyvAnswerView extends FrameLayout {
                 PolyvLotteryEndVO vo = PolyvGsonUtil.fromJson(PolyvLotteryEndVO.class, msg);
                 List<PolyvLotteryEndVO.DataBean> winnerList = notNull(vo).getData();
                 for (PolyvLotteryEndVO.DataBean bean : winnerList) {
-                    if (studentUserId.equals(bean.getUserId())) {
+                    if (viewerId.equals(bean.getUserId())) {
                         win = true;
                         winnerCode = bean.getWinnerCode();
                         answerWebView.setWinnerCode(winnerCode);
-                        onWinLotteryShow();
                         break;
                     }
                 }
                 PolyvLottery2JsVO winnerVo = new PolyvLottery2JsVO(win, vo.getPrize(), winnerCode);
                 String winnerJson1 = winnerVo.toJson();
                 LogUtils.d(winnerJson1);
-                answerWebView.callLotteryEnd(winnerJson1, vo.getSessionId(), vo.getLotteryId());
+                final boolean winTemp=win;
+                answerWebView.callLotteryEnd(winnerJson1, vo.getSessionId(), vo.getLotteryId(), new Runnable() {
+                    @Override
+                    public void run() {
+                        if (winTemp){
+                            onWinLotteryShow();
+                        }
+                    }
+                });
                 break;
             //未领奖的中奖人信息
             case PolyvSocketEvent.LOTTERY_WINNER:
                 PolyvLotteryWinnerVO winnerVO = PolyvGsonUtil.fromJson(PolyvLotteryWinnerVO.class, msg);
                 showAnswerContainer();
-                PolyvLottery2JsVO winnerJsonVO = new PolyvLottery2JsVO(true, notNull(winnerVO).getPrize(), winnerVO.getWinnerCode());
+                final PolyvLottery2JsVO winnerJsonVO = new PolyvLottery2JsVO(true, notNull(winnerVO).getPrize(), winnerVO.getWinnerCode());
                 String winnerJson2 = winnerJsonVO.toJson();
                 if (winnerJsonVO.isWin()) {
-                    onWinLotteryShow();
                     answerWebView.setWinnerCode(winnerJsonVO.getWinnerCode());
                 }
                 LogUtils.json(winnerJson2);
-                answerWebView.callLotteryWinner(winnerJson2, winnerVO.getSessionId(), winnerVO.getLotteryId());
+                answerWebView.callLotteryWinner(winnerJson2, winnerVO.getSessionId(), winnerVO.getLotteryId(), new Runnable() {
+                    @Override
+                    public void run() {
+                        if (winnerJsonVO.isWin()){
+                            onWinLotteryShow();
+                        }
+                    }
+                });
                 break;
             //开始签到
             case PolyvSocketEvent.START_SIGN_IN:
@@ -377,8 +390,8 @@ public class PolyvAnswerView extends FrameLayout {
         answerContainer.setVisibility(INVISIBLE);
     }
 
-    public void setStudentUserId(String studentUserId) {
-        this.studentUserId = studentUserId;
+    public void setViewerId(String viewerId) {
+        this.viewerId = viewerId;
     }
 
     private <T> T notNull(T object) {

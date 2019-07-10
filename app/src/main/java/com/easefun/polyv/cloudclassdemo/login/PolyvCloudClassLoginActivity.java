@@ -15,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.easefun.polyv.businesssdk.PolyvChatDomainManager;
+import com.easefun.polyv.businesssdk.model.chat.PolyvChatDomain;
 import com.easefun.polyv.businesssdk.model.video.PolyvPlayBackVO;
 import com.easefun.polyv.businesssdk.service.PolyvLoginManager;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient;
@@ -291,9 +293,9 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         //请求token接口
         getTokenDisposable = PolyvLoginManager.checkLoginToken(userId, appSecret, appId,
                 channel, vid,
-                new PolyvrResponseCallback<PolyvResponseBean>() {
+                new PolyvrResponseCallback<PolyvChatDomain>() {
                     @Override
-                    public void onSuccess(PolyvResponseBean responseBean) {
+                    public void onSuccess(PolyvChatDomain responseBean) {
                         PolyvLinkMicClient.getInstance().setAppIdSecret(appId, appSecert.getText().toString());
                         PolyvLiveSDKClient.getInstance().setAppIdSecret(appId, appSecert.getText().toString());
                         PolyvVodSDKClient.getInstance().initConfig(appId, appSecert.getText().toString());
@@ -304,10 +306,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
                         }
                         requestLiveStatus(userId);
 
+                        PolyvChatDomainManager.getInstance().setChatDomain(responseBean);
                     }
 
                     @Override
-                    public void onFailure(PolyvResponseBean<PolyvResponseBean> responseBean) {
+                    public void onFailure(PolyvResponseBean<PolyvChatDomain> responseBean) {
                         super.onFailure(responseBean);
                         failedStatus(responseBean.getMessage());
                     }

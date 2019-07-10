@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -23,7 +22,6 @@ import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.commonui.PolyvCommonMediacontroller;
 import com.easefun.polyv.commonui.player.IPolyvBusinessMediaController;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
-import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvTimeUtils;
 
 public class PolyvPlaybackMediaController extends PolyvCommonMediacontroller<PolyvPlaybackVideoView> implements
@@ -182,7 +180,7 @@ public class PolyvPlaybackMediaController extends PolyvCommonMediacontroller<Pol
         rlSpeed = (RelativeLayout) view.findViewById(R.id.rl_speed);
         rlSpeed.setOnClickListener(this);
         speedContainer = view.findViewById(R.id.speed_container);
-        btSpeedPort = (Button) view.findViewById(R.id.bt_speed_port);
+        btSpeedPort = (Button) view.findViewById(R.id.bt_controller_more);
         btSpeedLand = findViewById(R.id.bt_speed_land);
         btSpeedPort.setOnClickListener(this);
         btSpeedLand.setOnClickListener(this);
@@ -337,7 +335,7 @@ public class PolyvPlaybackMediaController extends PolyvCommonMediacontroller<Pol
         } else if (id == com.easefun.polyv.commonui.R.id.bt_speed_land) {
             hide();
             visibleWithAnimation(rlSpeed);
-        } else if (id == com.easefun.polyv.commonui.R.id.bt_speed_port) {
+        } else if (id == com.easefun.polyv.commonui.R.id.bt_controller_more) {
             hide();
             visibleWithAnimation(rlSpeed);
         } else if (id == com.easefun.polyv.commonui.R.id.bt_speed_10) {

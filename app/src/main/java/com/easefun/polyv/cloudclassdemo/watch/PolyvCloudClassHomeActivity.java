@@ -140,8 +140,10 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     //是否是普通直播  是否直播回放
     private boolean isNormalLive, isNormalLivePlayBack;
 
-    private String studentUserId;
-    private String studentNickName;
+    //观众id
+    private String viewerId;
+    //观众昵称
+    private String viewerName;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="入口">
@@ -264,9 +266,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
     // <editor-fold defaultstate="collapsed" desc="初始化">
     private void initialStudentIdAndNickName() {
-        //初始化学员用户id和用户昵称，用于统计数据
-        studentUserId = "" + Build.SERIAL;
-        studentNickName = "学员" + studentUserId;
+        //初始化观众id和观众昵称，用于统计数据
+        viewerId = "" + Build.SERIAL;
+        viewerName = "学员" + viewerId;
     }
 
     private void initial() {
@@ -448,14 +450,14 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private void initialAnswer() {
         answerView = findViewById(R.id.answer_layout);
         answerContainer = answerView.findViewById(R.id.polyv_answer_web_container);
-        answerView.setStudentUserId(studentUserId);
+        answerView.setViewerId(viewerId);
         answerView.setAnswerJsCallback(new PolyvAnswerWebView.AnswerJsCallback() {
             @Override
             public void callOnHasAnswer(PolyvJSQuestionVO polyvJSQuestionVO) {
                 PolyvCommonLog.d(TAG, "send to server has choose answer");
                 if (chatManager != null) {
                     PolyvQuestionSocketVO socketVO = new PolyvQuestionSocketVO
-                            (polyvJSQuestionVO.getAnswerId(), studentNickName, polyvJSQuestionVO.getQuestionId(),
+                            (polyvJSQuestionVO.getAnswerId(), viewerName, polyvJSQuestionVO.getQuestionId(),
                                     channelId, chatManager.userId);
                     chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, socketVO);
                 }
@@ -464,7 +466,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             @Override
             public void callOnHasQuestionnaireAnswer(PolyvQuestionnaireSocketVO polyvQuestionnaireSocketVO) {
                 PolyvCommonLog.d(TAG, "发送调查问卷答案");
-                polyvQuestionnaireSocketVO.setNick(studentNickName);
+                polyvQuestionnaireSocketVO.setNick(viewerName);
                 polyvQuestionnaireSocketVO.setRoomId(channelId);
                 polyvQuestionnaireSocketVO.setUserId(chatManager.userId);
                 chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, polyvQuestionnaireSocketVO);
@@ -472,14 +474,14 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
             @Override
             public void callOnSignIn(PolyvSignIn2SocketVO socketVO) {
-                socketVO.setUser(new PolyvSignIn2SocketVO.UserBean(studentNickName, studentUserId));
+                socketVO.setUser(new PolyvSignIn2SocketVO.UserBean(viewerName, viewerId));
                 chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, socketVO);
             }
 
             @Override
             public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone,String realName,String address) {
                 PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
-                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, studentUserId, realName, telephone,address),
+                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, PolyvCloudClassHomeActivity.this.viewerId, realName, telephone,address),
                         String.class, new PolyvrResponseCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
@@ -513,7 +515,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             @Override
             public void callOnAbandonLottery() {
                 PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
-                                .postLotteryAbandon(channelId, studentUserId), String.class,
+                                .postLotteryAbandon(channelId, viewerId), String.class,
                         new PolyvrResponseCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
@@ -588,7 +590,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         playbackVideoHelper.initConfig(isNormalLivePlayBack);
         playbackVideoHelper.addPPT(videoPptContainer);
 
-        playbackVideoHelper.setNickName(studentNickName);
+        playbackVideoHelper.setNickName(viewerName);
 
         playPlaybackVideo();
     }
@@ -599,13 +601,13 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         // TODO: 2018/9/12 videoId 为直播平台的 videopoolid为点播平台的视频id
         PolyvPlaybackVideoParams playbackVideoParams = new PolyvPlaybackVideoParams(videoId,//videoId
                 channelId,
-                userId,studentUserId//viewerid
+                userId, viewerId//viewerid
         );
         playbackVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
                 .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
                 .buildOptions(PolyvBaseVideoParams.IS_PPT_PLAY, true)
                 // TODO: 2019/3/25 请在此处填入用户的昵称
-                .buildOptions(PolyvBaseVideoParams.PARAMS2, studentNickName)
+                .buildOptions(PolyvBaseVideoParams.PARAMS2, viewerName)
                 .buildOptions(PolyvPlaybackVideoParams.ENABLE_ACCURATE_SEEK, true);
         playbackVideoHelper.startPlay(playbackVideoParams);
     }
@@ -626,12 +628,12 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 //        linkMicLayoutParent.resetFloatViewPort();
 
         PolyvCloudClassVideoParams cloudClassVideoParams = new PolyvCloudClassVideoParams(channelId, userId
-                , studentUserId// viewerid
+                , viewerId// viewerid
                  );
         cloudClassVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
                 .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
                 // TODO: 2019/3/25 请在此处填入用户的昵称
-                .buildOptions(PolyvBaseVideoParams.PARAMS2,studentNickName);
+                .buildOptions(PolyvBaseVideoParams.PARAMS2, viewerName);
         livePlayerHelper.startPlay(cloudClassVideoParams);
     }
 
@@ -819,13 +821,13 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         //根据直播类型(普通直播、三分屏直播)设置聊天室的学员的类型
         chatManager.userType = isNormalLive ? PolyvChatManager.USERTYPE_STUDENT : PolyvChatManager.USERTYPE_SLICE;
-        chatManager.login(studentUserId, channelId, studentNickName);
+        chatManager.login(viewerId, channelId, viewerName);
 
         if (livePlayerHelper != null) {
-            livePlayerHelper.setNickName(studentNickName);
+            livePlayerHelper.setNickName(viewerName);
         }
         if (playbackVideoHelper != null) {
-            playbackVideoHelper.setNickName(studentNickName);
+            playbackVideoHelper.setNickName(viewerName);
         }
     }
 

@@ -116,6 +116,35 @@
 
             </android.support.v7.widget.RecyclerView>
         </FrameLayout>
+        <FrameLayout
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:id="@+id/fl_lines"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#1AFFFFFF" />
+            <TextView
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="19dp"
+                android:gravity="center"
+                android:text="多线路"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_marginTop="1dp"
+                android:layout_marginLeft="64dp"
+                android:id="@+id/rv_more_lines"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </android.support.v7.widget.RecyclerView>
+        </FrameLayout>
     </com.easefun.polyv.cloudclassdemo.watch.player.live.widget.OrientationSensibleLinearLayout>
 
     <ImageView
