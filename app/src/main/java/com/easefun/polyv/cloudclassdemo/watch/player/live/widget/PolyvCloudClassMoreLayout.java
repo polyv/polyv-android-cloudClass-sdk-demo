@@ -132,8 +132,8 @@ public class PolyvCloudClassMoreLayout {
     }
 
     public void initLines(List<PolyvLiveLinesVO> lines) {
-        showLines(true);
         linesAdapter.updateLinesDatas(lines);
+        showLines(true);
     }
 
     public void updateLinesStatus(int pos) {
@@ -272,7 +272,7 @@ public class PolyvCloudClassMoreLayout {
     }
 
     private void showLines(boolean show) {
-        linesContainer.setVisibility(show?View.VISIBLE:View.VISIBLE);
+        linesContainer.setVisibility(show || linesAdapter.getItemCount() >1?View.VISIBLE:View.GONE);
     }
 
 

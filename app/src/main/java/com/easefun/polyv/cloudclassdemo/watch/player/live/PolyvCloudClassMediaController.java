@@ -19,7 +19,6 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.model.video.PolyvBitrateVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvDefinitionVO;
@@ -528,7 +527,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         videoRefreshLand.setVisibility(VISIBLE);
         videoRefreshPort.setVisibility(VISIBLE);
         if (isPaused){
-            togglePauseBtn();
+            togglePauseBtn(true);
         }
     }
 
@@ -690,13 +689,19 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         polyvCloudClassPlayerHelper.restartPlay();
     }
 
-    private void togglePauseBtn() {
+    /**
+     *
+     * @param justChangeUi 是否只改变UI，如果为false，则会进行真正的暂停或者重新拉流。
+     */
+    private void togglePauseBtn(boolean justChangeUi) {
         isPaused=!isPaused;
         boolean toPause = isPaused;
-        if (toPause) {
-            polyvVideoView.pause();
-        } else {
-            refreshVideoView();
+        if (!justChangeUi){
+            if (toPause) {
+                polyvVideoView.pause();
+            } else {
+                refreshVideoView();
+            }
         }
         ivVideoPauseLand.setSelected(toPause);
         ivVideoPausePortrait.setSelected(toPause);
@@ -705,6 +710,12 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 
     public void changeAudioOrVideoMode(@PolyvMediaPlayMode.Mode int mediaPlayMode) {
         moreLayout.onChangeAudioOrVideoMode(mediaPlayMode);
+    }
+
+    public void onVideoViewPrepared(){
+        if (isPaused){
+            togglePauseBtn(true);
+        }
     }
     // </editor-fold>
 
@@ -734,9 +745,6 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             case R.id.video_refresh_land:
             case R.id.video_refresh_port:
                 refreshVideoView();
-                if (isPaused){
-                    togglePauseBtn();
-                }
                 break;
 //            case R.id.video_screen_switch_land:
 //                changeToPortrait();
@@ -765,7 +773,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
                 break;
             case R.id.iv_video_pause_land:
             case R.id.iv_video_pause_portrait:
-                togglePauseBtn();
+                togglePauseBtn(false);
                 break;
             case R.id.tv_start_send_danmu_land:
                 onClickOpenStartSendDanmuListener.onStartSendDanmu();

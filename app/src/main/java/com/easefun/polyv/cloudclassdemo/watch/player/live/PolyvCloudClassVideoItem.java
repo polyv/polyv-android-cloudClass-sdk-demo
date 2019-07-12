@@ -223,8 +223,8 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         audioModeView=audioViewImpl;
         audioModeLayoutRoot.addView(audioModeView.getRoot(),LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
 
-        //打开弹幕下的竖屏
-        controller.enableDanmuInPortrait();
+        //用来打开竖屏下的弹幕
+//        controller.enableDanmuInPortrait();
     }
 
     private void initialVideoView() {
@@ -273,6 +273,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 isNoLiveAtPresent=false;
                 hideScreenShotView();
                 controller.show();
+                controller.onVideoViewPrepared();
             }
 
             @Override
