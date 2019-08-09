@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:visibility="invisible"
     android:orientation="vertical">
 
@@ -10,60 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:orientation="horizontal"
-        >
+        android:visibility="gone">
 
-        <RelativeLayout
-            android:id="@+id/group_chat_item_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/tv_group_chat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="3dp"
-                android:text="聊天"
-                android:textColor="@drawable/polyv_color_topic_tab_text_selector"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="32dp"
-                android:layout_height="3dp"
-                android:layout_below="@id/tv_group_chat"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/polyv_color_topic_tab_bottom_selector" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/personal_chat_item_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/tv_personal_chat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="3dp"
-                android:gravity="center"
-                android:text="私聊"
-                android:textColor="@drawable/polyv_color_topic_tab_text_selector"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="32dp"
-                android:layout_height="3dp"
-                android:layout_below="@id/tv_personal_chat"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="7dp"
-                android:background="@drawable/polyv_color_topic_tab_bottom_selector" />
-        </RelativeLayout>
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="-1dp"
+        android:background="#F3F3F4" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/chat_viewpager"

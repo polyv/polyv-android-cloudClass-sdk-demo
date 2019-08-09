@@ -2,6 +2,7 @@ package com.easefun.polyv.cloudclassdemo.watch.linkMic.widget;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,8 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Scroller;
 
+import com.easefun.polyv.cloudclassdemo.watch.linkMic.IPolyvViewVisibilityChangedListener;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
-import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
 /**
  * @author df
@@ -34,6 +35,10 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
 
     private int originTop = 0;
 
+    private String linkType;
+
+    private IPolyvViewVisibilityChangedListener visibilityChangedListener;
+
     public PolyvLinkMicListView(Context context) {
         this(context,null);
     }
@@ -49,6 +54,12 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
     public void initView(Context context){
         scroller = new Scroller(context);
     }
+
+    @Override
+    public void setOnVisibilityChangedListener(IPolyvViewVisibilityChangedListener listener) {
+        this.visibilityChangedListener = listener;
+    }
+
     @Override
     protected void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -63,6 +74,14 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
             }
         });
 
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibilityChangedListener != null  && changedView == this) {
+            visibilityChangedListener.onVisibilityChanged(changedView, visibility);
+        }
     }
 
     public void topSubviewTo(final int top) {
@@ -122,7 +141,7 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
         Log.d(TAG, "resetFloatViewLand: leftMargin :" + layoutParams.leftMargin + " parent height :topMargin"
                 + layoutParams.topMargin + "   height :" + getMeasuredHeight());
 
-        layoutParams.leftMargin = PolyvScreenUtils.dip2px(getContext(), 100);
+        layoutParams.leftMargin = 0;
         layoutParams.topMargin = 0;
         setLayoutParams(layoutParams);
 
@@ -178,6 +197,16 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
 
     @Override
     public void enableShow( boolean canshow) {
+
+    }
+
+    @Override
+    public void setLinkType(String type) {
+        this.linkType = type;
+    }
+
+    @Override
+    public void setSupportRtc(boolean type) {
 
     }
 

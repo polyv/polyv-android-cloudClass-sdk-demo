@@ -1,6 +1,7 @@
 package com.easefun.polyv.cloudclassdemo.watch;
 
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
+import com.easefun.polyv.cloudclass.chat.event.PolyvTeacherInfo;
 
 /**
  * @author df
@@ -17,13 +18,13 @@ public class PolyvDemoClient {
     private PolyvDemoClient() {
     }
 
-    private PolyvJoinInfoEvent teacher;
+    private PolyvTeacherInfo teacher;
 
-    public PolyvJoinInfoEvent getTeacher() {
+    public PolyvTeacherInfo getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(PolyvJoinInfoEvent teacher) {
+    public void setTeacher(PolyvTeacherInfo teacher) {
         this.teacher = teacher;
     }
 

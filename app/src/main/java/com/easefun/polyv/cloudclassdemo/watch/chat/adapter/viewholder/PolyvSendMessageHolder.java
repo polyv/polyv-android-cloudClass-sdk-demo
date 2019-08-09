@@ -10,6 +10,8 @@ import com.easefun.polyv.cloudclass.chat.PolyvLocalMessage;
 import com.easefun.polyv.cloudclass.chat.PolyvQuestionMessage;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
 import com.easefun.polyv.cloudclass.chat.history.PolyvSpeakHistory;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackImg;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackSpeak;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
 import com.easefun.polyv.cloudclassdemo.R;
@@ -68,7 +70,7 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
         }
 
         sendMessageHolder.imgLoading.setTag(position);
-        if (!(object instanceof PolyvSendLocalImgEvent || object instanceof PolyvChatImgHistory)) {
+        if (!(object instanceof PolyvSendLocalImgEvent || object instanceof PolyvChatImgHistory || object instanceof PolyvChatPlaybackImg)) {
             sendMessageHolder.resendMessageButton.setVisibility(View.GONE);
             sendMessageHolder.chatImg.setVisibility(View.GONE);
             sendMessageHolder.imgLoading.setVisibility(View.GONE);
@@ -123,6 +125,18 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
             sendMessageHolder.imgLoading.setProgress(0);
             fitChatImgWH((int) contentBean.getSize().getWidth(), (int) contentBean.getSize().getHeight(), sendMessageHolder.chatImg);
             loadNetImg(contentBean.getUploadImgUrl(), position, sendMessageHolder.imgLoading, sendMessageHolder.chatImg);
+        } else if (object instanceof PolyvChatPlaybackSpeak) {//历史自己的回放信息
+            PolyvChatPlaybackSpeak chatPlaybackSpeak = (PolyvChatPlaybackSpeak) object;
+            sendMessageHolder.sendMessage.setText((CharSequence) chatPlaybackSpeak.getObjects()[0]);
+        } else if (object instanceof PolyvChatPlaybackImg) {//历史自己的回放图片信息
+            PolyvChatPlaybackImg chatPlaybackImg = (PolyvChatPlaybackImg) object;
+            PolyvChatPlaybackImg.ContentBean contentBean = chatPlaybackImg.getContent();
+            if (contentBean != null) {
+                sendMessageHolder.imgLoading.setVisibility(View.GONE);
+                sendMessageHolder.imgLoading.setProgress(0);
+                fitChatImgWH((int) contentBean.getSize().getWidth(), (int) contentBean.getSize().getHeight(), sendMessageHolder.chatImg);
+                loadNetImg(contentBean.getUploadImgUrl(), position, sendMessageHolder.imgLoading, sendMessageHolder.chatImg);
+            }
         }
     }
 }

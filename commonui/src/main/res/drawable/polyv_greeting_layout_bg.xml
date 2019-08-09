@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <!--背景色,外圆角  -->
+            <solid android:color="#000000" />
+            <corners android:topRightRadius="80dp" android:bottomRightRadius="80dp"/>
+        </shape>
+    </item>
+
+    <!--除了item中的边距的背景色，内圆角,除了item中的边距的边距大小的背景色(透明会被覆盖)  -->
+    <item
+        android:bottom="1dp"
+        android:left="0dp"
+        android:right="1dp"
+        android:top="1dp">
+        <shape>
+            <solid android:color="#ffffff" />
+            <corners android:topRightRadius="80dp" android:bottomRightRadius="80dp"/>
+        </shape>
+    </item>
+
+</layer-list>

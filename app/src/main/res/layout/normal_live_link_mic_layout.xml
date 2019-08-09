@@ -2,11 +2,13 @@
 <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvNormalLinkMicView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:visibility="invisible"
+    android:background="#333333"
     android:id="@+id/normal_live_link_mic_layout_parent"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dm_60">
+    android:layout_height="wrap_content">
 
     <LinearLayout
+        android:visibility="gone"
         android:gravity="center"
         android:background="@drawable/link_mic_head_back"
         android:id="@+id/link_mic_fixed_position"
@@ -17,12 +19,12 @@
 
     <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dm_60">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/link_mic_layout"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dm_60"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="invisible" />
     </com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView>

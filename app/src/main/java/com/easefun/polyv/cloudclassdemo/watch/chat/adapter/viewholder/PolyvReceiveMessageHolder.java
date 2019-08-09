@@ -11,18 +11,21 @@ import com.bumptech.glide.Glide;
 import com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView;
 import com.easefun.polyv.cloudclass.chat.PolyvChatAuthorization;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
-import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
+import com.easefun.polyv.cloudclass.chat.PolyvChatUser;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvSpeakEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvTAnswerEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
 import com.easefun.polyv.cloudclass.chat.history.PolyvSpeakHistory;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackImg;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackSpeak;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatGroupFragment;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatPrivateFragment;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.itemview.PolyvItemViewFactoy;
+import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
 import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
 import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
 import com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView;
@@ -167,14 +170,43 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object,PolyvC
             if ((authorizationBean = chatImgHistory.getUser().getAuthorization()) != null) {
                 chatAuthorization = new PolyvChatAuthorization(authorizationBean.getActor(), authorizationBean.getFColor(), authorizationBean.getBgColor());
             }
+        } else if (object instanceof PolyvChatPlaybackSpeak) {//历史回放信息
+            PolyvChatPlaybackSpeak chatPlaybackSpeak = (PolyvChatPlaybackSpeak) object;
+            if (chatPlaybackSpeak.getUser() != null) {
+                userType = chatPlaybackSpeak.getUser().getUserType();
+                actor = chatPlaybackSpeak.getUser().getActor();
+                nick = chatPlaybackSpeak.getUser().getNick();
+                pic = chatPlaybackSpeak.getUser().getPic();
+                message = (CharSequence) chatPlaybackSpeak.getObjects()[0];
+                PolyvChatUser.AuthorizationBean authorizationBean;
+                if ((authorizationBean = chatPlaybackSpeak.getUser().getAuthorization()) != null) {
+                    chatAuthorization = new PolyvChatAuthorization(authorizationBean.getActor(), authorizationBean.getFColor(), authorizationBean.getBgColor());
+                }
+            }
+        } else if (object instanceof PolyvChatPlaybackImg) {//历史回放图片信息
+            PolyvChatPlaybackImg chatPlaybackImg = (PolyvChatPlaybackImg) object;
+            if (chatPlaybackImg.getUser() != null) {
+                userType = chatPlaybackImg.getUser().getUserType();
+                actor = chatPlaybackImg.getUser().getActor();
+                nick = chatPlaybackImg.getUser().getNick();
+                pic = chatPlaybackImg.getUser().getPic();
+                if (chatPlaybackImg.getContent() != null && chatPlaybackImg.getContent().getSize() != null) {
+                    chatImg = chatPlaybackImg.getContent().getUploadImgUrl();
+                    imgHeight = (int) chatPlaybackImg.getContent().getSize().getHeight();
+                    imgWidth = (int) chatPlaybackImg.getContent().getSize().getWidth();
+                    PolyvChatUser.AuthorizationBean authorizationBean;
+                    if ((authorizationBean = chatPlaybackImg.getUser().getAuthorization()) != null) {
+                        chatAuthorization = new PolyvChatAuthorization(authorizationBean.getActor(), authorizationBean.getFColor(), authorizationBean.getBgColor());
+                    }
+                }
+            }
         } else if (object instanceof PolyvChatPrivateFragment.PolyvQuestionTipsEvent) {//自定义的私聊的问候语信息
             userType = PolyvChatManager.USERTYPE_TEACHER;
             actor = "讲师";
             nick = "讲师";
             pic = "http://livestatic.videocc.net/uploaded/images/webapp/avatar/default-teacher.png";
             message = "同学，您好！请问有什么问题吗？";
-        }
-        else {
+        } else {
             return;
         }
         acceptReceiveMessage(this, userType, actor, nick, pic, message, chatImg, imgHeight, imgWidth, chatAuthorization, position);

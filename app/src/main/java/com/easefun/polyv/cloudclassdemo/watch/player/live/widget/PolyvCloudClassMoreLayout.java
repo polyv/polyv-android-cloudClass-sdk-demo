@@ -39,7 +39,7 @@ public class PolyvCloudClassMoreLayout {
     //View
     private FrameLayout flMoreRoot;
     private OrientationSensibleLinearLayout llMoreVertical;
-    private RecyclerView rvBitrate;
+    private RecyclerView rvBitrate,rvLines;
     private RvMoreAdapter rvAdapter;
     private TextView tvOnlyAudioSwitch;
     private ImageView ivCloseMore;

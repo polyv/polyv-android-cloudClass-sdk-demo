@@ -23,6 +23,7 @@ import com.easefun.polyv.commonui.player.ppt.PolyvPPTView;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
 /**
@@ -299,6 +300,10 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     public void destory() {
         PolyvCommonLog.d(TAG, "destroy helper video");
+        if(videoViewVolume >0){
+            PolyvControlUtils.setVolume(context, videoViewVolume);
+        }
+
         videoView.destroy();
         controller.destroy();
         videoItem.destroy();

@@ -7,6 +7,7 @@
     <dimen name="ppt_width">144dp</dimen>
     <dimen name="ppt_height">108dp</dimen>
     <dimen name="controller_margin">15dp</dimen>
+    <dimen name="dm_1">1dp</dimen>
     <dimen name="dm_3">3dp</dimen>
     <dimen name="dm_5">5dp</dimen>
     <dimen name="dm_10">10dp</dimen>

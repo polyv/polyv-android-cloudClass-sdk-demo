@@ -181,7 +181,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         rlSpeed = (RelativeLayout) view.findViewById(R.id.rl_speed);
         rlSpeed.setOnClickListener(this);
         speedContainer = view.findViewById(R.id.speed_container);
-        btSpeedPort = (Button) view.findViewById(R.id.bt_speed_port);
+        btSpeedPort = (Button) view.findViewById(R.id.bt_controller_more);
         btSpeedLand = findViewById(R.id.bt_speed_land);
         btSpeedPort.setOnClickListener(this);
         btSpeedLand.setOnClickListener(this);
@@ -338,7 +338,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         } else if (id == R.id.bt_speed_land) {
             hide();
             visibleWithAnimation(rlSpeed);
-        } else if (id == R.id.bt_speed_port) {
+        } else if (id == R.id.bt_controller_more) {
             hide();
             visibleWithAnimation(rlSpeed);
         } else if (id == R.id.bt_speed_10) {

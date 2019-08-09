@@ -20,66 +20,57 @@ public abstract class IPolyvDataBinder {
 
     protected Disposable ownerShowTimer;//头像显示切换定时器
     protected View ownerView, ownerCamera;//自己的布局view
+    protected ViewGroup parentView;
+
     protected static final int SHOW_TIME = 5 * 1000;
+    protected boolean isAudio;
 
     public abstract void addOwner(String myUid, PolyvJoinInfoEvent owern);
 
-    public abstract void addParent(LinearLayout linkMicLayout);
-
     public abstract void notifyItemChanged(int pos, boolean mute);
+
+
+    public  void addParent(LinearLayout linkMicLayout){
+        parentView = linkMicLayout;
+    };
 
     public void switchView(String originUid) {
     }
-
-    ;
 
     public ViewGroup switchViewToMianScreen(String userId) {
         return null;
     }
 
-    ;
-
     public int getJoinsPos(String uid) {
         return -1;
     }
-
-    ;
 
     public void updateSwitchViewStatus(String subLinkMicViewUid, String mainLinkMicViewUid) {
 
     }
 
-    ;
-
     public ViewGroup getFirstLinkMicView() {
         return null;
     }
-
-    ;
 
     public View getTeacherParentView() {
         return null;
     }
 
-    ;
-
     public View getCameraView(View parent) {
         return null;
     }
 
-    ;
-
     public View getCameraView() {
         return null;
     }
-
-    ;
 
     public void updateCamerStatus(boolean cameraOpen) {
 
     }
 
     public void setAudio(boolean audio) {
+        isAudio = audio;
     }
 
     public View getOwnerView() {
@@ -95,7 +86,6 @@ public abstract class IPolyvDataBinder {
     public void startAudioWave(IRtcEngineEventHandler.AudioVolumeInfo[] speakers, int totalVolume){
 
     };
-
 
     public void bindLinkMicFrontView(ViewGroup frontView){
 

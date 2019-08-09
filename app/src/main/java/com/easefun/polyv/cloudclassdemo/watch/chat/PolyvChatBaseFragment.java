@@ -1,9 +1,16 @@
 package com.easefun.polyv.cloudclassdemo.watch.chat;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Spannable;
@@ -22,29 +29,40 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
 import com.easefun.polyv.businesssdk.sub.gif.GifImageSpan;
 import com.easefun.polyv.businesssdk.sub.gif.RelativeImageSpan;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackImg;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
 import com.easefun.polyv.cloudclassdemo.watch.IPolyvHomeProtocol;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvEmoListAdapter;
+import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.viewholder.PolyvSendMessageHolder;
 import com.easefun.polyv.cloudclassdemo.watch.chat.imageScan.PolyvChatImageViewer;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.adapter.PolyvBaseRecyclerViewAdapter;
 import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
 import com.easefun.polyv.commonui.base.PolyvBaseFragment;
 import com.easefun.polyv.commonui.utils.PolyvFaceManager;
+import com.easefun.polyv.commonui.utils.PolyvPictureUtils;
 import com.easefun.polyv.commonui.utils.PolyvToast;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
+import com.easefun.polyv.commonui.utils.PolyvUriPathHelper;
+import com.easefun.polyv.commonui.widget.PolyvAnswerView;
 import com.easefun.polyv.commonui.widget.PolyvChatRecyclerView;
+import com.easefun.polyv.foundationsdk.permission.PolyvOnGrantedListener;
+import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
+import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
+import com.easefun.polyv.foundationsdk.utils.PolyvSDCardUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +103,18 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     protected boolean isShowPopupLayout;
     protected ViewGroup currentShowPopupLayout;
     protected int srcViewPagerHeight;
+
+    //更多、选择照片按钮、拍摄按钮、公告按钮
+    protected ImageView more, selectPhotoButton, openCameraButton, openBulletinButton;
+    //添加更多的布局
+    protected LinearLayout moreLayout, selectPhotoLayout, openCameraLayout, openBulletinLayout;
+
+    protected File takePhotosFilePath;
+    protected static final int REQUEST_SELECT_PHOTO = 0x01;
+    protected static final int REQUEST_OPEN_CAMERA = 0x02;
+
+    //只看讲师信息的集合（讲师包括：管理员、讲师、助教）
+    protected List<PolyvChatListAdapter.ChatTypeItem> teacherItems = new ArrayList<>();
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="发送弹幕">
@@ -95,7 +125,14 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     }
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="get、set方法">
+    // <editor-fold defaultstate="collapsed" desc="get、set、add、is方法">
+    protected PolyvCommonVideoView getVideoView() {
+        if (homePresnter != null) {
+            return homePresnter.getVideoView();
+        }
+        return null;
+    }
+
     protected ViewGroup getImageViewerContainer() {
         if (homePresnter != null) {
             return homePresnter.getImageViewerContainer();
@@ -115,6 +152,39 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
             return homePresnter.getSessionId();
         }
         return null;
+    }
+
+    protected void addUnreadQuiz(int unreadCount) {
+        if (homePresnter != null) {
+            homePresnter.addUnreadQuiz(unreadCount);
+        }
+    }
+
+    protected boolean isSelectedQuiz() {
+        if (homePresnter != null) {
+            return homePresnter.isSelectedQuiz();
+        }
+        return false;
+    }
+
+    public int getChatListUnreadCount() {
+        if (chatMessageList != null) {
+            return chatMessageList.getUnreadCount();
+        }
+        return 0;
+    }
+
+    protected void addUnreadChat(int unreadCount) {
+        if (homePresnter != null) {
+            homePresnter.addUnreadChat(unreadCount);
+        }
+    }
+
+    protected boolean isSelectedChat() {
+        if (homePresnter != null) {
+            return homePresnter.isSelectedChat();
+        }
+        return false;
     }
     // </editor-fold>
 
@@ -171,7 +241,8 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
                     for (PolyvChatListAdapter.ChatTypeItem chatTypeItem : chatListAdapter.getChatTypeItems()) {
                         if (chatTypeItem.object instanceof PolyvChatImgEvent
                                 || chatTypeItem.object instanceof PolyvChatImgHistory
-                                || chatTypeItem.object instanceof PolyvSendLocalImgEvent) {
+                                || chatTypeItem.object instanceof PolyvSendLocalImgEvent
+                                || chatTypeItem.object instanceof PolyvChatPlaybackImg) {
                             imgItemList.add(chatTypeItem);
                         }
                     }
@@ -303,6 +374,189 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
                 sendMessage();
             }
         });
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="初始化更多功能相关">
+    protected void initMoreLayout() {
+        //更多按钮
+        more = findViewById(R.id.add_more);
+        more.setVisibility(View.VISIBLE);
+        more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                togglePopupLayout(more, moreLayout, getChatEditContainer());
+            }
+        });
+        moreLayout = findViewById(R.id.ic_chat_add_more_layout);
+        addPopupBottom(more);
+        addPopupLayout(moreLayout);
+        selectPhotoLayout = findViewById(R.id.select_photo_layout);
+        openCameraLayout = findViewById(R.id.open_camera_layout);
+        selectPhotoButton = findViewById(R.id.select_photo_button);
+        selectPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean result = permissionManager.permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .opstrs(-1)
+                        .meanings("存储权限")
+                        .setOnGrantedListener(new PolyvOnGrantedListener() {
+                            @Override
+                            public void afterPermissionsOnGranted() {
+                                selectPhoto();
+                            }
+                        })
+                        .request();
+                if (!result) {
+                    toast.makeText(getContext(), "请允许存储权限后再选择图片", PolyvToast.LENGTH_SHORT).show(true);
+                }
+            }
+        });
+        openCameraButton = findViewById(R.id.open_camera_button);
+        openCameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean result = permissionManager.permissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+                        .opstrs(-1, PolyvPermissionManager.OP_CAMERA)
+                        .meanings("存储权限", "相机权限")
+                        .setOnGrantedListener(new PolyvOnGrantedListener() {
+                            @Override
+                            public void afterPermissionsOnGranted() {
+                                openCamera();
+                            }
+                        })
+                        .request();
+                if (!result) {
+                    toast.makeText(getContext(), "请允许存储和相机权限后再拍摄", PolyvToast.LENGTH_SHORT).show(true);
+                }
+            }
+        });
+        //重发图片的按钮监听
+        chatListAdapter.setOnResendMessageViewClickListener(new PolyvChatListAdapter.OnResendMessageViewClickListener() {
+            @Override
+            public void onClick(ImageView iv, int position) {
+                PolyvChatListAdapter.ChatTypeItem chatTypeItem = chatListAdapter.getChatTypeItems().get(position);
+                if (chatTypeItem.object instanceof PolyvSendLocalImgEvent) {
+                    PolyvSendLocalImgEvent sendLocalImgEvent = (PolyvSendLocalImgEvent) chatTypeItem.object;
+                    sendLocalImgEvent.initSendStatus();
+                    PolyvSendMessageHolder sendMessageHolder = findVisiableSendMessageHolder(sendLocalImgEvent);
+                    if (sendMessageHolder != null) {
+                        sendMessageHolder.resendMessageButton.setVisibility(View.GONE);
+                        sendMessageHolder.imgLoading.setVisibility(View.VISIBLE);
+                        sendMessageHolder.imgLoading.setProgress(0);
+                    }
+                    //放在view初始之后
+                    sendImage(sendLocalImgEvent, getSessionId());
+                }
+            }
+        });
+        //公告
+        openBulletinLayout = findViewById(R.id.open_bulletin_layout);
+        openBulletinButton = findViewById(R.id.open_bulletin_button);
+        openBulletinButton.setOnClickListener(v -> {
+            //用Bus发送消息到AnswerView显示公告
+            PolyvRxBus.get().post(new PolyvAnswerView.BUS_EVENT(PolyvAnswerView.BUS_EVENT.TYPE_SHOW_BULLETIN));
+            hidePopupLayout(more, moreLayout);
+        });
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="发送图片">
+    protected void onImgUploadFail(PolyvSendLocalImgEvent localImgEvent, Throwable t) {
+        localImgEvent.setSendFail(true);
+        PolyvSendMessageHolder sendMessageHolder = findVisiableSendMessageHolder(localImgEvent);
+        if (sendMessageHolder != null) {
+            sendMessageHolder.imgLoading.setVisibility(View.GONE);
+            sendMessageHolder.resendMessageButton.setVisibility(View.VISIBLE);
+        }
+        toast.makeText(getContext(), "图片发送失败：" + t.getMessage(), PolyvToast.LENGTH_SHORT).show(true);
+    }
+
+    protected void onImgSendFail(PolyvSendLocalImgEvent localImgEvent, int sendValue) {
+        localImgEvent.setSendFail(true);
+        PolyvSendMessageHolder sendMessageHolder = findVisiableSendMessageHolder(localImgEvent);
+        if (sendMessageHolder != null) {
+            sendMessageHolder.imgLoading.setVisibility(View.GONE);
+            sendMessageHolder.resendMessageButton.setVisibility(View.VISIBLE);
+        }
+        toast.makeText(getContext(), "图片发送失败：" + sendValue, PolyvToast.LENGTH_SHORT).show(true);
+    }
+
+    protected void onImgSuccess(PolyvSendLocalImgEvent localImgEvent, String uploadImgUrl, String imgId) {
+        localImgEvent.setSendSuccess(true);
+        PolyvSendMessageHolder sendMessageHolder = findVisiableSendMessageHolder(localImgEvent);
+        if (sendMessageHolder != null) {
+            sendMessageHolder.imgLoading.setVisibility(View.GONE);
+        }
+    }
+
+    protected void onImgProgress(PolyvSendLocalImgEvent localImgEvent, float progress) {
+        localImgEvent.setSendProgress((int) (progress * 100));
+        PolyvSendMessageHolder sendMessageHolder = findVisiableSendMessageHolder(localImgEvent);
+        if (sendMessageHolder != null) {
+            sendMessageHolder.imgLoading.setVisibility(View.VISIBLE);
+            sendMessageHolder.imgLoading.setProgress((int) (progress * 100));
+        }
+    }
+
+    protected void sendImage(PolyvSendLocalImgEvent sendLocalImgEvent, String sessionId) {
+    }
+
+    private PolyvSendMessageHolder findVisiableSendMessageHolder(PolyvSendLocalImgEvent sendLocalImgEvent) {
+        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) chatMessageList.getLayoutManager();
+        int firstPosition = linearLayoutManager.findFirstVisibleItemPosition();
+        int lastPosition = linearLayoutManager.findLastVisibleItemPosition();
+        if (firstPosition < 0 || lastPosition < 0)
+            return null;
+        for (int i = 0; i <= lastPosition - firstPosition; i++) {
+            PolyvChatListAdapter.ChatTypeItem chatTypeItem = chatListAdapter.getChatTypeItems().get(i + firstPosition);
+            if (chatTypeItem.object == sendLocalImgEvent) {
+                PolyvSendMessageHolder sendMessageHolder = (PolyvSendMessageHolder) chatMessageList.getChildViewHolder(chatMessageList.getChildAt(i));
+                return sendMessageHolder;
+            }
+        }
+        return null;
+    }
+
+    private void openCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String picName = System.currentTimeMillis() + ".jpg";//同名会覆盖
+        String savePath = PolyvSDCardUtils.createPath(getContext(), "PolyvImg");
+        takePhotosFilePath = new File(savePath, picName);
+        Uri photoUri = FileProvider.getUriForFile(
+                getContext(),
+                getContext().getPackageName() + ".fileprovider",
+                takePhotosFilePath);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        startActivityForResult(intent, REQUEST_OPEN_CAMERA);
+    }
+
+    private void selectPhoto() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent, "选择图片"), REQUEST_SELECT_PHOTO);
+    }
+
+    private void sendPicture(String picturePath) {
+        PolyvSendLocalImgEvent sendLocalImgEvent = new PolyvSendLocalImgEvent();
+        sendLocalImgEvent.setImageFilePath(picturePath);
+        int[] pictureWh = PolyvPictureUtils.getPictureWh(picturePath);
+        sendLocalImgEvent.setWidth(pictureWh[0]);
+        sendLocalImgEvent.setHeight(pictureWh[1]);
+
+        sendImage(sendLocalImgEvent, getSessionId());
+
+        PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(sendLocalImgEvent, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND, PolyvChatManager.SE_MESSAGE);
+        chatTypeItems.add(chatTypeItem);
+        teacherItems.add(chatTypeItem);
+        chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
+        chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
+
+        if (more.isSelected()) {
+            hidePopupLayout(more, moreLayout);
+        }
     }
     // </editor-fold>
 
@@ -570,6 +824,22 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         super.onConfigurationChanged(newConfig);
         if (getUserVisibleHint()) {
             hideSoftInputAndEmoList();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
+            final Uri selectedUri = data.getData();
+            if (selectedUri != null) {
+                String picturePath = PolyvUriPathHelper.getPath(getContext(), selectedUri);
+                sendPicture(picturePath);
+            } else {
+                toast.makeText(getContext(), "cannot retrieve selected image", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_OPEN_CAMERA && resultCode == Activity.RESULT_OK) {//data->null
+            sendPicture(takePhotosFilePath.getAbsolutePath());
         }
     }
 

@@ -6,56 +6,70 @@
     android:orientation="vertical"
     tools:context=".watch.PolyvCloudClassHomeActivity">
 
+    <!--主屏容器-->
     <FrameLayout
         android:id="@+id/player_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/videoview_height_port"
         android:background="@color/gray" />
 
+    <!--连麦区域-->
+    <FrameLayout
+        android:id="@+id/link_mic_region"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/player_container"
+        android:background="#333333"
+        android:visibility="gone">
+    </FrameLayout>
 
+    <!--聊天区域容器-->
     <include
         android:id="@+id/chat_container_layout"
         layout="@layout/polyv_chat_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/player_container" />
+        android:layout_below="@id/link_mic_region" />
 
-
+    <!--副屏容器-->
     <com.easefun.polyv.commonui.widget.PolyvTouchContainerView
         android:id="@+id/video_ppt_container"
         android:layout_width="@dimen/ppt_width"
         android:layout_height="@dimen/ppt_height"
         android:visibility="invisible">
-
     </com.easefun.polyv.commonui.widget.PolyvTouchContainerView>
 
-
-    <!--com.easefun.polyv.cloudclassdemo.watch.linkMickMic.widget.PolyvLinkMicListView-->
-    <!--android:id="@+id/link_mic_layout"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="@dimen/ppt_height"-->
-    <!--android:visibility="invisible" />-->
+    <!--云课堂直播连麦布局-->
     <ViewStub
-        android:layout="@layout/link_mic_layout"
         android:id="@+id/polyv_link_mic_stub"
-        android:inflatedId="@+id/polyv_link_mic_id"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/ppt_height" />
+        android:layout_height="@dimen/ppt_height"
+        android:inflatedId="@+id/polyv_link_mic_id"
+        android:layout="@layout/link_mic_layout" />
 
-
+    <!--普通直播连麦布局-->
     <ViewStub
-        android:layout="@layout/normal_live_link_mic_layout"
         android:id="@+id/polyv_normal_live_link_mic_stub"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dm_60" />
+        android:layout_height="wrap_content"
+        android:layout="@layout/normal_live_link_mic_layout" />
 
+    <!--问答-->
     <com.easefun.polyv.commonui.widget.PolyvAnswerView
         android:id="@+id/answer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!--聊天输入框容器-->
     <include
         layout="@layout/polyv_chat_input_imageviewer_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <ImageView
+        android:visibility="invisible"
+        android:src="@drawable/back"
+        android:id="@+id/top_video_back_land"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

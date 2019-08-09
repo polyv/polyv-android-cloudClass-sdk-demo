@@ -19,6 +19,7 @@
         android:imeOptions="actionSend|flagNoFullscreen"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
+        android:maxLength="200"
         android:singleLine="true"
         android:textColor="#000000"
         android:textColorHint="#c7c7c7"
@@ -31,5 +32,5 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:clickable="true"
-        android:src="@drawable/polyv_selector_emoji" />
+        android:src="@drawable/polyv_selector_emoji"/>
 </RelativeLayout>

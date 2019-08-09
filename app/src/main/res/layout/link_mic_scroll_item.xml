@@ -32,7 +32,6 @@
             android:id="@+id/polyv_link_camera_switch_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/polyv_camer_back"
             android:orientation="horizontal">
 
             <ImageView

@@ -59,6 +59,10 @@ public class PolyvTouchContainerView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        //子view为invisible时(即非visible)不要拦截点击事件
+        boolean firstChildIsVisible = getChildAt(0) == null || (getChildAt(0).getVisibility() == View.VISIBLE);
+        if (/*getVisibility() != View.VISIBLE || */!firstChildIsVisible)
+            return super.onTouchEvent(event);
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             lastX = event.getX();
             lastY = event.getY();

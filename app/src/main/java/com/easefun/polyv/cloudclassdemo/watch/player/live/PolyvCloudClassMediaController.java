@@ -88,8 +88,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     // 提示对话框
     private AlertDialog alertDialog;
 
-    private ImageView ivMorePortrait;
-    private ImageView ivMoreLand;
+    private ImageView topBack;//由於在皮肤那里得返回按钮在连麦后会被连麦头像挡住，这里添加一个新得顶层按钮替换
 
     private OnClickOpenStartSendDanmuListener onClickOpenStartSendDanmuListener;
 
@@ -106,6 +105,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         super(context, attrs, defStyleAttr);
     }
 
+// <editor-fold defaultstate="collapsed" desc="初始化部分">
 
     protected void initialView() {
         context = (Activity) getContext();
@@ -114,6 +114,13 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         initialOtherView();
 
         addListener();
+    }
+
+    @Override
+    public void initialConfig(ViewGroup view) {
+        super.initialConfig(view);
+        topBack = parentView.getRootView().findViewById(R.id.top_video_back_land);
+        topBack.setOnClickListener(this);
     }
 
     private void initialOtherView() {
@@ -194,39 +201,14 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         tvStartSendDanmuLand.setOnClickListener(this);
     }
 
-    @Override
-    public void release() {
+    // </editor-fold>
 
-    }
 
-    @Override
-    public void destroy() {
-        if (danmuFragment != null) {
-            danmuFragment.onDestroy();
-            danmuFragment = null;
-        }
-        if (popupWindowTimer != null) {
-            popupWindowTimer.dispose();
-            popupWindowTimer = null;
-        }
-
-        cancleLinkUpTimer();
-    }
+    // <editor-fold defaultstate="collapsed" desc="码率相关">
 
     @Override
     public void setViewBitRate(String vid, int bitRate) {
 
-    }
-
-    @Override
-    public void onPrepared(PolyvCloudClassVideoView mp) {
-
-    }
-
-
-    @Override
-    public void onLongBuffering(String tip) {
-        showBitrateChangeView();
     }
 
     private void showBitrateChangeView() {
@@ -302,6 +284,9 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             }
         });
     }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="横竖屏切换">
 
     @Override
     public void changeToLandscape() {
@@ -321,15 +306,58 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         });
     }
 
+    // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="子类重载相关方法">
+
+    @Override
+    public void release() {
+
+    }
+    @Override
+    public void addHelper(PolyvCloudClassVideoHelper polyvCloudClassPlayerHelper) {
+        this.polyvCloudClassPlayerHelper = polyvCloudClassPlayerHelper;
+    }
+
+    @Override
+    public void destroy() {
+        if (danmuFragment != null) {
+            danmuFragment.onDestroy();
+            danmuFragment = null;
+        }
+        if (popupWindowTimer != null) {
+            popupWindowTimer.dispose();
+            popupWindowTimer = null;
+        }
+
+        cancleLinkUpTimer();
+    }
+
+
+    @Override
+    public void onPrepared(PolyvCloudClassVideoView mp) {
+
+    }
+
+
+    @Override
+    public void onLongBuffering(String tip) {
+        showBitrateChangeView();
+    }
     @Override
     public void hide() {
         super.hide();
         moreLayout.hide();
+        topBack.setVisibility(GONE);
     }
 
     @Override
     public void show() {
         super.show();
+        if(polyvCloudClassPlayerHelper.isSupportRTC()
+                && polyvCloudClassPlayerHelper.isJoinLinkMick()
+                && PolyvScreenUtils.isLandscape(context)){
+            topBack.setVisibility(VISIBLE);
+        }
     }
 
     @Override
@@ -347,69 +375,9 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         setVisibility(VISIBLE);
     }
 
-    @Override
-    public void onClick(View v) {
-        super.onClick(v);
-        int id = v.getId();
-        switch (id) {
-            case R.id.video_danmu_land:
-            case R.id.video_danmu_port:
-                danmuController.toggleDanmu();
-                break;
-            case R.id.video_hands_up_land:
-            case R.id.video_hands_up_port:
-                if (!polyvCloudClassPlayerHelper.requestPermission()) {
-                    return;
-                }
-                break;
-            case R.id.video_ppt_change_switch_port:
-            case R.id.video_ppt_change_switch_land:
-                if (showCamer) {
-                    showCamerView();
-                } else {
-                    changePPTVideoLocation();
-                }
-                break;
-            case R.id.video_refresh_land:
-            case R.id.video_refresh_port:
-                refreshVideoView();
-                if (isPaused){
-                    togglePauseBtn();
-                }
-                break;
-//            case R.id.video_screen_switch_land:
-//                changeToPortrait();
-//                polyvCloudClassPlayerHelper.resetFloatViewPort();
-//                break;
-            case R.id.video_screen_switch_port:
-                PolyvScreenUtils.unlockOrientation();
-                changeToLandscape();
-                break;
-            case R.id.iv_video_back_portrait:
-                if (context != null) {
-                    context.finish();
-                }
-                break;
-            case R.id.iv_video_back_land:
-                if (ScreenUtils.isLandscape()) {
-                    PolyvScreenUtils.unlockOrientation();
-                    changeToPortrait();
-                }
-                break;
-            case R.id.iv_more_land:
-                moreLayout.showWhenLandscape();
-                break;
-            case R.id.iv_more_portrait:
-                moreLayout.showWhenPortrait();
-                break;
-            case R.id.iv_video_pause_land:
-            case R.id.iv_video_pause_portrait:
-                togglePauseBtn();
-                break;
-            case R.id.tv_start_send_danmu_land:
-                onClickOpenStartSendDanmuListener.onStartSendDanmu();
-        }
-    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="小窗口与主窗口交互部分">
 
     @Override
     public void updatePPTShowStatus(boolean showPPT) {
@@ -426,27 +394,6 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
 
-    public void onServerDanmuOpen(boolean isServerDanmuOpen) {
-        danmuController.onServerDanmuOpen(isServerDanmuOpen);
-    }
-
-    /**
-     * 打开竖屏下的弹幕（默认关闭）
-     */
-    public void enableDanmuInPortrait() {
-        danmuController.enableDanmuInPortrait();
-    }
-
-    public void changeAudioOrVideoMode(@PolyvMediaPlayMode.Mode int mediaPlayMode) {
-        moreLayout.onChangeAudioOrVideoMode(mediaPlayMode);
-    }
-
-
-    private void refreshVideoView() {
-        polyvCloudClassPlayerHelper.initVolume();
-        polyvCloudClassPlayerHelper.restartPlay();
-    }
-
     public void changePPTVideoLocation() {
         if (!showPPT) {//如果不显示ppt  不触发此功能
             return;
@@ -459,6 +406,27 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             showPPTSubView = !showPPTSubView;
         }
     }
+    //关闭小窗口后 更新控制栏
+    public void updateControllerWithCloseSubView() {
+        showCamer = true;
+        if (showPPTSubView) {
+            videoPptChangeSwitchPort.setImageResource(R.drawable.ppt);
+            videoScreenSwitchLand.setImageResource(R.drawable.ppt);
+        } else {
+            videoPptChangeSwitchPort.setImageResource(R.drawable.camera);
+            videoScreenSwitchLand.setImageResource(R.drawable.camera);
+
+        }
+    }
+
+    @Override
+    public boolean isPPTSubView() {
+        return showPPTSubView;
+    }
+
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="连麦相关">
 
     //将ppt显示在主屏位置 因为在连麦后 要主动切换ppt到主屏
     public void switchPPTToMainScreen() {
@@ -472,6 +440,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         }
     }
 
+    //举手连麦
     public void handsUp(boolean joinSuccess) {
         View v = videoHandsUpPort;
         if (!videoHandsUpPort.isSelected()) {
@@ -485,24 +454,6 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             showStopLinkDialog(joinSuccess, false);
         }
 
-
-    }
-
-    private void resetSelectedStatus(View v) {
-        videoHandsUpLand.setSelected(!v.isSelected());
-        videoHandsUpPort.setSelected(!v.isSelected());
-    }
-
-    private void togglePauseBtn() {
-        isPaused=!isPaused;
-        boolean toPause = isPaused;
-        if (toPause) {
-            polyvVideoView.pause();
-        } else {
-            refreshVideoView();
-        }
-        ivVideoPauseLand.setSelected(toPause);
-        ivVideoPausePortrait.setSelected(toPause);
     }
 
     private void startHandsUpTimer() {
@@ -523,53 +474,6 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         }
     }
 
-    private void showStopLinkDialog(boolean joinSuccess, final boolean isExit) {
-        String message = joinSuccess ? String.format("您将断开与老师同学间的通话%s。", isExit ? "并退出" : "") :
-                "您将取消连线申请";
-        String btnMsg = joinSuccess ? String.format("挂断%s", isExit ? "并退出" : "") : "取消连线";
-        alertDialog = new AlertDialog.Builder(getContext()).setTitle(joinSuccess ? "即将退出连麦功能\n" : "您将取消连线申请\n")
-                .setNegativeButton(joinSuccess ? "继续连麦" : "继续申请", null)
-                .setPositiveButton(btnMsg, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (isExit) {
-                            context.finish();
-                            return;
-                        }
-                        videoHandsUpPort.setSelected(!videoHandsUpPort.isSelected());
-                        videoHandsUpLand.setSelected(!videoHandsUpPort.isSelected());
-                        if (joinSuccess) {
-                            PolyvLinkMicWrapper.getInstance().leaveChannel();
-                        } else {
-                            polyvCloudClassPlayerHelper.leaveChannel();
-                        }
-                        startHandsUpTimer();
-                    }
-                })
-                .create();
-        alertDialog.show();
-        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.center_view_color_blue));
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.center_view_color_blue));
-    }
-
-
-    public void addHelper(PolyvCloudClassVideoHelper polyvCloudClassPlayerHelper) {
-        this.polyvCloudClassPlayerHelper = polyvCloudClassPlayerHelper;
-    }
-
-    //关闭小窗口后 更新控制栏
-    public void updateControllerWithCloseSubView() {
-        showCamer = true;
-        if (showPPTSubView) {
-            videoPptChangeSwitchPort.setImageResource(R.drawable.ppt);
-            videoScreenSwitchLand.setImageResource(R.drawable.ppt);
-        } else {
-            videoPptChangeSwitchPort.setImageResource(R.drawable.camera);
-            videoScreenSwitchLand.setImageResource(R.drawable.camera);
-
-        }
-    }
-
     /**
      * 更新连麦状态
      *
@@ -586,19 +490,6 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     public void enableLinkBtn(boolean enable) {
         videoHandsUpPort.setEnabled(enable);
         videoHandsUpLand.setEnabled(enable);
-    }
-
-    public void setDanmuFragment(PolyvDanmuFragment danmuFragment) {
-        this.danmuFragment = danmuFragment;
-    }
-
-    public void setOnClickOpenStartSendDanmuListener(OnClickOpenStartSendDanmuListener onClickOpenStartSendDanmuListener) {
-        this.onClickOpenStartSendDanmuListener = onClickOpenStartSendDanmuListener;
-    }
-
-    @Override
-    public boolean isPPTSubView() {
-        return showPPTSubView;
     }
 
     @Override
@@ -636,10 +527,66 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         videoRefreshLand.setVisibility(VISIBLE);
         videoRefreshPort.setVisibility(VISIBLE);
         if (isPaused){
-            togglePauseBtn();
+            togglePauseBtn(true);
         }
     }
 
+    //重置连麦按钮状态
+    private void resetSelectedStatus(View v) {
+        videoHandsUpLand.setSelected(!v.isSelected());
+        videoHandsUpPort.setSelected(!v.isSelected());
+    }
+
+    private void showStopLinkDialog(boolean joinSuccess, final boolean isExit) {
+        String message = joinSuccess ? String.format("您将断开与老师同学间的通话%s。", isExit ? "并退出" : "") :
+                "您将取消连线申请";
+        String btnMsg = joinSuccess ? String.format("挂断%s", isExit ? "并退出" : "") : "取消连线";
+        alertDialog = new AlertDialog.Builder(getContext()).setTitle(joinSuccess ? "即将退出连麦功能\n" : "您将取消连线申请\n")
+                .setNegativeButton(joinSuccess ? "继续连麦" : "继续申请", null)
+                .setPositiveButton(btnMsg, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (isExit) {
+                            context.finish();
+                            return;
+                        }
+                        videoHandsUpPort.setSelected(!videoHandsUpPort.isSelected());
+                        videoHandsUpLand.setSelected(!videoHandsUpPort.isSelected());
+                        if (joinSuccess) {
+                            PolyvLinkMicWrapper.getInstance().leaveChannel();
+                        } else {
+                            polyvCloudClassPlayerHelper.leaveChannel();
+                        }
+                        startHandsUpTimer();
+                    }
+                })
+                .create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.center_view_color_blue));
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.center_view_color_blue));
+    }
+
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="弹幕相关">
+    public void onServerDanmuOpen(boolean isServerDanmuOpen) {
+        danmuController.onServerDanmuOpen(isServerDanmuOpen);
+    }
+
+    /**
+     * 打开竖屏下的弹幕（默认关闭）
+     */
+    public void enableDanmuInPortrait() {
+        danmuController.enableDanmuInPortrait();
+    }
+
+    public void setDanmuFragment(PolyvDanmuFragment danmuFragment) {
+        this.danmuFragment = danmuFragment;
+    }
+
+    public void setOnClickOpenStartSendDanmuListener(OnClickOpenStartSendDanmuListener onClickOpenStartSendDanmuListener) {
+        this.onClickOpenStartSendDanmuListener = onClickOpenStartSendDanmuListener;
+    }
 
     /**
      * 弹幕控制器
@@ -734,5 +681,114 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 
     public interface OnClickOpenStartSendDanmuListener {
         void onStartSendDanmu();
+    }
+        // </editor-fold>
+
+
+    // <editor-fold defaultstate="collapsed" desc="按钮控制相关方法">
+    private void refreshVideoView() {
+        polyvCloudClassPlayerHelper.initVolume();
+        polyvCloudClassPlayerHelper.restartPlay();
+    }
+
+    /**
+     *
+     * @param justChangeUi 是否只改变UI，如果为false，则会进行真正的暂停或者重新拉流。
+     */
+    private void togglePauseBtn(boolean justChangeUi) {
+        isPaused=!isPaused;
+        boolean toPause = isPaused;
+        if (!justChangeUi){
+            if (toPause) {
+                polyvVideoView.pause();
+            } else {
+                refreshVideoView();
+            }
+        }
+        ivVideoPauseLand.setSelected(toPause);
+        ivVideoPausePortrait.setSelected(toPause);
+    }
+
+
+    public void changeAudioOrVideoMode(@PolyvMediaPlayMode.Mode int mediaPlayMode) {
+        moreLayout.onChangeAudioOrVideoMode(mediaPlayMode);
+    }
+
+    public void onVideoViewPrepared(){
+        if (isPaused){
+            togglePauseBtn(true);
+        }
+    }
+    // </editor-fold>
+
+    @Override
+    public void onClick(View v) {
+        super.onClick(v);
+        int id = v.getId();
+        switch (id) {
+            case R.id.video_danmu_land:
+            case R.id.video_danmu_port:
+                danmuController.toggleDanmu();
+                break;
+            case R.id.video_hands_up_land:
+            case R.id.video_hands_up_port:
+                if (!polyvCloudClassPlayerHelper.requestPermission()) {
+                    return;
+                }
+                break;
+            case R.id.video_ppt_change_switch_port:
+            case R.id.video_ppt_change_switch_land:
+                if (showCamer) {
+                    showCamerView();
+                } else {
+                    changePPTVideoLocation();
+                }
+                break;
+            case R.id.video_refresh_land:
+            case R.id.video_refresh_port:
+                refreshVideoView();
+                break;
+//            case R.id.video_screen_switch_land:
+//                changeToPortrait();
+//                polyvCloudClassPlayerHelper.resetFloatViewPort();
+//                break;
+            case R.id.video_screen_switch_port:
+                PolyvScreenUtils.unlockOrientation();
+                changeToLandscape();
+                break;
+            case R.id.iv_video_back_portrait:
+                if (context != null) {
+                    context.finish();
+                }
+                break;
+            case R.id.top_video_back_land:
+                if (ScreenUtils.isLandscape()) {
+                    PolyvScreenUtils.unlockOrientation();
+                    changeToPortrait();
+                } else {
+                    if (context != null) {
+                        context.finish();
+                    }
+                }
+                break;
+            case R.id.iv_video_back_land:
+                if (ScreenUtils.isLandscape()) {
+                    PolyvScreenUtils.unlockOrientation();
+                    changeToPortrait();
+                }
+                break;
+            case R.id.iv_more_land:
+                moreLayout.showWhenLandscape();
+                break;
+            case R.id.iv_more_portrait:
+                moreLayout.showWhenPortrait();
+                break;
+            case R.id.iv_video_pause_land:
+            case R.id.iv_video_pause_portrait:
+                togglePauseBtn(false);
+                break;
+            case R.id.tv_start_send_danmu_land:
+                onClickOpenStartSendDanmuListener.onStartSendDanmu();
+        }
     }
 }

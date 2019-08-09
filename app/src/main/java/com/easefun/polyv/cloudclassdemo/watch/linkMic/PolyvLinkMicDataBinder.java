@@ -43,13 +43,13 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
     private View teacherParentView;//   teacherParentView:老师外层布局view
     private View cameraView, surfaceView;//surfaceview 是其他连麦者的摄像头，cameraView 是老师的摄像头
 
-    private boolean isAudio, cameraOpen = true;
+    private boolean cameraOpen = true,isNormalLive;
 
     private List<SurfaceView> cachesView = new ArrayList<>();
-    private ViewGroup parentView;
 
-    public PolyvLinkMicDataBinder(String myUid) {
+    public PolyvLinkMicDataBinder(String myUid, boolean isNormalLive) {
         this.myUid = myUid;
+        this.isNormalLive = isNormalLive;
     }
 
     public void addOwner(String myUid, PolyvJoinInfoEvent owern) {
@@ -66,8 +66,15 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
         onBindViewHolder(onCreateViewHolder(parentView, 0), 0);
     }
 
-    public void addParent(LinearLayout linkMicLayout) {
-        parentView = linkMicLayout;
+    @Override
+    public void bindLinkMicFrontView(ViewGroup linkMicLayoutParent) {
+        if(!isNormalLive){
+            return;
+        }
+        ViewGroup frontView = linkMicLayoutParent.findViewById(R.id.link_mic_fixed_position);
+        if(frontView != null){
+            frontView.setVisibility(View.GONE);//isAudio?View.VISIBLE
+        }
     }
 
     @NonNull
@@ -144,10 +151,10 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
         long longUid = Long.valueOf(uid);
         if (uid.equals(myUid)) {
              PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_HIDDEN, (int) longUid);
+                    VideoCanvas.RENDER_MODE_FIT, (int) longUid);
         } else {
             PolyvLinkMicWrapper.getInstance().setupRemoteVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_HIDDEN, (int) longUid);
+                    VideoCanvas.RENDER_MODE_FIT, (int) longUid);
         }
 
     }
@@ -162,10 +169,6 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
             return;
         }
         joins.put(teacherId, teacher);
-    }
-
-    public void setAudio(boolean audio) {
-        isAudio = audio;
     }
 
     public void updateCamerStatus(boolean cameraOpen) {
@@ -313,6 +316,9 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
             if (!uids.contains(requestSEvent.getUserId())) {
                 //老师放在第一位ol
                 if ("teacher".equals(requestSEvent.getUserType())) {
+                    if(isNormalLive){
+                        return;
+                    }
                     teacherId = requestSEvent.getUserId();
                     addTeacher(teacherId, requestSEvent);
                     uids.add(0, requestSEvent.getUserId());

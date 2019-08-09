@@ -3,6 +3,8 @@
     <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/link_mic_layout_parent"
+        android:background="#333333"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/ppt_height"
         >

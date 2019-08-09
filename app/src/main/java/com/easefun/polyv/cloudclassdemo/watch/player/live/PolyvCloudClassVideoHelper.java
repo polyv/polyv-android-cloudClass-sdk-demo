@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLoginEvent;
+import com.easefun.polyv.cloudclass.chat.event.PolyvTeacherInfo;
 import com.easefun.polyv.cloudclass.chat.event.linkmic.PolyvJoinLeaveSEvent;
 import com.easefun.polyv.cloudclass.chat.event.linkmic.PolyvJoinRequestSEvent;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
@@ -32,8 +34,8 @@ import com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.PolyvDemoClient;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.IPolyvDataBinder;
-import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvNormalLiveLinkMicDataBinder;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvLinkMicDataBinder;
+import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvNormalLiveLinkMicDataBinder;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.IPolyvRotateBaseView;
 import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.base.PolyvBaseActivity;
@@ -43,6 +45,7 @@ import com.easefun.polyv.foundationsdk.net.PolyvrResponseCallback;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
+import com.easefun.polyv.foundationsdk.utils.PolyvAppUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicAGEventHandler;
@@ -59,6 +62,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.agora.rtc.IRtcEngineEventHandler;
+import io.agora.rtc.video.VideoCanvas;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -109,6 +113,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     };
 
     private ViewGroup mainScreenLinkView;//主屏显示连麦人的时候的view
+    private FrameLayout linkMicRegion;
     private LinearLayout linkMicLayout;
     private IPolyvRotateBaseView linkMicLayoutParent;
     private IPolyvDataBinder polyvLinkMicAdapter;
@@ -117,10 +122,13 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private PolyvSocketSliceIdVO sliceIdVo;
     private String sessionId = "";
     private String roomId = "";
-    private boolean cameraOpen = true,showPPT;
+    private boolean cameraOpen = true,showPPT,supportRTC;
 
     private Disposable joinListTimer;
     private Set<Long> noCachesIds = new HashSet<>();//在缓存中没有找到数据得uid
+    private String teacherId;
+
+    private int RTC_VIEW_ID = 0x10000001;
 
     public PolyvCloudClassVideoHelper(PolyvCloudClassVideoItem videoItem,
                                       PolyvPPTItem polyvPPTItem, PolyvChatManager polyvChatManager) {
@@ -147,6 +155,20 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         controller.addHelper(this);
         controller.updatePPTShowStatus(showPPT);
         controller.changePPTVideoLocation();
+
+        if(isNormalLive){//如果是普通直播在videoview 先添加一个rtc展示得view
+            addRTCView();
+        }
+    }
+
+    private void addRTCView() {
+        SurfaceView surfaceView = PolyvLinkMicWrapper.getInstance().createRendererView(PolyvAppUtils.getApp());
+        surfaceView.setId(RTC_VIEW_ID);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams
+                (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        surfaceView.setLayoutParams(layoutParams);
+        surfaceView.setVisibility(View.GONE);
+        videoView.addView(surfaceView);
     }
 
     @Override
@@ -161,9 +183,14 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     }
 
     public void sendJoinRequest() {
-        joinSuccess = false;
+        supportRTC = videoView.getModleVO() != null ?videoView.getModleVO().isSupportRTCLive():false;
+        linkMicLayoutParent.setSupportRtc(supportRTC);
+        createLinkMicLayout(linkMicLayout, supportRTC);
+
+        updateLinkMicStatus(false);
         if (polyvLinkMicAdapter != null) {
             polyvLinkMicAdapter.setAudio("audio".equals(videoView.getLinkMicType()));
+            polyvLinkMicAdapter.bindLinkMicFrontView(linkMicLayoutParent.getOwnView());
         }
         PolyvLinkMicWrapper.getInstance().muteLocalVideo("audio".equals(videoView.getLinkMicType()));
         if (polyvChatManager != null) {
@@ -265,9 +292,9 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     }
 
     private void processTeacherInfo(String message) {
-        PolyvJoinInfoEvent joinInfoEvent = PolyvGsonUtil.fromJson(PolyvJoinInfoEvent.class,message);
-        joinRequests.put(joinInfoEvent.getUid(),joinInfoEvent);
-
+        PolyvTeacherInfo joinInfoEvent = PolyvGsonUtil.fromJson(PolyvTeacherInfo.class,message);
+        teacherId = joinInfoEvent.getData().getUserId();
+        PolyvCommonLog.e(TAG,"teacher id is "+teacherId);
         PolyvDemoClient.getInstance().setTeacher(joinInfoEvent);
     }
 
@@ -490,6 +517,10 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             PolyvCommonLog.e(TAG,"join id is:"+joinListBean.getUserId());
 //            if(!joinRequests.containsKey(joinListBean.getUserId()) || JOIN_DEFAULT_TYPE.equals(joinListBean.getUserType())){
                 joinRequests.put(joinListBean.getUserId(), joinListBean);
+            if ("teacher".equals(joinListBean.getUserType())) {
+                teacherId = joinListBean.getUserId();
+                PolyvCommonLog.e(TAG,"teacher id is "+teacherId);
+            }
 //            }
         }
     }
@@ -573,7 +604,6 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             if (surfaceView != null) {
                 surfaceView.setZOrderOnTop(changeToVideoView);
                 surfaceView.setZOrderMediaOverlay(changeToVideoView);
-
             }
 
             videoView.addView(changeToVideoView ? pptView : mainScreenLinkView, 0, new ViewGroup.LayoutParams
@@ -626,6 +656,9 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                 public void run() {
                     long longUid = uid & 0xFFFFFFFFL;
                     polyvLinkMicAdapter.addOwner(longUid+"",joinRequests.get(longUid+""));
+
+                    showRtcView(true,teacherId);
+
                     sendJoinSuccess();
                     cancleLinkTimer();
                     hideSubView();
@@ -634,7 +667,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                     if(pptView != null){
                         pptView.updateDelayTime(0);
                     }
-                    joinSuccess = true;
+                    updateLinkMicStatus(true);
                     linkMicLayout.setKeepScreenOn(true);
                     controller.onJoinLinkMic();
                 }
@@ -652,7 +685,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 //                        return;
 //                    }
                     PolyvCommonLog.d(TAG, "onLeaveChannel success");
-                    joinSuccess = false;
+                    showRtcView(false,null);
+                    updateLinkMicStatus(false);
                     cancleLinkTimer();
                     restartPlay();//restartPlay();
                     showSubView();
@@ -753,6 +787,27 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     };
 
+    private void showRtcView(boolean show,String teacherId) {
+        if(showPPT){
+            PolyvCommonLog.e(TAG,"is not teacher");
+            return;
+        }
+        if(!supportRTC){//
+            PolyvCommonLog.e(TAG,"live is not support rtc live");
+            return;
+        }
+        SurfaceView surfaceView = videoView.findViewById(RTC_VIEW_ID);
+        surfaceView.setVisibility(show?VISIBLE:INVISIBLE);
+        try {
+            if(show){
+                PolyvLinkMicWrapper.getInstance().setupRemoteVideo(surfaceView,
+                        VideoCanvas.RENDER_MODE_FIT, Integer.valueOf(teacherId));
+            }
+        }catch (Exception e){
+            PolyvCommonLog.exception(e);
+        }
+    }
+
     public void processUserOffline(long longUid) {
         int pos = polyvLinkMicAdapter.getJoinsPos(longUid+"");
 
@@ -821,6 +876,14 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         if(joinListTimer != null){
             joinListTimer.dispose();
             joinListTimer = null;
+        }
+    }
+
+    private void updateLinkMicStatus(boolean isJoinSuccess) {
+        this.joinSuccess = isJoinSuccess;
+        ViewGroup.LayoutParams layoutParams = linkMicRegion.getLayoutParams();
+        if (videoItem != null && linkMicLayoutParent != null) {
+            videoItem.notifyLinkMicStatusChange(isJoinSuccess, layoutParams.height);
         }
     }
 
@@ -963,12 +1026,17 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
         linkMicLayoutParent.setVisibility(INVISIBLE);
         linkMicLayout.removeAllViews();
-        polyvLinkMicAdapter.clear();
+        if(polyvLinkMicAdapter != null){
+            polyvLinkMicAdapter.clear();
+        }
+
         polyvChatManager.removeNewMessageListener(this);
         PolyvLinkMicWrapper.getInstance().removeEventHandler(polyvLinkMicAGEventHandler);
     }
 
-    public void addLinkMicLayout(LinearLayout linkMicLayout, IPolyvRotateBaseView linkMicLayoutParent) {
+    public void addLinkMicLayout(FrameLayout linkMicRegion, LinearLayout linkMicLayout,
+                                 IPolyvRotateBaseView linkMicLayoutParent) {
+        this.linkMicRegion = linkMicRegion;
         this.linkMicLayout = linkMicLayout;
         this.linkMicLayoutParent = linkMicLayoutParent;
 
@@ -982,16 +1050,25 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             }
         });
 
-        if(showPPT){
+
+    }
+
+    private void createLinkMicLayout(LinearLayout linkMicLayout, boolean supportRTC) {
+        //云课堂直播 或者是支持rtc得普通直播进行视频连麦
+        ViewGroup.LayoutParams layoutParams = linkMicRegion.getLayoutParams();
+        if(showPPT || (supportRTC)){//&& !"audio".equals(videoView.getLinkMicType())
             polyvLinkMicAdapter = new PolyvLinkMicDataBinder
-                    (PolyvLinkMicWrapper.getInstance().getEngineConfig().mUid + "");
+                    (PolyvLinkMicWrapper.getInstance().getEngineConfig().mUid + "", !showPPT);
+            layoutParams.height = PolyvScreenUtils.dip2px(context,108);
         }else{
             polyvLinkMicAdapter = new PolyvNormalLiveLinkMicDataBinder
                     (PolyvLinkMicWrapper.getInstance().getEngineConfig().mUid + "");
-            polyvLinkMicAdapter.bindLinkMicFrontView(linkMicLayoutParent.getOwnView());
+            layoutParams.height = PolyvScreenUtils.dip2px(context,0);
         }
 
+        linkMicRegion.setLayoutParams(layoutParams);
 
+        linkMicLayoutParent.setLinkType(videoView.getLinkMicType());
         PolyvLinkMicWrapper.getInstance().setPPTStatus(showPPT);
 
 //        linearLayoutManager = new LinearLayoutManager(context);
@@ -1030,4 +1107,13 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         }
     }
 
+    public void notifyOnConfigChangedListener(Configuration newConfig) {
+        if (videoItem != null) {
+            videoItem.notifyOnConfigChangedListener(newConfig);
+        }
+    }
+
+    public boolean isSupportRTC() {
+        return supportRTC;
+    }
 }

@@ -26,12 +26,11 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
     }
 
     @Override
-    public void loadDataDelay(boolean isFirst) {
-        super.loadDataDelay(isFirst);
-        if (!isFirst)
-            return;
+    public void loadDataAhead() {
+        super.loadDataAhead();
         initCommonView();
         addQuestionTips();
+        //需要在tab选中之前加载，可以获取未读的提问信息以更新右上角的未读信息数
         acceptEventMessage();
     }
     // </editor-fold>
@@ -102,6 +101,11 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
                     chatListAdapter.getChatTypeItems().add(new PolyvChatListAdapter.ChatTypeItem(eventObject, eventType, PolyvChatManager.SE_MESSAGE));
                     chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
                     chatMessageList.scrollToBottomOrShowMore(1);
+
+                    //是否需要添加到右上角的未读信息中
+                    if (!isSelectedQuiz()) {
+                        addUnreadQuiz(1);
+                    }
                 }
             }
         }, new Consumer<Throwable>() {
