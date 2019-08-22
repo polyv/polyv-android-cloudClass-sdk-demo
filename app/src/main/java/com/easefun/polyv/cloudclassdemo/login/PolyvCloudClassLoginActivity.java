@@ -21,6 +21,7 @@ import com.easefun.polyv.businesssdk.model.video.PolyvPlayBackVO;
 import com.easefun.polyv.businesssdk.service.PolyvLoginManager;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient;
 import com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient;
+import com.easefun.polyv.cloudclass.config.PolyvVClassGlobalConfig;
 import com.easefun.polyv.cloudclass.model.PolyvLiveStatusVO;
 import com.easefun.polyv.cloudclass.net.PolyvApiManager;
 import com.easefun.polyv.cloudclassdemo.R;
@@ -403,8 +404,8 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
 
     // <editor-fold defaultstate="collapsed" desc="startActivity">
     private void startActivityForLive(String userId, boolean isAlone) {
-        PolyvCloudClassHomeActivity.startActivityForLive(PolyvCloudClassLoginActivity.this,
-                getTrim(channelId), userId, isAlone);
+        PolyvCloudClassHomeActivity.startActivityForLiveWithParticipant(PolyvCloudClassLoginActivity.this,
+                getTrim(channelId), userId, isAlone, PolyvVClassGlobalConfig.IS_VCLASS);
     }
 
     private void startActivityForPlayback(String userId, boolean isNormalLivePlayBack) {

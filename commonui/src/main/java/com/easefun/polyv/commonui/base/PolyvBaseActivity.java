@@ -118,6 +118,7 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             savedInstanceState.putParcelable("android:support:fragments", null);
+            savedInstanceState.putParcelable("android:fragments", null);
         }
         super.onCreate(savedInstanceState);
         isCreateSuccess = false;
@@ -173,7 +174,7 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     //新增的findViewById()方法，用于兼容support 25
     @SuppressWarnings("unchecked")
     public <T extends View> T findView(@IdRes int id) {
-        return (T)super.findViewById(id);
+        return (T) super.findViewById(id);
     }
     // </editor-fold>
 

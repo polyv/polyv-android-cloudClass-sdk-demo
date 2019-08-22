@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_top_pull_layout"
+    android:layout_width="match_parent"
+    android:layout_height="25dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/pull_chat"
+        android:layout_width="36dp"
+        android:layout_height="5dp"
+        android:layout_gravity="center"
+        android:src="@drawable/polyv_chat_divider" />
+
+</LinearLayout>

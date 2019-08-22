@@ -106,6 +106,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     private SwipeRefreshLayout chatPullLoad;
     //欢迎语
     private PolyvGreetingTextView greetingText;
+    //    private PolyvGreetingView greetingView;
     //当前列表中显示的是否是禁言状态，在当前列表中是否是房间关闭状态，重连时当前列表中是否是房间关闭状态
     private boolean isBanIp, isCloseRoom, isCloseRoomReconnect;
     // 获取的历史记录条数
@@ -127,8 +128,19 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     @Override
     public void loadDataDelay(boolean isFirst) {
         super.loadDataDelay(isFirst);
-        if (!isFirst)
-            return;
+//        if (!isFirst)
+//            return;
+//        initCommonView();
+//        initView();
+//        //控件初始化之后再接收聊天室的事件
+//        acceptConnectStatus();
+//        acceptEventMessage();
+//        listenSendChatImgStatus();
+    }
+
+    @Override
+    public void loadDataAhead() {
+        super.loadDataAhead();
         initCommonView();
         initView();
         //控件初始化之后再接收聊天室的事件
@@ -306,6 +318,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 
         //欢迎语
         greetingText = findViewById(R.id.greeting_text);
+//        greetingView = findViewById(R.id.greeting_view);
     }
     // </editor-fold>
 
@@ -581,12 +594,22 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                 else
                     chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
                 chatMessageList.scrollToBottomOrShowMore(listArr[1].size());
+
+                //是否需要添加到右上角的未读信息中
+                if (!isSelectedChat()) {
+                    addUnreadChat(listArr[1].size());
+                }
             } else if (!isOnlyWatchTeacher() && listArr[0].size() > 0) {
                 if (listArr[0].size() > 1)
                     chatListAdapter.notifyItemRangeInserted(srcMaxPosition + 1, chatListAdapter.getItemCount() - 1);
                 else
                     chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
                 chatMessageList.scrollToBottomOrShowMore(listArr[0].size());
+
+                //是否需要添加到右上角的未读信息中
+                if (!isSelectedChat()) {
+                    addUnreadChat(listArr[0].size());
+                }
             }
         }
     }
@@ -661,6 +684,9 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 
     //发送的弹幕消息一起发送到聊天室
     public void sendChatMessageByDanmu(String sendMessage){
+        if (talk==null){
+            return;
+        }
         if (sendMessage.trim().length() == 0) {
             toast.makeText(getContext(), "发送内容不能为空！", Toast.LENGTH_SHORT).show(true);
         } else {
@@ -713,6 +739,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     }
 
     private void acceptLoginEvent(PolyvLoginEvent loginEvent) {
+//        greetingView.acceptLoginEvent(loginEvent);
         greetingText.acceptLoginEvent(loginEvent);
     }
 

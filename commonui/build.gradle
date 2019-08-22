@@ -14,6 +14,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        qatest {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
     lintOptions {
         checkReleaseBuilds false
@@ -30,6 +34,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api 'com.android.support:design:27.1.1'
-    api 'com.easefun.polyv:polyvSDKCloudClass:0.8.1'
+    api 'com.easefun.polyv:polyvSDKCloudClass:0.8.2.02'
+    //glide
+    api 'jp.wasabeef:glide-transformations:3.3.0'
+    api "com.github.bumptech.glide:okhttp3-integration:4.7.1"
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 }

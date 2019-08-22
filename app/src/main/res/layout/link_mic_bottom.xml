@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#1F1F1F"
+    android:orientation="vertical"
+    android:id="@+id/link_mic_bottom_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:background="#353535"
+        tools:visibility="visible"
+        android:visibility="gone"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:id="@+id/link_mic_brush_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.easefun.polyv.commonui.widget.PolyvMediaCheckView
+            android:id="@+id/controller_red"
+            app:borderColor="@color/white"
+            app:mainColor="#FF5B5B"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.easefun.polyv.commonui.widget.PolyvMediaCheckView
+            android:id="@+id/controller_blue"
+            app:borderColor="@color/white"
+            app:mainColor="#3BA4FF"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.easefun.polyv.commonui.widget.PolyvMediaCheckView
+            android:id="@+id/controller_yellow"
+            app:borderColor="@color/white"
+            app:mainColor="#FFE35B"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_marginLeft="12dp"
+            android:id="@+id/controller_erase"
+            android:src="@drawable/polyv_controller_link_erase_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:id="@+id/link_mic_bottom_controller"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:visibility="gone"
+            android:layout_margin="12dp"
+            android:id="@+id/controller_brush"
+            android:src="@drawable/polyv_controller_link_brush_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_margin="12dp"
+            android:id="@+id/controller_mic"
+            android:src="@drawable/polyv_controller_link_mic_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_margin="12dp"
+            android:id="@+id/controller_camera"
+            android:src="@drawable/polyv_controller_link_cam_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_margin="12dp"
+            android:id="@+id/controller_camera_switch"
+            android:src="@drawable/btncamex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_margin="12dp"
+            android:id="@+id/controller_link_mic_call"
+            android:src="@drawable/btnbye"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>

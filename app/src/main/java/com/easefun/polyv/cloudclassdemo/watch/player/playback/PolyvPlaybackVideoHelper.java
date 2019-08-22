@@ -3,10 +3,14 @@ package com.easefun.polyv.cloudclassdemo.watch.player.playback;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTVodProcessor;
 import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
+import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
 import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackVideoView;
 import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
+import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.github.lzyzsd.jsbridge.CallBackFunction;
 
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
@@ -59,6 +63,32 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
                 //重置状态
                 pptItem.resetStatus();
             }
+        }
+    }
+
+    @Override
+    protected void addCloudClassWebProcessor() {
+        if(pptView != null){
+            IPolyvWebMessageProcessor<PolyvPPTVodProcessor.PolyvVideoPPTCallback> processor = new
+                    PolyvPPTVodProcessor(null);
+            pptView.addWebProcessor(processor);
+            processor.registerJSHandler(new PolyvPPTVodProcessor.PolyvVideoPPTCallback() {
+                @Override
+                public void callVideoDuration(CallBackFunction function) {
+                    PolyvCommonLog.d(TAG,"callVideoDuration:");
+                    if (videoView == null) {
+                        return;
+                    }
+                    String time = "{\"time\":" + videoView.getCurrentPosition() + "}";
+                    PolyvCommonLog.d(TAG,"time:"+time);
+                    function.onCallBack(time);
+                }
+
+                @Override
+                public void pptPrepare() {
+                    pptView.setLoadingViewVisible(View.INVISIBLE);
+                }
+            });
         }
     }
 

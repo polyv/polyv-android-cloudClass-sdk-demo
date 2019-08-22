@@ -3,11 +3,8 @@ package com.easefun.polyv.cloudclassdemo.watch.linkMic.widget;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
-import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
+import com.easefun.polyv.cloudclassdemo.watch.linkMic.IPolyvViewVisibilityChangedListener;
 
 /**
  * @author df
@@ -30,6 +27,12 @@ public interface IPolyvRotateBaseView {
     public void setVisibility(int visibility);
 
     public void enableShow(boolean show);
+
+    public void setLinkType(String type);
+
+    public void setSupportRtc(boolean type);
+
+ public void setOnVisibilityChangedListener(IPolyvViewVisibilityChangedListener listener);
    // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="移动相关">

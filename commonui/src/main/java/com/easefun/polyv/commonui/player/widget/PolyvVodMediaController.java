@@ -216,7 +216,6 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         int totalTime = polyvVideoView.getDuration();
         tvTotaltime.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
         tvTotaltimeLand.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
-        videoControllerPort.setVisibility(VISIBLE);
     }
 
     @Override
@@ -385,7 +384,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         pbSubviewShow.setVisibility(GONE);
         pbSubviewShowLand.setVisibility(GONE);
         if (polyvVodVideoHelper != null) {
-            polyvVodVideoHelper.showCamerView();
+            polyvVodVideoHelper.showCameraView();
         }
     }
 

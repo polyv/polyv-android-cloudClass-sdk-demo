@@ -65,6 +65,8 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     private static final String landTag = "land";
     private static final String portraitTag = "portrait";
 
+    protected boolean joinLinkMic;
+
     private Runnable hideTask = new Runnable() {
         @Override
         public void run() {
@@ -165,7 +167,6 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     public void initialConfig(ViewGroup view) {
         parentView = view;
         changeToPortrait();
-
     }
 
     private void setPortraitController() {
@@ -201,7 +202,6 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     @Override
     public void show() {
         show(SHOW_TIME);
-
     }
 
     @Override

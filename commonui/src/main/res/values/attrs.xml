@@ -14,4 +14,11 @@
         <attr name="selected_color" format="color" />
         <attr name="disabled_color" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="PolyvMediaCheckView">
+
+        <attr name="placeholder" format="reference|color"/>
+        <attr name="mainColor" format="color"/>
+        <attr name="borderColor" format="color"/>
+    </declare-styleable>
 </resources>

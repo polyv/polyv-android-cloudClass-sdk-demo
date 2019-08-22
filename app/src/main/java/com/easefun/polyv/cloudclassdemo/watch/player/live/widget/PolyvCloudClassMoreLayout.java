@@ -3,6 +3,7 @@ package com.easefun.polyv.cloudclassdemo.watch.player.live.widget;
 import android.app.Activity;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -131,8 +132,8 @@ public class PolyvCloudClassMoreLayout {
     }
 
     public void initLines(List<PolyvLiveLinesVO> lines) {
-        showLines(true);
         linesAdapter.updateLinesDatas(lines);
+        showLines(true);
     }
 
     public void updateLinesStatus(int pos) {
@@ -191,18 +192,19 @@ public class PolyvCloudClassMoreLayout {
 
 
     private void initView(View root) {
-        flMoreRoot = root.findViewById(R.id.fl_more_root);
+        flMoreRoot = (FrameLayout) root.findViewById(R.id.fl_more_root);
         flMoreRoot.setOnClickListener(v -> hide());
 
-        llMoreVertical = root.findViewById(R.id.ll_more_vertical);
+        llMoreVertical = (OrientationSensibleLinearLayout) root.findViewById(R.id.ll_more_vertical);
         llMoreVertical.onLandscape = this::onLandscape;
         llMoreVertical.onPortrait = this::onPortrait;
 
-        rvBitrate = root.findViewById(R.id.rv_more_bitrate);
+        rvBitrate = (RecyclerView) root.findViewById(R.id.rv_more_bitrate);
         rvAdapter = new RvMoreAdapter();
         rvBitrate.setAdapter(rvAdapter);
         rvBitrate.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL,false));
 
+        tvOnlyAudioSwitch = (TextView) root.findViewById(R.id.cb_only_audio_switch);
         //多綫路
         linesAdapter = new RvLinesAdapter();
         rvLines = root.findViewById(R.id.rv_more_lines);
@@ -238,10 +240,10 @@ public class PolyvCloudClassMoreLayout {
             hide();
         });
 
-        ivCloseMore = root.findViewById(R.id.iv_close_more);
+        ivCloseMore = (ImageView) root.findViewById(R.id.iv_close_more);
         ivCloseMore.setOnClickListener(v -> hide());
 
-        llBitrate = root.findViewById(R.id.fl_bitrate);
+        llBitrate = (FrameLayout) root.findViewById(R.id.fl_bitrate);
     }
 
     private void showMediaController() {
@@ -270,7 +272,7 @@ public class PolyvCloudClassMoreLayout {
     }
 
     private void showLines(boolean show) {
-        linesContainer.setVisibility(show?View.VISIBLE:View.VISIBLE);
+        linesContainer.setVisibility(show && linesAdapter.getItemCount() >1?View.VISIBLE:View.GONE);
     }
 
 
@@ -371,7 +373,7 @@ public class PolyvCloudClassMoreLayout {
 
             RvMoreViewHolder(View itemView) {
                 super(itemView);
-                tvBitrate = itemView.findViewById(R.id.tv_bitrate);
+                tvBitrate = (TextView) itemView.findViewById(R.id.tv_bitrate);
             }
         }
 

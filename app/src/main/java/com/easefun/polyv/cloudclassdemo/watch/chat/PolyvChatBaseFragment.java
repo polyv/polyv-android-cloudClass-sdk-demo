@@ -95,7 +95,7 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     }
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="get、set方法">
+    // <editor-fold defaultstate="collapsed" desc="get、set、add、is方法">
     protected ViewGroup getImageViewerContainer() {
         if (homePresnter != null) {
             return homePresnter.getImageViewerContainer();
@@ -115,6 +115,39 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
             return homePresnter.getSessionId();
         }
         return null;
+    }
+
+    protected void addUnreadQuiz(int unreadCount) {
+        if (homePresnter != null) {
+            homePresnter.addUnreadQuiz(unreadCount);
+        }
+    }
+
+    protected boolean isSelectedQuiz() {
+        if (homePresnter != null) {
+            return homePresnter.isSelectedQuiz();
+        }
+        return false;
+    }
+
+    public int getChatListUnreadCount() {
+        if (chatMessageList != null) {
+            return chatMessageList.getUnreadCount();
+        }
+        return 0;
+    }
+
+    protected void addUnreadChat(int unreadCount) {
+        if (homePresnter != null) {
+            homePresnter.addUnreadChat(unreadCount);
+        }
+    }
+
+    protected boolean isSelectedChat() {
+        if (homePresnter != null) {
+            return homePresnter.isSelectedChat();
+        }
+        return false;
     }
     // </editor-fold>
 

@@ -34,6 +34,8 @@ public class PolyvTouchContainerView extends FrameLayout {
     private int beforeSoftTop = 0;
     private RotateTask rotateTask ;
 
+    private boolean canMove;//是否能移动
+
     public PolyvTouchContainerView(Context context) {
         this(context,null);
     }
@@ -59,6 +61,13 @@ public class PolyvTouchContainerView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(!canMove){
+            return super.onTouchEvent(event);
+        }
+        //子view为invisible时(即非visible)不要拦截点击事件
+        boolean firstChildIsVisible = getChildAt(0) == null || (getChildAt(0).getVisibility() == View.VISIBLE);
+        if (/*getVisibility() != View.VISIBLE || */!firstChildIsVisible)
+            return super.onTouchEvent(event);
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             lastX = event.getX();
             lastY = event.getY();
@@ -106,6 +115,7 @@ public class PolyvTouchContainerView extends FrameLayout {
     }
 
     public void resetFloatViewLand() {
+//        canMove = true;
         ViewGroup.MarginLayoutParams layoutParams = null;
         if (getParent() instanceof RelativeLayout) {
             layoutParams = (RelativeLayout.LayoutParams) getLayoutParams();
@@ -123,13 +133,14 @@ public class PolyvTouchContainerView extends FrameLayout {
         Log.d(TAG, "resetFloatViewLand: portraitLeft :" + portraitLeft + " portraitTop :"
                 + portraitTop+ "   width :" + getMeasuredWidth());
 
-        layoutParams.leftMargin = ((ViewGroup) getParent()).getMeasuredWidth() - getMeasuredWidth();
+        layoutParams.leftMargin = 0;
         layoutParams.topMargin = 0;
         setLayoutParams(layoutParams);
 
     }
 
     public void resetFloatViewPort() {
+//        canMove = false;
         MarginLayoutParams rlp = null;
         if (getParent() instanceof RelativeLayout) {
             rlp = (RelativeLayout.LayoutParams) getLayoutParams();
@@ -162,6 +173,10 @@ public class PolyvTouchContainerView extends FrameLayout {
         }
         post(rotateTask);
 
+    }
+
+    public boolean isCanMove() {
+        return canMove;
     }
 
     class RotateTask implements Runnable {
@@ -239,5 +254,9 @@ public class PolyvTouchContainerView extends FrameLayout {
 
     public void setOriginTop(int originTop) {
         this.originTop = originTop;
+    }
+
+    public void setContainerMove(boolean canMove){
+        this.canMove = canMove;
     }
 }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ececec">
+    android:background="#e9ebf5">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/chat_pull_load"
@@ -73,6 +73,14 @@
             app:scroll_interval="6666"
             app:scroll_mode="mode_once" />
     </FrameLayout>
+
+<!--    <com.easefun.polyv.commonui.widget.PolyvGreetingView
+        android:id="@+id/greeting_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="60dp"
+        android:visibility="invisible" />-->
 
     <com.easefun.polyv.commonui.widget.PolyvCornerBgTextView
         android:id="@+id/tv_status"

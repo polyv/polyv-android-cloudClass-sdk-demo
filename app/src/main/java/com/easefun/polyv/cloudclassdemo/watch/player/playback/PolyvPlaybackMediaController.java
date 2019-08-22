@@ -384,7 +384,7 @@ public class PolyvPlaybackMediaController extends PolyvCommonMediacontroller<Pol
         pbSubviewShow.setVisibility(GONE);
         pbSubviewShowLand.setVisibility(GONE);
         if (videoHelper != null) {
-            videoHelper.showCamerView();
+            videoHelper.showCameraView();
         }
     }
 
