@@ -52,10 +52,23 @@
     <com.easefun.polyv.commonui.widget.PolyvAnswerView
         android:id="@+id/answer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"  />
 
     <include
         layout="@layout/polyv_chat_input_imageviewer_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <TextView
+        android:visibility="gone"
+        android:textColor="@drawable/polyv_login_text_selector"
+        android:gravity="center"
+        android:background="@drawable/polyv_login_selector"
+        android:layout_marginBottom="@dimen/dm_32"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="缓存"
+        android:id="@+id/playback_cache"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

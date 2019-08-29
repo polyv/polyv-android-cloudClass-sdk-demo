@@ -1,13 +1,19 @@
 package com.easefun.polyv.commonui.player.ppt;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.blankj.utilcode.util.EncryptUtils;
 import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
+import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTVodProcessor;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTWebView;
+import com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient;
+import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
+import com.easefun.polyv.cloudclass.download.PolyvCloudClassCachesManager;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
@@ -18,6 +24,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
+import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTCacheProcessor.SETOFFLINEPATH;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICECONTROL;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEDRAW;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEID;
@@ -37,6 +44,7 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     protected ImageView pptLoadingView;
     private Disposable socketDispose;
     private CompositeDisposable delayDisposes = new CompositeDisposable();
+    private IPolyvWebMessageProcessor<PolyvPPTVodProcessor.PolyvVideoPPTCallback> processor;
 
     public PolyvPPTView(Context context) {
         this(context, null);
@@ -57,11 +65,16 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         View.inflate(context, R.layout.polyv_ppt_webview_layout, this);
         polyvPPTWebView = (PolyvPPTWebView) findViewById(R.id.polyv_ppt_web);
         pptLoadingView = (ImageView) findViewById(R.id.polyv_ppt_default_icon);
-        loadWeb();
 
     }
 
-    private void loadWeb() {
+    @Override
+    public void addWebProcessor(IPolyvWebMessageProcessor processor) {
+        polyvPPTWebView.registerProcessor(processor);
+        processor.bindWebView(polyvPPTWebView);
+    }
+
+    public void loadWeb() {
         polyvPPTWebView.loadWeb();//"file:///android_asset/startForMobile.html"
         registerSocketMessage();
     }
@@ -82,6 +95,20 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
 
     public void reLoad(){
         polyvPPTWebView.loadWeb();
+    }
+
+    public void loadLocalFile(String filePath,String pptPath,String vid,String videoId){
+        if(TextUtils.isEmpty(filePath)){
+            return;
+        }
+        polyvPPTWebView.loadUrl("file:///"+filePath);
+        polyvPPTWebView.callMessage(SETOFFLINEPATH, createPPTOffLinePath(pptPath));
+        polyvPPTWebView.callPPTParams(createTokenSign("",vid,videoId));
+    }
+
+    private String createPPTOffLinePath(String pptPath) {
+        String data  = "{\"path\":\""+pptPath+"\"}";
+        return data;
     }
 
     public void processSocketMessage(final PolyvSocketMessageVO polyvSocketMessageVO) {
@@ -109,9 +136,33 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     }
 
     @Override
-    public void pptPrepare(String message) {
+    public void pptPrepare(String channelId,String vid,String videoId) {
         hideLoading();
-        polyvPPTWebView.callPPTParams(message);
+        polyvPPTWebView.callPPTParams(createTokenSign(channelId,vid,videoId));
+    }
+
+    private String createTokenSign(String channelId,String vid,String videoId) {
+        long timestamp = System.currentTimeMillis();
+        String appId = PolyvVodSDKClient.getInstance().getAppId();
+        String appSecret = PolyvVodSDKClient.getInstance().getAppSecret();
+        String id = vid;//vid + ""
+        StringBuilder content = new StringBuilder();
+        content.append(appSecret)
+                .append("appId")
+                .append(appId)
+                .append("timestamp")
+                .append(timestamp)
+                .append("vid")
+                .append(vid)
+                .append(appSecret);
+        String sign = EncryptUtils.encryptMD5ToString(
+                content.toString()).toUpperCase();
+        String params = "{ \"vid\":\""+id+"\",\"appId\":\""+appId+
+                "\",\"timestamp\":"+timestamp+",\"sign\":\""+sign+
+                "\",\"videoId\":\""+videoId+
+                "\"}";
+
+        return params;
     }
 
     @Override
@@ -135,6 +186,7 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         PolyvCommonLog.d(TAG, "destroy ppt view");
         if (polyvPPTWebView != null) {
             polyvPPTWebView.removeAllViews();
+            polyvPPTWebView.destroy();
             removeView(polyvPPTWebView);
         }
         polyvPPTWebView = null;
@@ -167,15 +219,17 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         }
     }
 
+    @Override
+    public void sendWebMessage(String event, String message) {
+        if (polyvPPTWebView != null) {
+            polyvPPTWebView.callMessage(event,message);
+        }
+    }
+
     public void setLoadingViewVisible(int visible) {
         if (pptLoadingView != null) {
             pptLoadingView.setVisibility(visible);
         }
-    }
-
-    @Override
-    public void addPPTCallback(PolyvPPTWebView.PolyvVideoPPTCallback polyvVideoPPTCallback) {
-        polyvPPTWebView.setPolyvVideoPPTCallback(polyvVideoPPTCallback);
     }
 
     public void updateDelayTime(int delay_time){

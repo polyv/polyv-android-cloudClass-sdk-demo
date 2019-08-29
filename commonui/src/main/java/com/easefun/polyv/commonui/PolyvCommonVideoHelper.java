@@ -85,6 +85,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
             polyvPPTItem.addMediaController(controller);
             videoItem.bindPPTView(polyvPPTItem);
 
+            addCloudClassWebProcessor();
         }
     }
 
@@ -107,6 +108,11 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     public abstract void initConfig(boolean isNormalLive);
 
     public abstract void resetView(boolean isNoramlLivePlayBack);
+
+    /**
+     * 增加云客堂web端得处理器
+     */
+    protected abstract void addCloudClassWebProcessor();
 
     public void addPPT(PolyvTouchContainerView container) {
         pptParent = container;

@@ -233,6 +233,11 @@ public class PolyvTouchContainerView extends FrameLayout {
         return rlp;
     }
 
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+    }
+
     public void setOriginLeft(int originLeft) {
         this.originLeft = originLeft;
     }

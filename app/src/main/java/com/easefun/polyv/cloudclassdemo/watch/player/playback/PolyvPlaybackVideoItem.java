@@ -19,7 +19,9 @@ import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeItem;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeUtils;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView;
 import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackVideoView;
+import com.easefun.polyv.cloudclass.playback.video.api.IPolyvPlaybackListenerEvent;
 import com.easefun.polyv.cloudclassdemo.R;
+import com.easefun.polyv.cloudclassdemo.watch.IPolyvHomeProtocol;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.PolyvMediaInfoType;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
@@ -58,6 +60,8 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
     private PolyvMarqueeUtils marqueeUtils = null;
     private String nickName;
 
+    private IPolyvHomeProtocol polyvHomeProtocol;
+
     public PolyvPlaybackVideoItem(@NonNull Context context) {
         this(context, null);
     }
@@ -75,7 +79,11 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
     private void initView(Context context) {
         if (!(context instanceof Activity))
             throw new RuntimeException("must use activity create videoitem");
+
         this.context = (Activity) context;
+        if(this.context instanceof IPolyvHomeProtocol){
+            this.polyvHomeProtocol = (IPolyvHomeProtocol) this.context;
+        }
         this.view = LayoutInflater.from(this.context).inflate(R.layout.polyv_playback_video_item, this);
         videoView = (PolyvPlaybackVideoView) findViewById(R.id.pb_videoview);
         controller = (PolyvPlaybackMediaController) findViewById(R.id.controller);
@@ -100,6 +108,12 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
         videoView.setKeepScreenOn(true);
         videoView.setPlayerBufferingIndicator(loadingview);
         videoView.setNeedGestureDetector(true);
+        videoView.setOnVideoDownloadListener(new IPolyvPlaybackListenerEvent.OnVideoDownloadListener() {
+            @Override
+            public void onVideoDownload(boolean canDownload) {
+                polyvHomeProtocol.updateVideoDownloadStatus(canDownload);
+            }
+        });
         videoView.setOnPPTShowListener(new IPolyvVideoViewListenerEvent.OnPPTShowListener() {
             @Override
             public void showPPTView(int visiable) {
@@ -378,6 +392,8 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
             tipsviewVolume.removeAllViews();
             tipsviewVolume = null;
         }
+
+        polyvHomeProtocol = null;
     }
 
 }

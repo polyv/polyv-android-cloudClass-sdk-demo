@@ -20,4 +20,6 @@ public interface IPolyvHomeProtocol {
     ViewGroup getChatEditContainer();
 
     PolyvChatManager getChatManager();
+
+    void updateVideoDownloadStatus(boolean canDownload);
 }

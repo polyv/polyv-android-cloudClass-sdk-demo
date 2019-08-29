@@ -87,7 +87,7 @@
                         android:layout_centerInParent="true"
                         android:layout_marginBottom="3dp"
                         android:gravity="center"
-                        android:text="回放"
+                        android:text="直播回放"
                         android:textColor="@drawable/polyv_color_topic_tab_text_selector"
                         android:textSize="16sp" />
 

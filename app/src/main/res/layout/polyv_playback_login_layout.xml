@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/playback_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="@dimen/dm_20"
     android:layout_marginRight="@dimen/dm_20"
     android:visibility="gone"
+    tools:visibility="visible"
     android:orientation="vertical">
 
     <EditText
@@ -14,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
-        android:hint="@string/login_channelId"
+        android:hint="直播频道号"
         android:textColorHint="@color/place_holder_color"
         android:textCursorDrawable="@null"
         android:textSize="16sp" />
@@ -24,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
-        android:hint="@string/login_userId"
+        android:hint="直播userId"
         android:textColorHint="@color/place_holder_color"
         android:textCursorDrawable="@null"
         android:textSize="16sp" />
@@ -34,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
-        android:hint="@string/login_appId"
+        android:hint="直播AppID"
         android:textColorHint="@color/place_holder_color"
         android:textCursorDrawable="@null"
         android:textSize="16sp" />
@@ -44,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"
         android:layout_margin="@dimen/dm_10"
-        android:hint="@string/login_vid"
+        android:hint="回放vid（选填）"
         android:textColorHint="@color/place_holder_color"
         android:textCursorDrawable="@null"
         android:textSize="16sp" />

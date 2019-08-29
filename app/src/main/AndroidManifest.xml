@@ -23,7 +23,8 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        tools:replace="android:icon,android:theme">
+        tools:replace="android:icon,android:theme"
+        tools:ignore="GoogleAppIndexingWarning">
         <meta-data
             android:name="com.easefun.polyv.commonui.utils.glide.progress.PolyvProgressLibraryGlideModule"
             android:value="GlideModule" />
@@ -39,11 +40,16 @@
         </activity>
         <activity
             android:name=".watch.PolyvCloudClassHomeActivity"
+            android:launchMode="singleTop"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateHidden|adjustResize">
 
         </activity>
 
+        <activity android:name=".watch.playback_cache.playback_list.PolyvPlaybackListActivity" />
+
+        <activity android:name=".watch.playback_cache.cache_management.PolyvPlaybackCacheManageActivity" />
+        
         <provider
             android:name="com.easefun.polyv.commonui.utils.PolyvFileProvider"
             android:authorities="${applicationId}.fileprovider"

@@ -3,15 +3,17 @@ package com.easefun.polyv.commonui.player.ppt;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
 import com.easefun.polyv.commonui.PolyvCommonMediacontroller;
 import com.easefun.polyv.commonui.R;
+import com.easefun.polyv.commonui.modle.db.PolyvCacheStatus;
+import com.easefun.polyv.commonui.modle.db.PolyvPlaybackCacheDBEntity;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 
 /**
@@ -29,6 +31,8 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
 
     private T mediaController;
     private boolean hasClosed;
+    // TODO: 2019/8/15 需要从缓冲数据里获取
+    PolyvPlaybackCacheDBEntity data = null;
 
     public PolyvPPTItem(@NonNull Context context) {
         this(context, null);
@@ -95,5 +99,35 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
     @Override
     public ViewGroup getItemRootView() {
         return (ViewGroup) rootView;
+    }
+
+
+    protected boolean playLocalPPT() {
+
+        if (data == null) {
+            return false;
+        }
+        //如果本地没有ppt缓存 隐藏
+        show(TextUtils.isEmpty(data.getJsPath()) ? INVISIBLE : VISIBLE);
+
+        getPPTView().loadLocalFile(data.getJsPath(), data.getPptPath(), data.getVideoPoolId(), data.getVideoLiveId());
+        return true;
+    }
+
+    private boolean hasVideoCaches(PolyvPlaybackCacheDBEntity entity) {
+        // TODO: 2019/8/19 从数据库获取数据
+        this.data  =entity;
+        return data != null && data.getStatus() == PolyvCacheStatus.FINISHED;
+    }
+
+    public void loadWeb(PolyvPlaybackCacheDBEntity entity) {
+        if(polyvPptView == null){
+            return;
+        }
+        if(hasVideoCaches(entity)){
+            playLocalPPT();
+        }else {
+            polyvPptView.loadWeb();
+        }
     }
 }

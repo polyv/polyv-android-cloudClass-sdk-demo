@@ -61,7 +61,7 @@ public class PolyvPlaybackMediaController extends PolyvCommonMediacontroller<Pol
             // 单位：毫秒
             int position = polyvVideoView.getCurrentPosition();
             int totalTime = polyvVideoView.getDuration() / 1000 * 1000;
-            if (polyvVideoView.isCompletedState() || position > totalTime)
+            if (polyvVideoView.isCompletedState() && (Math.abs(position - totalTime) <= 10))
                 position = totalTime;
             int bufPercent = polyvVideoView.getBufferPercentage();
             //在拖动进度条的时候，这里不更新

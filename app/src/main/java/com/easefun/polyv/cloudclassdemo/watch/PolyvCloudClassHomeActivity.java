@@ -22,20 +22,23 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.businesssdk.model.video.PolyvCloudClassVideoParams;
 import com.easefun.polyv.businesssdk.model.video.PolyvPlaybackVideoParams;
 import com.easefun.polyv.cloudclass.chat.PolyvChatApiRequestHelper;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
-import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
 import com.easefun.polyv.cloudclass.chat.PolyvConnectStatusListener;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener2;
+import com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient;
+import com.easefun.polyv.cloudclass.download.PolyvCloudClassDownloader;
 import com.easefun.polyv.cloudclass.model.PolyvLiveClassDetailVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvJSQuestionVO;
@@ -49,7 +52,10 @@ import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatBaseFragment;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatFragmentAdapter;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatGroupFragment;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatPrivateFragment;
+import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.IPolyvRotateBaseView;
+import com.easefun.polyv.cloudclassdemo.watch.playback_cache.PolyvDemoDownloaderFactory;
+import com.easefun.polyv.cloudclassdemo.watch.playback_cache.cache_storage.PolyvPlaybackCacheDBManager;
 import com.easefun.polyv.cloudclassdemo.watch.player.PolyvOrientoinListener;
 import com.easefun.polyv.cloudclassdemo.watch.player.live.PolyvCloudClassMediaController;
 import com.easefun.polyv.cloudclassdemo.watch.player.live.PolyvCloudClassVideoHelper;
@@ -57,8 +63,10 @@ import com.easefun.polyv.cloudclassdemo.watch.player.live.PolyvCloudClassVideoIt
 import com.easefun.polyv.cloudclassdemo.watch.player.playback.PolyvPlaybackVideoHelper;
 import com.easefun.polyv.cloudclassdemo.watch.player.playback.PolyvPlaybackVideoItem;
 import com.easefun.polyv.commonui.base.PolyvBaseActivity;
+import com.easefun.polyv.commonui.modle.db.PolyvCacheStatus;
+import com.easefun.polyv.commonui.modle.db.PolyvPlaybackCacheDBEntity;
+import com.easefun.polyv.commonui.modle.db.PolyvRxOption;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
-import com.easefun.polyv.commonui.player.widget.PolyvSlideSwitchView;
 import com.easefun.polyv.commonui.utils.PolyvChatEventBus;
 import com.easefun.polyv.commonui.widget.PolyvAnswerView;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
@@ -68,6 +76,7 @@ import com.easefun.polyv.foundationsdk.net.PolyvResponseBean;
 import com.easefun.polyv.foundationsdk.net.PolyvResponseExcutor;
 import com.easefun.polyv.foundationsdk.net.PolyvrResponseCallback;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
+import com.easefun.polyv.foundationsdk.rx.PolyvRxFlowableTransformer;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 
@@ -75,6 +84,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.socket.client.Socket;
 import okhttp3.ResponseBody;
@@ -95,11 +109,12 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private ViewPager chatViewPager;
     private PolyvChatFragmentAdapter chatPagerAdapter;
     private View lastView;
+    private TextView download;
 
     //直播与点播辅助类
     private PolyvCloudClassVideoHelper livePlayerHelper;
     private PolyvPlaybackVideoHelper playbackVideoHelper;
-    private PolyvSlideSwitchView polyvSlideSwitch;
+    private PolyvPlaybackCacheDBEntity cacheDBEntity;
 
     private String userId, channelId, videoId;
 
@@ -127,6 +142,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private static final String NORMALLIVE = "normallive";
     private static final String NORMALLIVE_PLAYBACK = "normallive_playback";
     private static final String DEFAULT_NICKNAME = "POLYV";
+    private static final String EXTRA_CAN_PLAYBACK_CACHE = "can_playback_cache";
 
     //直播与点播类型选择
 
@@ -144,6 +160,10 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private String viewerId;
     //观众昵称
     private String viewerName;
+
+    private Disposable cacheDispose;
+
+    private boolean canDownloadCache;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="入口">
@@ -156,13 +176,14 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         activity.startActivity(intent);
     }
 
-    public static void startActivityForPlayBack(Activity activity, String videoId, String channelId, String userId, boolean isNormalLivePlayBack) {
+    public static void startActivityForPlayBack(Activity activity, String videoId, String channelId, String userId, boolean isNormalLivePlayBack, boolean canPlaybackCache) {
         Intent intent = new Intent(activity, PolyvCloudClassHomeActivity.class);
         intent.putExtra(VIDEOID_KEY, videoId);
         intent.putExtra(USERID_KEY, userId);
         intent.putExtra(CHANNELID_KEY, channelId);
         intent.putExtra(NORMALLIVE_PLAYBACK, isNormalLivePlayBack);
         intent.putExtra(PLAY_TYPE_KEY, PolyvPlayOption.PLAYMODE_VOD);
+        intent.putExtra(EXTRA_CAN_PLAYBACK_CACHE, canPlaybackCache);
         activity.startActivity(intent);
     }
     // </editor-fold>
@@ -264,17 +285,31 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             chatManager.destroy();
         }
 
+        if (cacheDispose != null) {
+            cacheDispose.dispose();
+            cacheDispose = null;
+        }
+
         PolyvLinkMicWrapper.getInstance().destroy(linkMicLayout);
         PolyvChatEventBus.clear();
 
         super.onDestroy();
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if(download != null) {
+            download.setVisibility(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT ? View.VISIBLE : View.GONE);
+        }
+    }
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="初始化">
     private void initialStudentIdAndNickName() {
         //初始化观众id和观众昵称，用于统计数据
-        viewerId = "" + Build.SERIAL;
+        viewerId = PolyvLiveSDKClient.getInstance().getViewerId();
         viewerName = "学员" + viewerId;
     }
 
@@ -302,6 +337,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         isNormalLive = intent.getBooleanExtra(NORMALLIVE, true);
         isNormalLivePlayBack = intent.getBooleanExtra(NORMALLIVE_PLAYBACK, true);
         playMode = intent.getIntExtra(PLAY_TYPE_KEY, PolyvPlayOption.PLAYMODE_VOD);
+        canDownloadCache = intent.getBooleanExtra(EXTRA_CAN_PLAYBACK_CACHE, false);
     }
 
     private void initialLinkMic() {
@@ -486,9 +522,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             }
 
             @Override
-            public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone,String realName,String address) {
+            public void callOnLotteryWin(String lotteryId, String winnerCode, String viewerId, String telephone, String realName, String address) {
                 PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
-                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, PolyvCloudClassHomeActivity.this.viewerId, realName, telephone,address),
+                                .postLotteryWinnerInfo(channelId, lotteryId, winnerCode, PolyvCloudClassHomeActivity.this.viewerId, realName, telephone, address),
                         String.class, new PolyvrResponseCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
@@ -590,19 +626,65 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     }
 
     private void initialPlaybackVideo() {
+        initDownload();
+
         PolyvPlaybackVideoItem playbackVideoItem = new PolyvPlaybackVideoItem(this);
+        PolyvPPTItem<PolyvCloudClassMediaController> pptItem = null;
         playbackVideoHelper = new PolyvPlaybackVideoHelper(playbackVideoItem,
-                isNormalLivePlayBack ? null : new PolyvPPTItem<PolyvCloudClassMediaController>(this));
+                isNormalLivePlayBack ? null : (pptItem = new PolyvPPTItem<PolyvCloudClassMediaController>(this)));
         playbackVideoHelper.addVideoPlayer(playerContainer);
         playbackVideoHelper.initConfig(isNormalLivePlayBack);
         playbackVideoHelper.addPPT(videoPptContainer);
 
         playbackVideoHelper.setNickName(viewerName);
 
-        playPlaybackVideo();
+        checkLocalCache(pptItem);
     }
 
-    private void playPlaybackVideo() {
+    private void initDownload() {
+        download = findView(R.id.playback_cache);
+        download.setVisibility(View.VISIBLE);
+        download.setEnabled(canDownloadCache);
+        download.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showShort("已加入缓存列表");
+                download.setEnabled(false);
+                download.setText("缓存中");
+
+                PolyvCloudClassDownloader downloader = PolyvDemoDownloaderFactory
+                        .getDownloaderAndSetGlobalListener(videoId);
+                PolyvDemoDownloaderFactory.startDownload(downloader);
+            }
+        });
+    }
+
+    private void checkLocalCache(PolyvPPTItem<PolyvCloudClassMediaController> pptItem) {
+        cacheDispose = Flowable.create(new FlowableOnSubscribe<PolyvRxOption>() {
+            @Override
+            public void subscribe(FlowableEmitter<PolyvRxOption> emitter) throws Exception {
+                List<PolyvPlaybackCacheDBEntity> datas = PolyvPlaybackCacheDBManager.
+                        getDB().getByVideoPoolId(videoId);
+                PolyvPlaybackCacheDBEntity data = datas.isEmpty() ? null : datas.get(0);
+                PolyvRxOption<PolyvPlaybackCacheDBEntity> result = new PolyvRxOption<>(data);
+                emitter.onNext(result);
+            }
+        }, BackpressureStrategy.BUFFER)
+                .compose(new PolyvRxFlowableTransformer<PolyvRxOption, PolyvRxOption>())
+                .subscribe(new Consumer<PolyvRxOption>() {
+                    @Override
+                    public void accept(PolyvRxOption polyvPlaybackCacheDBEntity) throws Exception {
+                        cacheDBEntity = (PolyvPlaybackCacheDBEntity) polyvPlaybackCacheDBEntity.getData();
+                        playPlaybackVideo(cacheDBEntity);
+                        if(pptItem != null){
+                            pptItem.loadWeb(cacheDBEntity);
+                        }
+                    }
+                });
+    }
+
+    private void playPlaybackVideo(PolyvPlaybackCacheDBEntity data) {
+        updateDownloadStatus(data);
         playbackVideoHelper.resetView(isNormalLivePlayBack);
 
         // TODO: 2018/9/12 videoId 为直播平台的 videopoolid为点播平台的视频id
@@ -616,17 +698,43 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                 // TODO: 2019/3/25 请在此处填入用户的昵称
                 .buildOptions(PolyvBaseVideoParams.PARAMS2, viewerName)
                 .buildOptions(PolyvPlaybackVideoParams.ENABLE_ACCURATE_SEEK, true);
-        playbackVideoHelper.startPlay(playbackVideoParams);
+        if(hasCache(data)){//有缓存
+            playbackVideoHelper.startLocal(data.getVideoPath(),playbackVideoParams);
+        }else {
+            playbackVideoHelper.startPlay(playbackVideoParams);
+        }
+    }
+
+    private void updateDownloadStatus(PolyvPlaybackCacheDBEntity data) {
+        if (data==null){
+            download.setEnabled(true);
+            download.setText("缓存");
+        }else {
+            download.setEnabled(false);
+            if (data.getStatus()==PolyvCacheStatus.FINISHED){
+                download.setText("已缓存");
+            }else {
+                download.setText("缓存中");
+            }
+        }
+    }
+
+    private boolean hasCache(PolyvPlaybackCacheDBEntity data) {
+        return data != null && (data.getStatus() == PolyvCacheStatus.FINISHED);
     }
 
     private void initialLiveVideo() {
+        if (download != null) {
+            download.setVisibility(View.GONE);
+        }
         PolyvCloudClassVideoItem cloudClassVideoItem = new PolyvCloudClassVideoItem(this);
-        cloudClassVideoItem.setOnSendDanmuListener((danmuMessage)->{
+        cloudClassVideoItem.setOnSendDanmuListener((danmuMessage) -> {
             polyvChatGroupFragment.sendChatMessageByDanmu(danmuMessage);
         });
-
+        PolyvPPTItem<PolyvCloudClassMediaController> pptItem = null;
         livePlayerHelper = new PolyvCloudClassVideoHelper(cloudClassVideoItem,
-                isNormalLive ? null : new PolyvPPTItem<PolyvCloudClassMediaController>(this), chatManager);
+                isNormalLive ? null : (pptItem = new PolyvPPTItem<PolyvCloudClassMediaController>(this)),
+                chatManager);
         livePlayerHelper.addVideoPlayer(playerContainer);
         livePlayerHelper.initConfig(isNormalLive);
         livePlayerHelper.addPPT(videoPptContainer);
@@ -636,12 +744,15 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         PolyvCloudClassVideoParams cloudClassVideoParams = new PolyvCloudClassVideoParams(channelId, userId
                 , viewerId// viewerid
-                 );
+        );
         cloudClassVideoParams.buildOptions(PolyvBaseVideoParams.WAIT_AD, true)
                 .buildOptions(PolyvBaseVideoParams.MARQUEE, true)
                 // TODO: 2019/3/25 请在此处填入用户的昵称
                 .buildOptions(PolyvBaseVideoParams.PARAMS2, viewerName);
         livePlayerHelper.startPlay(cloudClassVideoParams);
+        if (pptItem!=null){
+            pptItem.loadWeb(null);
+        }
     }
 
     private ViewGroup.MarginLayoutParams getLayoutParamsLayout(View layout) {
@@ -820,8 +931,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         //设置字体聊天室字体颜色
         PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_ASSISTANT, Color.BLUE);
-        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_MANAGER,Color.BLUE);
-        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_TEACHER,Color.BLUE);
+        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_MANAGER, Color.BLUE);
+        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_TEACHER, Color.BLUE);
 
         //TODO 登录聊天室(userId：学员的Id(聊天室用户的唯一标识，非直播后台的userId，不同的学员应当使用不同的userId)，roomId：频道号，nickName：学员的昵称)
         //TODO 登录聊天室后一些功能才可以正常使用，例如：连麦
@@ -913,6 +1024,15 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     @Override
     public PolyvChatManager getChatManager() {
         return chatManager;
+    }
+
+    @Override
+    public void updateVideoDownloadStatus(boolean canDownload) {
+        //如果已经有缓存 以缓存状态来决定
+        if(cacheDBEntity != null){
+            return;
+        }
+        download.setEnabled(canDownload);
     }
     // </editor-fold>
 

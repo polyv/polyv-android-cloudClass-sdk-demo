@@ -31,7 +31,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -58,6 +58,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':commonui')
+    implementation "com.daimajia.swipelayout:library:1.2.0@aar"//demo中下载列表使用
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 }
 configurations.all {
     resolutionStrategy.force rootProject.ext.support.appCompatV7

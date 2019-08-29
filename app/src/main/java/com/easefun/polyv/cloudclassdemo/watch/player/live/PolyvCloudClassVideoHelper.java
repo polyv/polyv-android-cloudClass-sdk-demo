@@ -16,9 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor;
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
 import com.easefun.polyv.businesssdk.model.link.PolyvLinkMicMedia;
 import com.easefun.polyv.businesssdk.model.link.PolyvMicphoneStatus;
+import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
@@ -133,12 +135,20 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         this.polyvChatManager = polyvChatManager;
         PolyvLinkMicWrapper.getInstance().addEventHandler(polyvLinkMicAGEventHandler);
 
+
         permissionManager = PolyvPermissionManager.with((Activity) context)
                 .permissions(permissions)
                 .meanings(permissionsYips)
                 .opstrs(ops)
                 .addRequestCode(REQUEST_CODE)
                 .setPermissionsListener(this);
+    }
+
+
+
+
+    public PolyvCloudClassVideoHelper(PolyvCloudClassVideoItem videoItem, PolyvPPTItem polyvPPTItem) {
+        super(videoItem, polyvPPTItem);
     }
 
     @Override
@@ -148,9 +158,52 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         controller.updatePPTShowStatus(showPPT);
         controller.changePPTVideoLocation();
     }
-
     @Override
     public void resetView(boolean isNormalLive) {
+
+    }
+    @Override
+    protected void addCloudClassWebProcessor() {
+        IPolyvWebMessageProcessor<PolyvCloudClassPPTProcessor.CloudClassJSCallback> processor =
+                new PolyvCloudClassPPTProcessor(null);
+        if(pptView != null){
+            pptView.addWebProcessor(processor);
+        }
+        processor.registerJSHandler(new PolyvCloudClassPPTProcessor.CloudClassJSCallback() {
+            @Override
+            public void authorizationPPT(boolean authorization) {
+
+            }
+
+            @Override
+            public void screenBSSwitch(boolean pptSubShow) {
+                changePPTViewToVideoView(!pptSubShow);
+            }
+
+            @Override
+            public void screenPLSwitch(boolean landscapeShow) {
+                if(landscapeShow){
+                    changeToLandscape();
+                }else {
+                    changeToPortrait();
+                }
+            }
+
+            @Override
+            public void startOrPause(boolean start) {
+                if(start){
+                    videoView.start();
+                }else {
+                    videoView.pause();
+                }
+            }
+
+            @Override
+            public void reloadVideo() {
+                initVolume();
+                restartPlay();
+            }
+        });
 
     }
 
