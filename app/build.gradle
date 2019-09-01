@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+static def currentTime() {
+    return new Date().format("yyyy-MM-dd-HH-mm-ss",TimeZone.getTimeZone("UTC"))
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
@@ -15,7 +19,8 @@ android {
         //依赖的包可能支持很多类型的ABI
         //为了避免打包了我们没有支持的ABI，指定需要打包的ABI目录
         ndk {
-            abiFilters 'arm64-v8a', "armeabi-v7a", "x86" // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
+            abiFilters 'arm64-v8a', "armeabi-v7a", "x86"
+            // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
         }
     }
     lintOptions {
@@ -37,6 +42,26 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("../sign.jks")
+            storePassword "123456"
+            keyAlias "key"
+            keyPassword "123456"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${variant.name}_${variant.versionName}_${currentTime()}.apk"
+        }
     }
 }
 
