@@ -3,6 +3,7 @@ package com.easefun.polyv.cloudclassdemo.watch.player.playback;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTCacheProcessor;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTVodProcessor;
 import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
@@ -13,6 +14,8 @@ import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
+
+import java.io.File;
 
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
@@ -70,19 +73,19 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
 
     @Override
     protected void addCloudClassWebProcessor() {
-        if(pptView != null){
+        if (pptView != null) {
             IPolyvWebMessageProcessor<PolyvPPTVodProcessor.PolyvVideoPPTCallback> processor = new
                     PolyvPPTCacheProcessor(null);
             pptView.addWebProcessor(processor);
             processor.registerJSHandler(new PolyvPPTVodProcessor.PolyvVideoPPTCallback() {
                 @Override
                 public void callVideoDuration(CallBackFunction function) {
-                    PolyvCommonLog.d(TAG,"callVideoDuration:");
+                    PolyvCommonLog.d(TAG, "callVideoDuration:");
                     if (videoView == null) {
                         return;
                     }
                     String time = "{\"time\":" + videoView.getCurrentPosition() + "}";
-                    PolyvCommonLog.d(TAG,"time:"+time);
+                    PolyvCommonLog.d(TAG, "time:" + time);
                     function.onCallBack(time);
                 }
 
@@ -102,13 +105,34 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
     @Override
     public void resume() {
         super.resume();
-        if(videoView != null && !videoView.isPlaying()){
+        if (videoView != null && !videoView.isPlaying()) {
             videoView.start();
         }
     }
 
-    public void startLocal(String videoPath, PolyvPlaybackVideoParams playbackVideoParams){
-        videoView.playLocalVideo(videoPath,playbackVideoParams);
+    public void startLocal(String videoPath, PolyvPlaybackVideoParams playbackVideoParams) {
+        videoView.playLocalVideo(videoPath, playbackVideoParams);
+    }
+
+    /**
+     * 开始本地播放
+     *
+     * @param unzipDownloadedFile 解压后的下载文件，里面包括ppt，js，video。
+     * @param videoPoolId         视频在点播中的id
+     * @param videoLiveId         视频在直播中的id
+     * @param playbackVideoParams 播放参数
+     */
+    public void startLocal(File unzipDownloadedFile, String videoPoolId, String videoLiveId, PolyvPlaybackVideoParams playbackVideoParams) {
+        //取出视频文件
+        File videoDir = new File(unzipDownloadedFile, "video/");
+        File firstBitrateDir = videoDir.listFiles()[0];
+        File videoFile = firstBitrateDir.listFiles()[0];
+
+        //给播放器设置本地视频路径
+        startLocal(videoFile.getAbsolutePath(), playbackVideoParams);
+
+        //给pptView设置js文件路径
+        videoItem.getPPTItem().loadFromLocal(unzipDownloadedFile, videoPoolId, videoLiveId);
     }
 
     public void stopPlay() {

@@ -10,11 +10,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.commonui.PolyvCommonMediacontroller;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.modle.db.PolyvCacheStatus;
 import com.easefun.polyv.commonui.modle.db.PolyvPlaybackCacheDBEntity;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+
+import java.io.File;
 
 /**
  * @author df
@@ -31,7 +34,7 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
 
     private T mediaController;
     private boolean hasClosed;
-    // TODO: 2019/8/15 需要从缓冲数据里获取
+
     PolyvPlaybackCacheDBEntity data = null;
 
     public PolyvPPTItem(@NonNull Context context) {
@@ -57,7 +60,7 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
     }
 
     public void show(int show) {
-        PolyvCommonLog.d(TAG,"show polyvPPTWebView:"+show);
+        PolyvCommonLog.d(TAG, "show polyvPPTWebView:" + show);
         polyvPptView.polyvPPTWebView.setVisibility(show);
         polyvPptView.pptLoadingView.setVisibility(show == VISIBLE ? INVISIBLE : VISIBLE);
         if (hasClosed) {
@@ -115,19 +118,73 @@ public class PolyvPPTItem<T extends PolyvCommonMediacontroller> extends
     }
 
     private boolean hasVideoCaches(PolyvPlaybackCacheDBEntity entity) {
-        // TODO: 2019/8/19 从数据库获取数据
-        this.data  =entity;
+        this.data = entity;
         return data != null && data.getStatus() == PolyvCacheStatus.FINISHED;
     }
 
-    public void loadWeb(PolyvPlaybackCacheDBEntity entity) {
-        if(polyvPptView == null){
+    /**
+     * 加载在线ppt数据
+     */
+    public void loadFromWeb() {
+        if (polyvPptView == null) {
             return;
         }
-        if(hasVideoCaches(entity)){
-            playLocalPPT();
-        }else {
-            polyvPptView.loadWeb();
+        polyvPptView.loadWeb();
+    }
+
+    /**
+     * 加载本地ppt数据
+     *
+     * @param entity 回放缓存数据库实体
+     */
+    public void loadFromLocal(PolyvPlaybackCacheDBEntity entity) {
+        if (polyvPptView == null) {
+            return;
         }
+        if (hasVideoCaches(entity)) {
+            playLocalPPT();
+        }
+    }
+
+    /**
+     * 加载本地ppt数据
+     *
+     * @param downloadedFile 下载的压缩包解压后的文件。
+     * @param videoPoolId    videoPoolId
+     * @param videoLiveId    videoLiveId
+     */
+    public void loadFromLocal(File downloadedFile, String videoPoolId, String videoLiveId) {
+        if (!downloadedFile.exists()) {
+            LogUtils.e("文件不存在：" + downloadedFile);
+            return;
+        }
+
+        // <editor-fold defaultstate="collapsed" desc="找到js中的html文件">
+        File jsFile = new File(downloadedFile, "js");
+
+        if (!jsFile.exists()) {
+            show(INVISIBLE);
+            return;
+        }
+        File htmlFile = null;
+        for (File file : jsFile.listFiles()) {
+            if (file.getAbsolutePath().endsWith(".html")) {
+                htmlFile = file;
+                break;
+            }
+        }
+
+        if (htmlFile == null) {
+            show(INVISIBLE);
+            return;
+        }
+        // </editor-fold>
+
+        // <editor-fold defaultstate="collapsed" desc="找到ppt路径">
+        File pptFile = new File(downloadedFile, "ppt");
+        // </editor-fold>
+
+        show(VISIBLE);
+        getPPTView().loadLocalFile(htmlFile.getAbsolutePath(), pptFile.getAbsolutePath(), videoPoolId, videoLiveId);
     }
 }
