@@ -55,6 +55,7 @@ import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatPrivateFragment;
 import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.IPolyvRotateBaseView;
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.PolyvDemoDownloaderFactory;
+import com.easefun.polyv.cloudclassdemo.watch.playback_cache.PolyvSingleZipDownloadAndPlayExample;
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.cache_storage.PolyvPlaybackCacheDBManager;
 import com.easefun.polyv.cloudclassdemo.watch.player.PolyvOrientoinListener;
 import com.easefun.polyv.cloudclassdemo.watch.player.live.PolyvCloudClassMediaController;
@@ -677,7 +678,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                         cacheDBEntity = (PolyvPlaybackCacheDBEntity) polyvPlaybackCacheDBEntity.getData();
                         playPlaybackVideo(cacheDBEntity);
                         if(pptItem != null){
-                            pptItem.loadWeb(cacheDBEntity);
+                            pptItem.loadFromLocal(cacheDBEntity);
                         }
                     }
                 });
@@ -701,7 +702,11 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         if(hasCache(data)){//有缓存
             playbackVideoHelper.startLocal(data.getVideoPath(),playbackVideoParams);
         }else {
-            playbackVideoHelper.startPlay(playbackVideoParams);
+            //在线播放视频
+//            playbackVideoHelper.startPlay(playbackVideoParams);
+
+            //测试单个zip打包并播放。
+            PolyvSingleZipDownloadAndPlayExample.testDownloadAndPlay(playerContainer,playbackVideoHelper,playbackVideoParams);
         }
     }
 
@@ -751,7 +756,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                 .buildOptions(PolyvBaseVideoParams.PARAMS2, viewerName);
         livePlayerHelper.startPlay(cloudClassVideoParams);
         if (pptItem!=null){
-            pptItem.loadWeb(null);
+            pptItem.loadFromWeb();
         }
     }
 

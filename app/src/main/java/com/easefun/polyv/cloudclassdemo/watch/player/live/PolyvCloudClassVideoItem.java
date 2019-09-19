@@ -26,6 +26,11 @@ import com.easefun.polyv.businesssdk.model.video.PolyvMediaPlayMode;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeItem;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeUtils;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView;
+import com.easefun.polyv.cloudclass.PolyvSocketEvent;
+import com.easefun.polyv.cloudclass.chat.PolyvChatApiRequestHelper;
+import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
+import com.easefun.polyv.cloudclass.model.PolyvCloudClassRoomStatusVO;
+import com.easefun.polyv.cloudclass.model.PolyvPauseRecordVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketSliceControlVO;
 import com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView;
@@ -40,6 +45,7 @@ import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.widget.PolyvLightTipsView;
 import com.easefun.polyv.commonui.player.widget.PolyvVolumeTipsView;
+import com.easefun.polyv.commonui.widget.PolyvAnswerView;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
@@ -113,6 +119,8 @@ public class PolyvCloudClassVideoItem extends FrameLayout
     private static final String NICK_NAME = "nick_name";
 
     private boolean isNoLiveAtPresent;
+
+    private Disposable getRoomStatusDisposable;
 
     private Runnable hideTask = new Runnable() {
         @Override
@@ -274,6 +282,9 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 hideScreenShotView();
                 controller.show();
                 controller.onVideoViewPrepared();
+                if (polyvCloudClassVideoView.getModleVO() != null) {
+                    getCloudClassRoomStatus(polyvCloudClassVideoView.getModleVO().getChannelId() + "");
+                }
             }
 
             @Override
@@ -490,6 +501,11 @@ public class PolyvCloudClassVideoItem extends FrameLayout
             danmuFragment.onDestroy();
             danmuFragment = null;
         }
+
+        if (getRoomStatusDisposable != null) {
+            getRoomStatusDisposable.dispose();
+            getRoomStatusDisposable = null;
+        }
     }
 
     @Override
@@ -588,4 +604,26 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         this.nickName = nickName;
     }
 
+    private void getCloudClassRoomStatus(String roomId) {
+        getRoomStatusDisposable = PolyvChatApiRequestHelper.getInstance().getCloudClassRoomStatus(roomId)
+                .subscribe(new Consumer<PolyvCloudClassRoomStatusVO>() {
+                    @Override
+                    public void accept(PolyvCloudClassRoomStatusVO polyvCloudClassRoomStatusVO) throws Exception {
+                        if (polyvCloudClassRoomStatusVO.getCode() != 200) {
+                            throw new Exception(polyvCloudClassRoomStatusVO.getCode() + "(" + polyvCloudClassRoomStatusVO.getMessage() + ")");
+                        } else {
+                            if (PolyvCloudClassRoomStatusVO.STATUS_START.equals(polyvCloudClassRoomStatusVO.getData().getStatus())) {
+                                PolyvRxBus.get().post(new PolyvAnswerView.BUS_EVENT(PolyvAnswerView.BUS_EVENT.TYPE_REMOVE_PAUSERECORD));
+                            } else {
+                                PolyvRxBus.get().post(new PolyvAnswerView.BUS_EVENT(PolyvAnswerView.BUS_EVENT.TYPE_SHOW_PAUSERECORD,
+                                        PolyvEventHelper.gson.toJson(new PolyvPauseRecordVO(PolyvSocketEvent.PAUSE_RECORD, polyvCloudClassRoomStatusVO.getData().getTip()))));
+                            }
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                    }
+                });
+    }
 }

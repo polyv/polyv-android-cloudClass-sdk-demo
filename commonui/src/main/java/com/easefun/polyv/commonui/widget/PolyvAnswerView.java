@@ -27,6 +27,9 @@ import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.cloudclass.PolyvSocketEvent;
+import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
+import com.easefun.polyv.cloudclass.chat.event.PolyvOnPauseRecordEvent;
+import com.easefun.polyv.cloudclass.model.PolyvPauseRecordVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionResultVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionSResult;
@@ -177,6 +180,12 @@ public class PolyvAnswerView extends FrameLayout {
                         if (event.type == BUS_EVENT.TYPE_SHOW_BULLETIN) {
                             showAnswerContainer();
                             answerWebView.callBulletinShow(bulletinVO);
+                        } else if (event.type == BUS_EVENT.TYPE_SHOW_PAUSERECORD) {
+                            showAnswerContainer();
+                            answerWebView.callPauseRecordShow(PolyvEventHelper.gson.fromJson(event.handleJson, PolyvPauseRecordVO.class));
+                        } else if (event.type == BUS_EVENT.TYPE_REMOVE_PAUSERECORD) {
+                            hideAnswerContainer();
+                            answerWebView.callResumeRecord();
                         }
                     }
                 }));
@@ -345,9 +354,24 @@ public class PolyvAnswerView extends FrameLayout {
                 break;
             //移除公告
             case PolyvSocketEvent.BULLETIN_REMOVE:
-                hideAnswerContainer();
                 answerWebView.callBulletinRemove();
                 bulletinVO.setContent("");
+                break;
+            //直播暂停
+            case PolyvSocketEvent.PAUSE_RECORD:
+                showAnswerContainer();
+                PolyvOnPauseRecordEvent onPauseRecordEvent = PolyvEventHelper.getEventObject(PolyvOnPauseRecordEvent.class, msg, event);
+                if (onPauseRecordEvent != null) {
+                    answerWebView.callPauseRecordShow(new PolyvPauseRecordVO(onPauseRecordEvent.getEVENT(), onPauseRecordEvent.getTip()));
+                }
+                break;
+            //直播恢复
+            case PolyvSocketEvent.RESUME_RECORD:
+                answerWebView.callResumeRecord();
+                break;
+            //直播结束(客户端点击结束直播/下课按钮的时候才会发送该事件，其他方式关闭直播不会发送)
+            case PolyvSocketEvent.EXIT_RECORD:
+                answerWebView.callExitRecord();
                 break;
             //其他
             default:
@@ -561,11 +585,19 @@ public class PolyvAnswerView extends FrameLayout {
     public static class BUS_EVENT {
         //显示公告
         public static final int TYPE_SHOW_BULLETIN = 1;
+        public static final int TYPE_SHOW_PAUSERECORD = 2;
+        public static final int TYPE_REMOVE_PAUSERECORD = 3;
 
+        public String handleJson;
         int type;
 
         public BUS_EVENT(int type) {
             this.type = type;
+        }
+
+        public BUS_EVENT(int type, String handleJson) {
+            this.type = type;
+            this.handleJson = handleJson;
         }
     }
 }
