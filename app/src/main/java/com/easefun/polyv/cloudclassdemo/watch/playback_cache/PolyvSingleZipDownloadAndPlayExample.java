@@ -30,7 +30,7 @@ public class PolyvSingleZipDownloadAndPlayExample {
         String url = "http://liveimages.videocc.net/ppt/8205ac89d37e05513c5cb49dcb5f2705.zip?run=2234";
         PolyvSingleZipDownloadAndPlayExample.testDownloadZip(url, file -> {
             attachedView.post(() -> {
-                helper.startLocal(file, "8205ac89d37e05513c5cb49dcb5f2705", "e529178318", playbackVideoParams);
+                helper.startLocal(file, "e529178318", playbackVideoParams);
             });
         });
     }

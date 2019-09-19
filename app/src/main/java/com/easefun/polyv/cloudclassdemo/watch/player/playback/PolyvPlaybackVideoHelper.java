@@ -118,11 +118,13 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
      * 开始本地播放
      *
      * @param unzipDownloadedFile 解压后的下载文件，里面包括ppt，js，video。
-     * @param videoPoolId         视频在点播中的id
-     * @param videoLiveId         视频在直播中的id
+     * @param videoId             视频在直播中的id
      * @param playbackVideoParams 播放参数
      */
-    public void startLocal(File unzipDownloadedFile, String videoPoolId, String videoLiveId, PolyvPlaybackVideoParams playbackVideoParams) {
+    public void startLocal(File unzipDownloadedFile, String videoId, PolyvPlaybackVideoParams playbackVideoParams) {
+        //从文件名取出videoPoolId。
+        String videoPoolId = unzipDownloadedFile.getName();
+
         //取出视频文件
         File videoDir = new File(unzipDownloadedFile, "video/");
         File firstBitrateDir = videoDir.listFiles()[0];
@@ -132,7 +134,7 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
         startLocal(videoFile.getAbsolutePath(), playbackVideoParams);
 
         //给pptView设置js文件路径
-        videoItem.getPPTItem().loadFromLocal(unzipDownloadedFile, videoPoolId, videoLiveId);
+        videoItem.getPPTItem().loadFromLocal(unzipDownloadedFile, videoPoolId, videoId);
     }
 
     public void stopPlay() {
