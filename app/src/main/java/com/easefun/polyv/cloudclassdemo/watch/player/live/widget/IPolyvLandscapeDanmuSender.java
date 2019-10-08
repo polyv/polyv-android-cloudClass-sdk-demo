@@ -21,6 +21,11 @@ public interface IPolyvLandscapeDanmuSender {
     void openDanmuSender();
 
     /**
+     * 隐藏
+     */
+    void dismiss();
+
+    /**
      * 发送弹幕监听器
      */
     interface OnSendDanmuListener {

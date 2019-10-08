@@ -23,6 +23,7 @@ import com.easefun.polyv.businesssdk.api.common.meidaControl.IPolyvMediaControll
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
 import com.easefun.polyv.businesssdk.model.video.PolyvBitrateVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvDefinitionVO;
+import com.easefun.polyv.businesssdk.model.video.PolyvLiveLinesVO;
 import com.easefun.polyv.commonui.player.adapter.PolyvBitRateAdapter;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
@@ -52,14 +53,19 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
 
 
     protected volatile int currentBitratePos;
-    protected boolean hasData;
     protected PolyvBitrateVO polyvLiveBitrateVO;
+
+    //更多
+    protected ImageView ivMorePortrait;
+    protected ImageView ivMoreLand;
 
     private ViewGroup contentView, fullVideoViewParent;
     private ViewGroup.LayoutParams portraitLP;//(需要移动的整个播放器布局)在竖屏下的LayoutParams
     private ViewGroup fullVideoView;//需要移动的整个播放器布局
     private static final String landTag = "land";
     private static final String portraitTag = "portrait";
+
+    protected boolean joinLinkMic;
 
     private Runnable hideTask = new Runnable() {
         @Override
@@ -161,7 +167,6 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     public void initialConfig(ViewGroup view) {
         parentView = view;
         changeToPortrait();
-
     }
 
     private void setPortraitController() {
@@ -197,7 +202,6 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
     @Override
     public void show() {
         show(SHOW_TIME);
-
     }
 
     @Override
@@ -236,13 +240,17 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
 
     @Override
     public void onClick(View view) {
-        int id = view.getId();
     }
 
 
 
     @Override
     public void initialBitrate(PolyvBitrateVO bitrateVO) {
+
+    }
+
+    @Override
+    public void initialLines(List<PolyvLiveLinesVO> linesVO) {
 
     }
 

@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.service.PolyvNoLeakHandler;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView;
 import com.easefun.polyv.commonui.PolyvCommonMediacontroller;
@@ -181,7 +181,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         rlSpeed = (RelativeLayout) view.findViewById(R.id.rl_speed);
         rlSpeed.setOnClickListener(this);
         speedContainer = view.findViewById(R.id.speed_container);
-        btSpeedPort = (Button) view.findViewById(R.id.bt_speed_port);
+        btSpeedPort = (Button) view.findViewById(R.id.bt_controller_more);
         btSpeedLand = findViewById(R.id.bt_speed_land);
         btSpeedPort.setOnClickListener(this);
         btSpeedLand.setOnClickListener(this);
@@ -216,7 +216,6 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         int totalTime = polyvVideoView.getDuration();
         tvTotaltime.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
         tvTotaltimeLand.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
-        videoControllerPort.setVisibility(VISIBLE);
     }
 
     @Override
@@ -338,7 +337,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         } else if (id == R.id.bt_speed_land) {
             hide();
             visibleWithAnimation(rlSpeed);
-        } else if (id == R.id.bt_speed_port) {
+        } else if (id == R.id.bt_controller_more) {
             hide();
             visibleWithAnimation(rlSpeed);
         } else if (id == R.id.bt_speed_10) {
@@ -385,7 +384,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         pbSubviewShow.setVisibility(GONE);
         pbSubviewShowLand.setVisibility(GONE);
         if (polyvVodVideoHelper != null) {
-            polyvVodVideoHelper.showCamerView();
+            polyvVodVideoHelper.showCameraView();
         }
     }
 

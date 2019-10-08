@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/link_mic_layout_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="invisible"
+    tools:visibility="visible">
+
+    <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicBottomView
+        android:id="@+id/link_mic_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:paddingBottom="92dp">
+
+    </com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicBottomView>
+
     <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/link_mic_layout_parent"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/ppt_height"
+        android:background="#1F1F1F"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/link_mic_bottom"
         >
 
-        <LinearLayout
+
+        <FrameLayout
             android:id="@+id/link_mic_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/ppt_height"
-            android:background="@color/video_back"
-            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#1F1F1F"
             android:visibility="invisible" />
+
+
     </com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView>
+
+
+</RelativeLayout>

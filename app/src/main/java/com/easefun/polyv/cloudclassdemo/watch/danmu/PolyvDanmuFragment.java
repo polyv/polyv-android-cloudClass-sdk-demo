@@ -168,7 +168,7 @@ public class PolyvDanmuFragment extends Fragment {
     }
 
     //释放
-    private void release() {
+    public void release() {
         if (mDanmakuView != null) {
             mDanmakuView.release();
             mDanmakuView = null;
@@ -184,6 +184,7 @@ public class PolyvDanmuFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        //26 support调用后context为null，多次调用会有异常
         super.onDestroy();
         release();
         mContext = null;

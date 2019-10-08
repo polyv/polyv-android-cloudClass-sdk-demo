@@ -23,8 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ConvertUtils;
-import com.blankj.utilcode.util.KeyboardUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.KeyboardUtils;
 import com.easefun.polyv.businesssdk.sub.gif.GifImageSpan;
 import com.easefun.polyv.businesssdk.sub.gif.RelativeImageSpan;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
@@ -41,7 +41,6 @@ import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
 import com.easefun.polyv.commonui.base.PolyvBaseFragment;
 import com.easefun.polyv.commonui.utils.PolyvFaceManager;
 import com.easefun.polyv.commonui.utils.PolyvToast;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
 import com.easefun.polyv.commonui.widget.PolyvChatRecyclerView;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
@@ -95,7 +94,7 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     }
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="get、set方法">
+    // <editor-fold defaultstate="collapsed" desc="get、set、add、is方法">
     protected ViewGroup getImageViewerContainer() {
         if (homePresnter != null) {
             return homePresnter.getImageViewerContainer();
@@ -115,6 +114,39 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
             return homePresnter.getSessionId();
         }
         return null;
+    }
+
+    protected void addUnreadQuiz(int unreadCount) {
+        if (homePresnter != null) {
+            homePresnter.addUnreadQuiz(unreadCount);
+        }
+    }
+
+    protected boolean isSelectedQuiz() {
+        if (homePresnter != null) {
+            return homePresnter.isSelectedQuiz();
+        }
+        return false;
+    }
+
+    public int getChatListUnreadCount() {
+        if (chatMessageList != null) {
+            return chatMessageList.getUnreadCount();
+        }
+        return 0;
+    }
+
+    protected void addUnreadChat(int unreadCount) {
+        if (homePresnter != null) {
+            homePresnter.addUnreadChat(unreadCount);
+        }
+    }
+
+    protected boolean isSelectedChat() {
+        if (homePresnter != null) {
+            return homePresnter.isSelectedChat();
+        }
+        return false;
     }
     // </editor-fold>
 
@@ -390,7 +422,7 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         }
     }
 
-    private void changeViewLayoutParams(ViewGroup popupLayout) {
+    private void changeViewLayoutParams(final ViewGroup popupLayout) {
         if (popupLayout == null)
             return;
         if (popupLayout.getHeight() == 0) {

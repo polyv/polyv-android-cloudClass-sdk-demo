@@ -1,4 +1,4 @@
-package com.easefun.polyv.commonui.utils.glide.progress;
+package com.easefun.polyv.commonui.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -586,5 +586,32 @@ public class PolyvCircleProgressView extends ProgressBar {
     public void invalidate() {
         initPaint();
         super.invalidate();
+    }
+
+    public static class PolyvDpUtils {
+
+        static float getDensity(Context context) {
+            return context.getResources().getDisplayMetrics().density;
+        }
+
+        static float getFontDensity(Context context) {
+            return context.getResources().getDisplayMetrics().scaledDensity;
+        }
+
+        static int dp2px(Context context, float dp) {
+            return (int) (getDensity(context) * dp + 0.5f);
+        }
+
+        static int px2dp(Context context, float px) {
+            return (int) (px / getDensity(context) + 0.5f);
+        }
+
+        static int sp2px(Context context, float sp) {
+            return (int) (getFontDensity(context) * sp + 0.5f);
+        }
+
+        static int px2sp(Context context, float px) {
+            return (int) (px / getFontDensity(context) + 0.5f);
+        }
     }
 }

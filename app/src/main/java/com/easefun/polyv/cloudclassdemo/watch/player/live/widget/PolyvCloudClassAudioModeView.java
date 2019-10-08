@@ -12,13 +12,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.LogUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.cloudclass.video.api.IPolyvCloudClassAudioModeView;
 import com.easefun.polyv.cloudclassdemo.R;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -64,9 +65,12 @@ public class PolyvCloudClassAudioModeView extends FrameLayout implements IPolyvC
         ivAnimation = findViewById(R.id.iv_animation);
         tvPlayVideo = findViewById(R.id.tv_play_video);
 
-        tvPlayVideo.setOnClickListener(v -> {
-            if (onChangeVideoModeListener != null) {
-                onChangeVideoModeListener.onClickPlayVideo();
+        tvPlayVideo.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onChangeVideoModeListener != null) {
+                    onChangeVideoModeListener.onClickPlayVideo();
+                }
             }
         });
 
@@ -84,22 +88,28 @@ public class PolyvCloudClassAudioModeView extends FrameLayout implements IPolyvC
         animationDrawable = new AnimationDrawable();
         readDrawableDisposable = Observable.just("1")
                 .observeOn(Schedulers.io())
-                .doOnNext(s -> {
-                    LogUtils.d(Thread.currentThread().getName());
-                    int drawableCount = 30;
-                    for (int i = 1; i <= drawableCount; i++) {
-                        String drawableName = "sound" + String.valueOf(10000 + i).substring(1);
-                        int drawableId = getResources().getIdentifier(drawableName, "drawable", getContext().getPackageName());
-                        Drawable drawable = getResources().getDrawable(drawableId);
-                        animationDrawable.addFrame(drawable, ANIMATE_ONCE_DURATION / drawableCount);
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        LogUtils.d(Thread.currentThread().getName());
+                        int drawableCount = 30;
+                        for (int i = 1; i <= drawableCount; i++) {
+                            String drawableName = "sound" + String.valueOf(10000 + i).substring(1);
+                            int drawableId = PolyvCloudClassAudioModeView.this.getResources().getIdentifier(drawableName, "drawable", PolyvCloudClassAudioModeView.this.getContext().getPackageName());
+                            Drawable drawable = PolyvCloudClassAudioModeView.this.getResources().getDrawable(drawableId);
+                            animationDrawable.addFrame(drawable, ANIMATE_ONCE_DURATION / drawableCount);
+                        }
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> {
-                    LogUtils.d(Thread.currentThread().getName());
-                    animationDrawable.setOneShot(false);
-                    ivAnimation.setImageDrawable(animationDrawable);
-                    animationDrawable.start();
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        LogUtils.d(Thread.currentThread().getName());
+                        animationDrawable.setOneShot(false);
+                        ivAnimation.setImageDrawable(animationDrawable);
+                        animationDrawable.start();
+                    }
                 });
     }
 

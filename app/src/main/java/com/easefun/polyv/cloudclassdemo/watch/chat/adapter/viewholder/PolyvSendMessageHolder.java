@@ -3,7 +3,6 @@ package com.easefun.polyv.cloudclassdemo.watch.chat.adapter.viewholder;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvLocalMessage;
@@ -17,7 +16,8 @@ import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.itemview.PolyvItemViewFactoy;
 import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
 import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView;
+import com.easefun.polyv.commonui.widget.PolyvCircleProgressView;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 
 /**
  * @author df
@@ -25,7 +25,7 @@ import com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView;
  * @Describe 发送消息item
  */
 
-public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChatListAdapter> {
+public class PolyvSendMessageHolder extends ClickableViewHolder<Object, PolyvChatListAdapter> {
     public GifSpanTextView sendMessage;
     public ImageView chatImg;
     public PolyvCircleProgressView imgLoading;
@@ -36,30 +36,30 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
     }
 
     private void initView() {
-        sendMessage =  $(com.easefun.polyv.commonui.R.id.gtv_send_message);
-        chatImg =  $(com.easefun.polyv.commonui.R.id.iv_chat_img);
-        imgLoading =  $(com.easefun.polyv.commonui.R.id.cpv_img_loading);
+        sendMessage = $(com.easefun.polyv.commonui.R.id.gtv_send_message);
+        chatImg = $(com.easefun.polyv.commonui.R.id.iv_chat_img);
+        imgLoading = $(com.easefun.polyv.commonui.R.id.cpv_img_loading);
     }
 
     @Override
     public void processNormalMessage(Object item, int position) {
-            handleSendMessage(this,item,position);
+        handleSendMessage(this, item, position);
     }
 
     @Override
-    public   void processCustomMessage(PolyvCustomEvent item, int position) {
+    public void processCustomMessage(PolyvCustomEvent item, int position) {
         resendMessageButton.setVisibility(View.GONE);
 
     }
 
     @Override
     public <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent) {
-        return PolyvItemViewFactoy.createItemView(baseCustomEvent.getEVENT(),context);
+        return PolyvItemViewFactoy.createItemView(baseCustomEvent.getEVENT(), context);
     }
 
-    private void handleSendMessage(PolyvSendMessageHolder sendMessageHolder, Object object, int position) {
+    private void handleSendMessage(final PolyvSendMessageHolder sendMessageHolder, Object object, final int position) {
         int childIndex = findReuseChildIndex(PolyvChatManager.SE_MESSAGE);
-        if(childIndex < 0){
+        if (childIndex < 0) {
             View child = View.inflate(context,
                     R.layout.polyv_chat_send_normal_message_content_item, null);
             child.setTag(PolyvChatManager.SE_MESSAGE);
@@ -106,9 +106,10 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
             sendMessageHolder.imgLoading.setProgress(sendLocalImgEvent.getSendProgress());
 
             fitChatImgWH(sendLocalImgEvent.getWidth(), sendLocalImgEvent.getHeight(), sendMessageHolder.chatImg);
-            Glide.with(parentView.getContext())
-                    .load(sendLocalImgEvent.getImageFilePath())
-                    .into(sendMessageHolder.chatImg);
+            PolyvImageLoader.getInstance()
+                    .loadImage(parentView.getContext(),
+                            sendLocalImgEvent.getImageFilePath(),
+                            sendMessageHolder.chatImg);
         } else if (object instanceof PolyvQuestionMessage) {//提问信息
             PolyvQuestionMessage questionMessage = (PolyvQuestionMessage) object;
             sendMessageHolder.sendMessage.setText((CharSequence) questionMessage.getObjects()[0]);

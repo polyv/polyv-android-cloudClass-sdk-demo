@@ -1,63 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/polyv_link_mic_container"
-        android:layout_width="@dimen/ppt_width"
-        android:layout_height="@dimen/ppt_height">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
         <FrameLayout
             android:id="@+id/polyv_link_mic_camera_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/video_back">
+            android:background="@drawable/link_mic_default_backgroud">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:src="@drawable/camera_default" />
+                android:src="@drawable/ic_nocam"/>
+
             <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicWaveView
                 android:id="@+id/polyv_link_mic_sound_wave"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </FrameLayout>
+                android:layout_height="match_parent"/>
 
-
-        <RelativeLayout
-            android:id="@+id/polyv_link_camera_switch_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/polyv_camer_back"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/polyv_camera_switch"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="@dimen/dm_10"
-                android:src="@drawable/img_cemera_switch" />
+                android:layout_gravity="bottom"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/teacher_logo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#2196F3"
+                    android:padding="4dp"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_talker"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/polyv_link_nick"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dm_20"
+                    android:background="#cc1f1f1f"
+
+                    android:drawablePadding="@dimen/dm_3"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxWidth="@dimen/dm_134"
+                    android:maxLines="1"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    tools:text="a;lfjsdjfs;k"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/polyv_link_camera_switch_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/polyv_camera_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="@dimen/dm_5"
+                    android:src="@drawable/ic_micoff"
+                    />
 
 
-        </RelativeLayout>
+            </RelativeLayout>
+        </FrameLayout>
 
-        <TextView
-            android:id="@+id/polyv_link_nick"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dm_48"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="@dimen/dm_10"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
-            android:maxWidth="@dimen/dm_134"
-            android:maxLines="1"
-            android:textColor="@color/white"
-            tools:text="a;lfjsdjfs;k" />
 
     </RelativeLayout>
 </FrameLayout>

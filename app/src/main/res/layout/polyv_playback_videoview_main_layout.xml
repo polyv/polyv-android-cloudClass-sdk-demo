@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <!-- 主播放器载入状态指示器 -->
-        <ProgressBar
+        <com.easefun.polyv.commonui.player.widget.PolyvLoadingLayout
             android:id="@+id/loadingview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

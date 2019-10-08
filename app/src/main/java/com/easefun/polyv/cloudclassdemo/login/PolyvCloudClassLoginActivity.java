@@ -14,11 +14,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ToastUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
+import com.easefun.polyv.businesssdk.PolyvChatDomainManager;
+import com.easefun.polyv.businesssdk.model.chat.PolyvChatDomain;
 import com.easefun.polyv.businesssdk.model.video.PolyvPlayBackVO;
 import com.easefun.polyv.businesssdk.service.PolyvLoginManager;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient;
 import com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient;
+import com.easefun.polyv.cloudclass.config.PolyvVClassGlobalConfig;
 import com.easefun.polyv.cloudclass.model.PolyvLiveStatusVO;
 import com.easefun.polyv.cloudclass.net.PolyvApiManager;
 import com.easefun.polyv.cloudclassdemo.R;
@@ -169,10 +172,10 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
 
     // <editor-fold defaultstate="collapsed" desc="设置测试数据">
     private void setTestData() {
-        appId.setText("");
-        appSecert.setText("");
-        userId.setText("");
-        channelId.setText("");
+        appId.setText("f9syxhkrbn");
+        appSecert.setText("3a942aa2d1c94371971cfbbc01ac3632");
+        userId.setText("14da40e138");
+        channelId.setText("333328");
 
         playbackChannelId.setText("");
         playbackUserId.setText("");
@@ -185,16 +188,15 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id) {
-            case R.id.login:
-                login();
-                break;
-            case R.id.live_group_layout:
-                showLiveGroup();
-                break;
-            case R.id.playback_group_layout:
-                showPlayBackGroup();
-                break;
+        if (id == R.id.login) {
+            login();
+
+        } else if (id == R.id.live_group_layout) {
+            showLiveGroup();
+
+        } else if (id == R.id.playback_group_layout) {
+            showPlayBackGroup();
+
         }
     }
     // </editor-fold>
@@ -287,13 +289,13 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         return playbackUserId.getText().toString().trim();
     }
 
-    private void checkToken(String userId, String appSecret, String channel, String vid, String appId) {
+    private void checkToken(final String userId, String appSecret, String channel, final String vid, final String appId) {
         //请求token接口
         getTokenDisposable = PolyvLoginManager.checkLoginToken(userId, appSecret, appId,
                 channel, vid,
-                new PolyvrResponseCallback<PolyvResponseBean>() {
+                new PolyvrResponseCallback<PolyvChatDomain>() {
                     @Override
-                    public void onSuccess(PolyvResponseBean responseBean) {
+                    public void onSuccess(PolyvChatDomain responseBean) {
                         PolyvLinkMicClient.getInstance().setAppIdSecret(appId, appSecert.getText().toString());
                         PolyvLiveSDKClient.getInstance().setAppIdSecret(appId, appSecert.getText().toString());
                         PolyvVodSDKClient.getInstance().initConfig(appId, appSecert.getText().toString());
@@ -304,10 +306,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
                         }
                         requestLiveStatus(userId);
 
+                        PolyvChatDomainManager.getInstance().setChatDomain(responseBean);
                     }
 
                     @Override
-                    public void onFailure(PolyvResponseBean<PolyvResponseBean> responseBean) {
+                    public void onFailure(PolyvResponseBean<PolyvChatDomain> responseBean) {
                         super.onFailure(responseBean);
                         failedStatus(responseBean.getMessage());
                     }
@@ -321,7 +324,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
                 });
     }
 
-    private void requestPlayBackStatus(String userId, String vid) {
+    private void requestPlayBackStatus(final String userId, String vid) {
         if(TextUtils.isEmpty(vid)){
             return;
         }
@@ -367,7 +370,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         }
     }
 
-    private void requestLiveStatus(String userId) {
+    private void requestLiveStatus(final String userId) {
         verifyDispose = PolyvResponseExcutor.excuteUndefinData(PolyvApiManager.getPolyvLiveStatusApi().geLiveStatusJson(channelId.getText().toString())
                 , new PolyvrResponseCallback<PolyvLiveStatusVO>() {
                     @Override
@@ -400,8 +403,8 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
 
     // <editor-fold defaultstate="collapsed" desc="startActivity">
     private void startActivityForLive(String userId, boolean isAlone) {
-        PolyvCloudClassHomeActivity.startActivityForLive(PolyvCloudClassLoginActivity.this,
-                getTrim(channelId), userId, isAlone);
+        PolyvCloudClassHomeActivity.startActivityForLiveWithParticipant(PolyvCloudClassLoginActivity.this,
+                getTrim(channelId), userId, isAlone, PolyvVClassGlobalConfig.IS_VCLASS);
     }
 
     private void startActivityForPlayback(String userId, boolean isNormalLivePlayBack) {

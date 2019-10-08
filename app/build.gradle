@@ -19,8 +19,7 @@ android {
         //依赖的包可能支持很多类型的ABI
         //为了避免打包了我们没有支持的ABI，指定需要打包的ABI目录
         ndk {
-            abiFilters 'arm64-v8a', "armeabi-v7a", "x86"
-            // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
+            abiFilters 'arm64-v8a', "armeabi-v7a", "x86" // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
         }
     }
     lintOptions {
@@ -34,14 +33,14 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        qatest {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     signingConfigs {

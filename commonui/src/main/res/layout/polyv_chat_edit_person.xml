@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_marginRight="6dp"
-        android:layout_toLeftOf="@id/iv_emoji"
+        android:layout_toLeftOf="@+id/iv_emoji"
         android:layout_toRightOf="@id/iv_switch"
         android:background="@drawable/polyv_et_chat_corner"
         android:hint="我也来聊几句..."
@@ -24,12 +24,14 @@
         android:textColorHint="#c7c7c7"
         android:textSize="16sp" />
 
-    <ImageView
+    <com.easefun.polyv.commonui.widget.PolyvPressedImageView
         android:id="@+id/iv_emoji"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:clickable="true"
-        android:src="@drawable/polyv_selector_emoji" />
+        android:src="@drawable/emoji"
+        app:pressed_color="#14a2f4"
+        app:selected_color="#14a2f4" />
 </RelativeLayout>

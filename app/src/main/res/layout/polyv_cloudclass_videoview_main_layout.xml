@@ -19,7 +19,7 @@
         <include layout="@layout/polyv_cloudclass_audio_mode_layout" />
 
         <!-- 主播放器载入状态指示器 -->
-        <ProgressBar
+        <com.easefun.polyv.commonui.player.widget.PolyvLoadingLayout
             android:layout_gravity="center"
             android:id="@+id/loadingview"
             android:layout_width="wrap_content"

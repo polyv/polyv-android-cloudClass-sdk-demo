@@ -8,8 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.commonui.adapter.PolyvBaseRecyclerViewAdapter;
 import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
@@ -29,14 +27,12 @@ public class PolyvChatListAdapter extends PolyvBaseRecyclerViewAdapter {
 
     private PolyvChatListAdapter(RecyclerView recyclerView) {
         super(recyclerView);
-        processBaseInfo();
     }
 
 
     public PolyvChatListAdapter(RecyclerView recyclerView, List<ChatTypeItem> chatTypeItems) {
         this(recyclerView);
         this.chatTypeItems = chatTypeItems;
-        processBaseInfo();
     }
 
     public void setChatTypeItems(List<ChatTypeItem> chatTypeItems) {
@@ -126,56 +122,41 @@ public class PolyvChatListAdapter extends PolyvBaseRecyclerViewAdapter {
 //                        inflate(R.layout.polyv_chat_receive_message_item, parent, false),this);
 //                break;
 //        }
-        return PolyvViewHolderCreateFactory.createViewHolder(viewType,getContext(),parent,this);
+        return PolyvViewHolderCreateFactory.createViewHolder(viewType, getContext(), parent, this);
     }
 
     @Override
     public void onBindViewHolder(ClickableViewHolder holder, int position) {
         ChatTypeItem chatTypeItem = chatTypeItems.get(position);
 
-        if(chatTypeItem != null){
-            if(SE_CUSTOMMESSAGE.equals(chatTypeItem.socketListen) ){//处理自定义消息
-                bindCustomView(chatTypeItem.object,holder,position);
+        if (chatTypeItem != null) {
+            if (SE_CUSTOMMESSAGE.equals(chatTypeItem.socketListen)) {//处理自定义消息
+                bindCustomView(chatTypeItem.object, holder, position);
 
-            }else{//此处处理以前的固定消息
-                holder.processNormalMessage(chatTypeItem.object,position);
+            } else {//此处处理以前的固定消息
+                holder.processNormalMessage(chatTypeItem.object, position);
             }
         }
 
         super.onBindViewHolder(holder, position);
     }
 
-    private <T> void bindCustomView(Object item,ClickableViewHolder holder,int position) {
-        PolyvCustomEvent<T> baseCustomEvent = (PolyvCustomEvent)item;
-        IPolyvCustomMessageBaseItemView<PolyvCustomEvent<T>> sendMessageItemView ;
+    private <T> void bindCustomView(Object item, ClickableViewHolder holder, int position) {
+        PolyvCustomEvent<T> baseCustomEvent = (PolyvCustomEvent) item;
+        IPolyvCustomMessageBaseItemView<PolyvCustomEvent<T>> sendMessageItemView;
         int childIndex = holder.findReuseChildIndex(baseCustomEvent.getEVENT());
-        if(childIndex < 0){
+        if (childIndex < 0) {
             sendMessageItemView = holder.createItemView(baseCustomEvent);
             holder.contentContainer.addView(sendMessageItemView);
-        }else {
+        } else {
             sendMessageItemView = (IPolyvCustomMessageBaseItemView<PolyvCustomEvent<T>>) holder.contentContainer.getChildAt(childIndex);
         }
         sendMessageItemView.setTag(baseCustomEvent.getEVENT());
-        sendMessageItemView.processMessage(baseCustomEvent,position);
+        sendMessageItemView.processMessage(baseCustomEvent, position);
 
-        holder.processCustomMessage(baseCustomEvent,position);
+        holder.processCustomMessage(baseCustomEvent, position);
     }
 
-    private void processBaseInfo() {
-        //加载头像
-        if (requestOptions_t == null) {
-            requestOptions_t = new RequestOptions()
-                    .placeholder(com.easefun.polyv.commonui.R.drawable.polyv_default_teacher)
-                    .error(com.easefun.polyv.commonui.R.drawable.polyv_default_teacher)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE);
-        }
-        if (requestOptions_s == null) {
-            requestOptions_s = new RequestOptions()
-                    .placeholder(com.easefun.polyv.commonui.R.drawable.polyv_missing_face)
-                    .error(com.easefun.polyv.commonui.R.drawable.polyv_missing_face)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE);
-        }
-    }
 
     @Override
     public int getItemCount() {

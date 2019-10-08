@@ -40,7 +40,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
-        android:layout_toLeftOf="@id/right_layout"
+        android:layout_toLeftOf="@+id/right_layout"
         android:layout_toRightOf="@id/ll_switch"
         android:background="@drawable/polyv_et_chat_corner"
         android:hint="在这里可以跟老师互动哦"

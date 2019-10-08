@@ -14,14 +14,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.FileUtils;
-import com.bumptech.glide.Glide;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.FileUtils;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.utils.PolyvToast;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.foundationsdk.permission.PolyvOnGrantedListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.utils.PolyvSDCardUtils;
@@ -110,11 +110,7 @@ public class PolyvChatImageViewer extends FrameLayout {
                                         }
                                     } catch (Exception e) {
                                     }
-                                    return Glide.with(getContext())
-                                            .asFile()
-                                            .load(imgUrl)
-                                            .submit()
-                                            .get();
+                                    return PolyvImageLoader.getInstance().saveImageAsFile(getContext(),imgUrl);
                                 }
                             })
                             .map(new Function<File, Boolean>() {

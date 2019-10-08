@@ -7,7 +7,7 @@ import android.graphics.RectF;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 
-import com.blankj.utilcode.util.ConvertUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 
 public class PolyvRoundImageView extends AppCompatImageView {
 

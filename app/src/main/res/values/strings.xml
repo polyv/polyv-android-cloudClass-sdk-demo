@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">POLYV云课堂</string>
+    <string name="app_name">云课堂</string>
     <string name="danmu">弹幕</string>
 
     <!-- 登录 -->
@@ -12,5 +12,10 @@
     <string name="login_appSecert">APP Secert</string>
     <string name="login_waiting">正在登录中，请稍等...</string>
     <string name="login_copyright">2013 - 2019 广州易方信息科技股份有限公司 版权所有</string>
+
+    <!-- 聊天室 -->
+    <string name="chat_tab_live_info_text_default">直播介绍</string>
+    <string name="chat_tab_group_chat_text_default">聊天</string>
+    <string name="chat_tab_personal_chat_text_default">提问</string>
 
 </resources>

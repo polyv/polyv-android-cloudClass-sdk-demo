@@ -38,7 +38,7 @@ public class PolyvItemViewFactoy {
     }
 
     @NonNull
-    private static IPolyvCustomMessageBaseItemView createDefaultView(Context context) {
+    private static IPolyvCustomMessageBaseItemView createDefaultView(final Context context) {
         return new IPolyvCustomMessageBaseItemView(context) {
             TextView defaultView = null;
 

@@ -8,11 +8,14 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "proguard-rules.pro"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        qatest {
         }
     }
     lintOptions {
@@ -30,6 +33,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api 'com.android.support:design:27.1.1'
-    api 'com.easefun.polyv:polyvSDKCloudClass:0.7.0'
+    api 'com.easefun.polyv:polyvSDKCloudClass:0.8.0'
+    //glide
+    api ('jp.wasabeef:glide-transformations:3.3.0'){
+//        exclude group:'com.github.bumptech.glide',module:'glide'
+    }
+    api ("com.github.bumptech.glide:okhttp3-integration:4.7.1"){
+//        exclude group:'com.github.bumptech.glide',module:'glide'
+    }
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 }

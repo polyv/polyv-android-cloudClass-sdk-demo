@@ -1,4 +1,4 @@
-package com.easefun.polyv.commonui.utils.glide.progress;
+package com.easefun.polyv.commonui.utils.imageloader.glide.progress;
 
 import android.os.Handler;
 import android.os.Looper;

@@ -1,4 +1,4 @@
-package com.easefun.polyv.commonui.utils.glide.progress;
+package com.easefun.polyv.commonui.utils.imageloader.glide.progress;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

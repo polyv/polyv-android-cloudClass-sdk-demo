@@ -2,22 +2,29 @@ package com.easefun.polyv.commonui.player.ppt;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
+import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTVodProcessor;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTWebView;
+import com.easefun.polyv.businesssdk.model.ppt.PolyvPPTAuthentic;
+import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
+import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
+import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.AUTHORIZATION_PPT_PAINT;
+import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.PPT_PAINT_STATUS;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICECONTROL;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEDRAW;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEID;
@@ -58,7 +65,12 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         polyvPPTWebView = findViewById(R.id.polyv_ppt_web);
         pptLoadingView = findViewById(R.id.polyv_ppt_default_icon);
         loadWeb();
+    }
 
+    @Override
+    public void addWebProcessor(IPolyvWebMessageProcessor processor) {
+        processor.bindWebView(polyvPPTWebView);
+        polyvPPTWebView.registerProcessor(processor);
     }
 
     private void loadWeb() {
@@ -135,6 +147,7 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         PolyvCommonLog.d(TAG, "destroy ppt view");
         if (polyvPPTWebView != null) {
             polyvPPTWebView.removeAllViews();
+            polyvPPTWebView.destroy();
             removeView(polyvPPTWebView);
         }
         polyvPPTWebView = null;
@@ -167,15 +180,21 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         }
     }
 
+    @Override
+    public void sendWebMessage(String event, String message) {
+        polyvPPTWebView.callMessage(event,message);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        PolyvCommonLog.e(TAG,"onTouchEvent");
+        return super.onTouchEvent(event);
+    }
+
     public void setLoadingViewVisible(int visible) {
         if (pptLoadingView != null) {
             pptLoadingView.setVisibility(visible);
         }
-    }
-
-    @Override
-    public void addPPTCallback(PolyvPPTWebView.PolyvVideoPPTCallback polyvVideoPPTCallback) {
-        polyvPPTWebView.setPolyvVideoPPTCallback(polyvVideoPPTCallback);
     }
 
     public void updateDelayTime(int delay_time){
@@ -184,5 +203,10 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
 
     public void resetDelayTime(){
         this.delayTime = DELAY_TIME;
+    }
+
+    public void updateBrushPermission(String message) {
+        PolyvPPTAuthentic polyvPPTAuthentic = PolyvGsonUtil.fromJson(PolyvPPTAuthentic.class,message);
+        polyvPPTWebView.setNeedGestureAction("1".equals(polyvPPTAuthentic.getStatus()));
     }
 }

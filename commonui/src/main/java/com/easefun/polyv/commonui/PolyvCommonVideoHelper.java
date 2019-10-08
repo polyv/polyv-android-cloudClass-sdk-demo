@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
-import com.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvBaseVideoView;
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
@@ -23,6 +23,8 @@ import com.easefun.polyv.commonui.player.ppt.PolyvPPTView;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
+import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
 /**
@@ -50,6 +52,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     protected static int videoViewVolume;
 
     protected  static final Handler S_HANDLER;
+    protected PolyvPermissionManager permissionManager;
 
     private boolean firstSwitchLocation = true;//第一次切换主副屏 不用动画
 
@@ -85,6 +88,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
             polyvPPTItem.addMediaController(controller);
             videoItem.bindPPTView(polyvPPTItem);
 
+            addCloudClassWebProcessor();
         }
     }
 
@@ -107,6 +111,11 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     public abstract void initConfig(boolean isNormalLive);
 
     public abstract void resetView(boolean isNoramlLivePlayBack);
+
+    /**
+     * 增加云客堂web端得处理器
+     */
+    protected abstract void addCloudClassWebProcessor();
 
     public void addPPT(PolyvTouchContainerView container) {
         pptParent = container;
@@ -220,9 +229,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         firstSwitchLocation = false;
     }
 
-    public void showCamerView() {
-        if(pptParent != null){
-            pptParent.setVisibility(View.VISIBLE);
+    public void showCameraView() {
+        if(pptContianer != null){
+            pptContianer.setVisibility(View.VISIBLE);
         }
         PolyvPPTItem pptItem = videoItem.getPPTItem();
         if (pptItem != null) {
@@ -297,8 +306,18 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 //        }
     }
 
+
+    public boolean requestPermission() {
+        permissionManager.request();
+        return true;
+    }
+
     public void destory() {
         PolyvCommonLog.d(TAG, "destroy helper video");
+        if(videoViewVolume >0){
+            PolyvControlUtils.setVolume(context, videoViewVolume);
+        }
+
         videoView.destroy();
         controller.destroy();
         videoItem.destroy();

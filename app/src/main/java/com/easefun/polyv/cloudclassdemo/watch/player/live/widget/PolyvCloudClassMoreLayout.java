@@ -3,7 +3,6 @@ package com.easefun.polyv.cloudclassdemo.watch.player.live.widget;
 import android.app.Activity;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -15,10 +14,11 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ScreenUtils;
-import com.blankj.utilcode.util.Utils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
 import com.easefun.polyv.businesssdk.model.video.PolyvBitrateVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvDefinitionVO;
+import com.easefun.polyv.businesssdk.model.video.PolyvLiveLinesVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvMediaPlayMode;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
@@ -39,16 +39,18 @@ public class PolyvCloudClassMoreLayout {
     //View
     private FrameLayout flMoreRoot;
     private OrientationSensibleLinearLayout llMoreVertical;
-    private RecyclerView rvBitrate;
+    private RecyclerView rvBitrate, rvLines;
     private RvMoreAdapter rvAdapter;
+    private RvLinesAdapter linesAdapter;
     private TextView tvOnlyAudioSwitch;
     private ImageView ivCloseMore;
-    private FrameLayout llBitrate;
+    private FrameLayout llBitrate, linesContainer;
 
     //callback
     private ShowMediaControllerFunction showMediaControllerFunction;
     private ShowGradientBarFunction showGradientBarFunction;
     private OnBitrateSelectedListener onBitrateSelectedListener;
+    private OnLinesSelectedListener onLinesSelectedListener;
     private OnOnlyAudioSwitchListener onOnlyAudioSwitchListener;
 
     //constant
@@ -73,9 +75,12 @@ public class PolyvCloudClassMoreLayout {
         window.setOutsideTouchable(false);
         window.setFocusable(true);
         window.setBackgroundDrawable(null);
-        window.setOnDismissListener(() -> {
-            if (showGradientBarFunction!=null){
-                showGradientBarFunction.showGradientBar(true);
+        window.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                if (showGradientBarFunction != null) {
+                    showGradientBarFunction.showGradientBar(true);
+                }
             }
         });
 
@@ -106,8 +111,9 @@ public class PolyvCloudClassMoreLayout {
     public void injectShowMediaControllerFunction(ShowMediaControllerFunction function) {
         this.showMediaControllerFunction = function;
     }
-    public void injectShowGradientBarFunction(ShowGradientBarFunction function){
-        this.showGradientBarFunction=function;
+
+    public void injectShowGradientBarFunction(ShowGradientBarFunction function) {
+        this.showGradientBarFunction = function;
     }
 
     public void setOnBitrateSelectedListener(OnBitrateSelectedListener onBitrateSelectedListener) {
@@ -118,20 +124,36 @@ public class PolyvCloudClassMoreLayout {
         this.onOnlyAudioSwitchListener = onOnlyAudioSwitchListener;
     }
 
+    public void setOnLinesSelectedListener(OnLinesSelectedListener onLinesSelectedListener) {
+        this.onLinesSelectedListener = onLinesSelectedListener;
+    }
+
     public void initBitrate(PolyvBitrateVO bitrateVO) {
         isSupportBitrate = !bitrateVO.getDefinitions().isEmpty();
         showBitrate(true);
         rvAdapter.updateBitrateListData(bitrateVO);
     }
 
+    public void initLines(List<PolyvLiveLinesVO> lines) {
+        linesAdapter.updateLinesDatas(lines);
+        showLines(true);
+    }
+
+    public void updateLinesStatus(int pos) {
+        linesAdapter.updateLinesStatus(pos);
+    }
+
+
     //从别处而不是从MoreLayout里切换模式，所以改变当前MoreLayout的状态。
     public void onChangeAudioOrVideoMode(@PolyvMediaPlayMode.Mode int mediaPlayMode) {
         boolean isAudioNow = mediaPlayMode == PolyvMediaPlayMode.MODE_AUDIO;
         if (isAudioNow) {
             showBitrate(false);
+            showLines(false);
             tvOnlyAudioSwitch.setText(TEXT_MODE_VIDEO);
         } else {
             showBitrate(true);
+            showLines(true);
             tvOnlyAudioSwitch.setText(TEXT_MODE_AUDIO);
         }
         tvOnlyAudioSwitch.setSelected(isAudioNow);
@@ -145,13 +167,16 @@ public class PolyvCloudClassMoreLayout {
         if (window.isShowing()) {
             window.update();
         }
-        llMoreVertical.post(() -> {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) llMoreVertical.getLayoutParams();
-            lp.width = Math.max(ScreenUtils.getScreenWidth(), ScreenUtils.getScreenHeight()) / 2;
-            lp.topMargin = MARGIN_TOP_PORTRAIT;
-            lp.gravity = Gravity.TOP;
-            llMoreVertical.setLayoutParams(lp);
-            ivCloseMore.setVisibility(View.GONE);
+        llMoreVertical.post(new Runnable() {
+            @Override
+            public void run() {
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) llMoreVertical.getLayoutParams();
+                lp.width = Math.max(ScreenUtils.getScreenWidth(), ScreenUtils.getScreenHeight()) / 2;
+                lp.topMargin = MARGIN_TOP_PORTRAIT;
+                lp.gravity = Gravity.TOP;
+                llMoreVertical.setLayoutParams(lp);
+                ivCloseMore.setVisibility(View.GONE);
+            }
         });
     }
 
@@ -161,60 +186,95 @@ public class PolyvCloudClassMoreLayout {
         if (window.isShowing()) {
             window.update();
         }
-        llMoreVertical.post(() -> {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) llMoreVertical.getLayoutParams();
-            lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            lp.topMargin = 0;
-            lp.gravity = Gravity.CENTER;
-            llMoreVertical.setLayoutParams(lp);
-            ivCloseMore.setVisibility(View.VISIBLE);
+        llMoreVertical.post(new Runnable() {
+            @Override
+            public void run() {
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) llMoreVertical.getLayoutParams();
+                lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                lp.topMargin = 0;
+                lp.gravity = Gravity.CENTER;
+                llMoreVertical.setLayoutParams(lp);
+                ivCloseMore.setVisibility(View.VISIBLE);
+            }
         });
     }
 
 
     private void initView(View root) {
-        flMoreRoot = root.findViewById(R.id.fl_more_root);
-        flMoreRoot.setOnClickListener(v -> hide());
+        flMoreRoot = (FrameLayout) root.findViewById(R.id.fl_more_root);
+        flMoreRoot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PolyvCloudClassMoreLayout.this.hide();
+            }
+        });
 
-        llMoreVertical = root.findViewById(R.id.ll_more_vertical);
-        llMoreVertical.onLandscape = this::onLandscape;
-        llMoreVertical.onPortrait = this::onPortrait;
+        llMoreVertical = (OrientationSensibleLinearLayout) root.findViewById(R.id.ll_more_vertical);
+        llMoreVertical.onLandscape = new Runnable() {
+            @Override
+            public void run() {
+                PolyvCloudClassMoreLayout.this.onLandscape();
+            }
+        };
+        llMoreVertical.onPortrait = new Runnable() {
+            @Override
+            public void run() {
+                PolyvCloudClassMoreLayout.this.onPortrait();
+            }
+        };
 
         rvBitrate = root.findViewById(R.id.rv_more_bitrate);
         rvAdapter = new RvMoreAdapter();
         rvBitrate.setAdapter(rvAdapter);
-        rvBitrate.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL,false));
+        rvBitrate.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false));
+
+        //多綫路
+        linesAdapter = new RvLinesAdapter();
+        rvLines = root.findViewById(R.id.rv_more_lines);
+        rvLines.setAdapter(linesAdapter);
+        rvLines.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL,false));
+        linesContainer = root.findViewById(R.id.fl_lines);
 
         tvOnlyAudioSwitch = root.findViewById(R.id.cb_only_audio_switch);
         tvOnlyAudioSwitch.setSelected(false);
-        tvOnlyAudioSwitch.setOnClickListener(v -> {
-            //点击后，将要生效的模式
-            boolean isAudioNow = !tvOnlyAudioSwitch.isSelected();
-            //是否成功切换模式
-            boolean isChangeModeSucceed = false;
+        tvOnlyAudioSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //点击后，将要生效的模式
+                boolean isAudioNow = !tvOnlyAudioSwitch.isSelected();
+                //是否成功切换模式
+                boolean isChangeModeSucceed = false;
 
-            if (onOnlyAudioSwitchListener != null) {
-                isChangeModeSucceed = onOnlyAudioSwitchListener.onOnlyAudioSelect(isAudioNow);
+                if (onOnlyAudioSwitchListener != null) {
+                    isChangeModeSucceed = onOnlyAudioSwitchListener.onOnlyAudioSelect(isAudioNow);
+                }
+                if (!isChangeModeSucceed) {
+                    PolyvCloudClassMoreLayout.this.hide();
+                    return;
+                }
+                if (isAudioNow) {
+                    PolyvCloudClassMoreLayout.this.showBitrate(false);
+                    PolyvCloudClassMoreLayout.this.showLines(false);
+                    tvOnlyAudioSwitch.setText(TEXT_MODE_VIDEO);
+                } else {
+                    PolyvCloudClassMoreLayout.this.showBitrate(true);
+                    PolyvCloudClassMoreLayout.this.showLines(true);
+                    tvOnlyAudioSwitch.setText(TEXT_MODE_AUDIO);
+                }
+                tvOnlyAudioSwitch.setSelected(isAudioNow);
+                PolyvCloudClassMoreLayout.this.hide();
             }
-            if (!isChangeModeSucceed) {
-                hide();
-                return;
-            }
-            if (isAudioNow) {
-                showBitrate(false);
-                tvOnlyAudioSwitch.setText(TEXT_MODE_VIDEO);
-            } else {
-                showBitrate(true);
-                tvOnlyAudioSwitch.setText(TEXT_MODE_AUDIO);
-            }
-            tvOnlyAudioSwitch.setSelected(isAudioNow);
-            hide();
         });
 
-        ivCloseMore = root.findViewById(R.id.iv_close_more);
-        ivCloseMore.setOnClickListener(v -> hide());
+        ivCloseMore = (ImageView) root.findViewById(R.id.iv_close_more);
+        ivCloseMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PolyvCloudClassMoreLayout.this.hide();
+            }
+        });
 
-        llBitrate = root.findViewById(R.id.fl_bitrate);
+        llBitrate = (FrameLayout) root.findViewById(R.id.fl_bitrate);
     }
 
     private void showMediaController() {
@@ -229,7 +289,7 @@ public class PolyvCloudClassMoreLayout {
         } else {
             window.showAtLocation(anchor, Gravity.RIGHT, 0, 0);
         }
-        if (showGradientBarFunction!=null){
+        if (showGradientBarFunction != null) {
             showGradientBarFunction.showGradientBar(false);
         }
     }
@@ -240,6 +300,10 @@ public class PolyvCloudClassMoreLayout {
         } else {
             llBitrate.setVisibility(View.GONE);
         }
+    }
+
+    private void showLines(boolean show) {
+        linesContainer.setVisibility(show && linesAdapter.getItemCount() > 1 ? View.VISIBLE : View.GONE);
     }
 
 
@@ -261,6 +325,10 @@ public class PolyvCloudClassMoreLayout {
         void onBitrateSelected(PolyvDefinitionVO definitionVO, int pos);
     }
 
+    public interface OnLinesSelectedListener {
+        void onLineSelected(PolyvLiveLinesVO linesVO, int bitratePos);
+    }
+
     public interface OnOnlyAudioSwitchListener {
         boolean onOnlyAudioSelect(boolean onlyAudio);
     }
@@ -269,6 +337,8 @@ public class PolyvCloudClassMoreLayout {
     //RecyclerView适配器
     //////////////////////
     private class RvMoreAdapter extends RecyclerView.Adapter<RvMoreAdapter.RvMoreViewHolder> {
+
+
         private int curSelectPos = -1;
         private boolean isInitDefaultDefinition = false;
         private PolyvBitrateVO bitrateVO;
@@ -295,8 +365,8 @@ public class PolyvCloudClassMoreLayout {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RvMoreViewHolder holder, int position) {
-            List<PolyvDefinitionVO> definitionVOList = bitrateVO.getDefinitions();
+        public void onBindViewHolder(@NonNull final RvMoreViewHolder holder, int position) {
+            final List<PolyvDefinitionVO> definitionVOList = bitrateVO.getDefinitions();
             String defenition = definitionVOList.get(position).definition;
             holder.tvBitrate.setText(defenition);
 
@@ -306,13 +376,21 @@ public class PolyvCloudClassMoreLayout {
                 holder.tvBitrate.setSelected(false);
             }
 
-            holder.itemView.setOnClickListener((itemView) -> {
-                curSelectPos = holder.getAdapterPosition();
-                notifyDataSetChanged();
-                if (onBitrateSelectedListener != null) {
-                    onBitrateSelectedListener.onBitrateSelected(definitionVOList.get(curSelectPos), curSelectPos);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View itemView) {
+                    curSelectPos = holder.getAdapterPosition();
+                    RvMoreAdapter.this.notifyDataSetChanged();
+                    if (onBitrateSelectedListener != null) {
+                        onBitrateSelectedListener.onBitrateSelected(definitionVOList.get(curSelectPos), curSelectPos);
+                    }
+                    rvBitrate.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            PolyvCloudClassMoreLayout.this.hide();
+                        }
+                    });
                 }
-                rvBitrate.post(PolyvCloudClassMoreLayout.this::hide);
             });
         }
 
@@ -325,10 +403,99 @@ public class PolyvCloudClassMoreLayout {
             }
         }
 
+        public int getCurSelectPos() {
+            return curSelectPos;
+        }
+
         class RvMoreViewHolder extends RecyclerView.ViewHolder {
             TextView tvBitrate;
 
             RvMoreViewHolder(View itemView) {
+                super(itemView);
+                tvBitrate = (TextView) itemView.findViewById(R.id.tv_bitrate);
+            }
+        }
+
+    }
+
+    //////////////////////
+    //RecyclerView适配器
+    //////////////////////
+    private class RvLinesAdapter extends RecyclerView.Adapter<RvLinesAdapter.RvLinesViewHolder> {
+        private int curSelectPos = 0;
+        private PolyvLiveLinesVO lastSelectedLine;
+        private List<PolyvLiveLinesVO> lines;
+        private boolean isInitDefaultDefinition = false;
+
+
+        @NonNull
+        @Override
+        public RvLinesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.polyv_cloud_class_item_bitrate, parent, false);
+            return new RvLinesViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final  RvLinesViewHolder holder, final int position) {
+            final PolyvLiveLinesVO linesVO = lines.get(position);
+            holder.tvBitrate.setText("线路" + (position + 1));
+
+//            if (position == curSelectPos) {
+//                holder.tvBitrate.setSelected(true);
+//            } else {
+//                holder.tvBitrate.setSelected(false);
+//            }
+            holder.tvBitrate.setSelected(position == curSelectPos);
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View itemView) {
+                    if (holder.getAdapterPosition() == curSelectPos) {
+                        return;
+                    }
+                    curSelectPos = holder.getAdapterPosition();
+                    if (lastSelectedLine != null) {
+                        lastSelectedLine.setSelected(false);
+                    }
+                    linesVO.setSelected(true);
+                    lastSelectedLine = linesVO;
+
+                    RvLinesAdapter.this.notifyDataSetChanged();
+                    if (onLinesSelectedListener != null) {
+                        onLinesSelectedListener.onLineSelected(linesVO, position);
+                    }
+                    rvBitrate.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            PolyvCloudClassMoreLayout.this.hide();
+                        }
+                    });
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            if (lines != null) {
+                return lines.size();
+            } else {
+                return 0;
+            }
+        }
+
+        public void updateLinesDatas(List<PolyvLiveLinesVO> lines) {
+            this.lines = lines;
+            notifyDataSetChanged();
+        }
+
+        public void updateLinesStatus(int pos) {
+            this.curSelectPos = pos;
+        }
+
+        class RvLinesViewHolder extends RecyclerView.ViewHolder {
+            TextView tvBitrate;
+
+            RvLinesViewHolder(View itemView) {
                 super(itemView);
                 tvBitrate = itemView.findViewById(R.id.tv_bitrate);
             }

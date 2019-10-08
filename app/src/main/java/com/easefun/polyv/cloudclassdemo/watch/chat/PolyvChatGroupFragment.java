@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.blankj.utilcode.util.ConvertUtils;
 import com.easefun.polyv.businesssdk.sub.gif.RelativeImageSpan;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvConnectStatusListener;
@@ -33,6 +32,7 @@ import com.easefun.polyv.cloudclass.chat.event.PolyvGongGaoEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvKickEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLikesEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLoginEvent;
+import com.easefun.polyv.cloudclass.chat.event.PolyvLoginRefuseEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvRemoveContentEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvRemoveHistoryEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvSpeakEvent;
@@ -63,6 +63,7 @@ import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBaseTransformer;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvSDCardUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -106,6 +107,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     private SwipeRefreshLayout chatPullLoad;
     //欢迎语
     private PolyvGreetingTextView greetingText;
+    //    private PolyvGreetingView greetingView;
     //当前列表中显示的是否是禁言状态，在当前列表中是否是房间关闭状态，重连时当前列表中是否是房间关闭状态
     private boolean isBanIp, isCloseRoom, isCloseRoomReconnect;
     // 获取的历史记录条数
@@ -127,8 +129,19 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     @Override
     public void loadDataDelay(boolean isFirst) {
         super.loadDataDelay(isFirst);
-        if (!isFirst)
-            return;
+//        if (!isFirst)
+//            return;
+//        initCommonView();
+//        initView();
+//        //控件初始化之后再接收聊天室的事件
+//        acceptConnectStatus();
+//        acceptEventMessage();
+//        listenSendChatImgStatus();
+    }
+
+    @Override
+    public void loadDataAhead() {
+        super.loadDataAhead();
         initCommonView();
         initView();
         //控件初始化之后再接收聊天室的事件
@@ -276,10 +289,13 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
             }
         });
         openBulletinButton=findViewById(R.id.open_bulletin_button);
-        openBulletinButton.setOnClickListener(v -> {
-            //用Bus发送消息到AnswerView显示公告
-            PolyvRxBus.get().post(new PolyvAnswerView.BUS_EVENT(PolyvAnswerView.BUS_EVENT.TYPE_SHOW_BULLETIN));
-            hidePopupLayout(more, moreLayout);
+        openBulletinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //用Bus发送消息到AnswerView显示公告
+                PolyvRxBus.get().post(new PolyvAnswerView.BUS_EVENT(PolyvAnswerView.BUS_EVENT.TYPE_SHOW_BULLETIN));
+                PolyvChatGroupFragment.this.hidePopupLayout(more, moreLayout);
+            }
         });
         //重发图片的按钮监听
         chatListAdapter.setOnResendMessageViewClickListener(new PolyvChatListAdapter.OnResendMessageViewClickListener() {
@@ -306,6 +322,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 
         //欢迎语
         greetingText = findViewById(R.id.greeting_text);
+//        greetingView = findViewById(R.id.greeting_view);
     }
     // </editor-fold>
 
@@ -581,12 +598,22 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                 else
                     chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
                 chatMessageList.scrollToBottomOrShowMore(listArr[1].size());
+
+                //是否需要添加到右上角的未读信息中
+                if (!isSelectedChat()) {
+                    addUnreadChat(listArr[1].size());
+                }
             } else if (!isOnlyWatchTeacher() && listArr[0].size() > 0) {
                 if (listArr[0].size() > 1)
                     chatListAdapter.notifyItemRangeInserted(srcMaxPosition + 1, chatListAdapter.getItemCount() - 1);
                 else
                     chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
                 chatMessageList.scrollToBottomOrShowMore(listArr[0].size());
+
+                //是否需要添加到右上角的未读信息中
+                if (!isSelectedChat()) {
+                    addUnreadChat(listArr[0].size());
+                }
             }
         }
     }
@@ -661,6 +688,9 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 
     //发送的弹幕消息一起发送到聊天室
     public void sendChatMessageByDanmu(String sendMessage){
+        if (talk==null){
+            return;
+        }
         if (sendMessage.trim().length() == 0) {
             toast.makeText(getContext(), "发送内容不能为空！", Toast.LENGTH_SHORT).show(true);
         } else {
@@ -713,6 +743,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     }
 
     private void acceptLoginEvent(PolyvLoginEvent loginEvent) {
+//        greetingView.acceptLoginEvent(loginEvent);
         greetingText.acceptLoginEvent(loginEvent);
     }
 
@@ -894,9 +925,23 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                         @Override
                                         public void run() {
                                             if (chatManager.userId.equals(kickEvent.getUser().getUserId())) {
-                                                PolyvBaseActivity.setKickValue(kickEvent.getChannelId(), true);
-                                                PolyvBaseActivity.checkKickTips(getActivity(), kickEvent.getChannelId(), "您已被管理员踢出聊天室！");
+                                                PolyvBaseActivity.showKickTips(getActivity(), "您已被管理员踢出聊天室！");
                                             }
+                                        }
+                                    }));
+                                }
+                                break;
+                            //被踢后，登录聊天室会回调(用户被踢后不能再登录聊天室，可以在后端取消踢出后恢复)
+                            case PolyvChatManager.EVENT_LOGIN_REFUSE:
+                                PolyvLoginRefuseEvent loginRefuseEvent = PolyvEventHelper.getEventObject(PolyvLoginRefuseEvent.class, message, event);
+                                if (loginRefuseEvent != null) {
+                                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //收到该事件需要退出登录，否则会一直重连
+                                            chatManager.disconnect();
+                                            bgStatus.hide();
+                                            PolyvBaseActivity.showKickTips(getActivity(), "您已被管理员踢出聊天室！");
                                         }
                                     }));
                                 }

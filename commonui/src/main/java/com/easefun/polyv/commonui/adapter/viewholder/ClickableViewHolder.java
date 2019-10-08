@@ -11,19 +11,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.blankj.utilcode.util.ConvertUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.adapter.PolyvBaseRecyclerViewAdapter;
 import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvOnProgressListener;
+import com.easefun.polyv.commonui.utils.imageloader.IPolyvProgressListener;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 
 import java.util.ArrayList;
@@ -68,26 +62,26 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
     public abstract void processNormalMessage(M item, int position);
 
     //处理自定义消息
-    public abstract  void processCustomMessage(PolyvCustomEvent item, int position);
+    public abstract void processCustomMessage(PolyvCustomEvent item, int position);
 
     //创建itemview
-    public abstract  <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent) ;
+    public abstract <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent);
     // </editor-fold>
 
     //是否需要复用container里的childview
-    public int findReuseChildIndex(String type){
-       int childIndex = -1;
+    public int findReuseChildIndex(String type) {
+        int childIndex = -1;
         int count = contentContainer.getChildCount();
         for (int i = 0; i < count; i++) {
             View child = contentContainer.getChildAt(i);
-            if(type.equals(child.getTag())){
-                PolyvCommonLog.d(TAG,"findReuseChildIndex");
-                if(child.getVisibility() != View.VISIBLE){
+            if (type.equals(child.getTag())) {
+                PolyvCommonLog.d(TAG, "findReuseChildIndex");
+                if (child.getVisibility() != View.VISIBLE) {
                     child.setVisibility(View.VISIBLE);
                 }
                 childIndex = i;
-            }else {
-                if(child.getVisibility() != View.GONE){
+            } else {
+                if (child.getVisibility() != View.GONE) {
                     child.setVisibility(View.GONE);
                 }
             }
@@ -123,44 +117,53 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
 
 
     // <editor-fold defaultstate="collapsed" desc="图片处理方法">
-    protected void loadNetImg(String chatImg, final int position, final ProgressBar imgLoading, final ImageView imageView) {
-        PolyvMyProgressManager.removeListener(chatImg, position);
-        final PolyvOnProgressListener onProgressListener = new PolyvOnProgressListener() {
-            @Override
-            public void onStart(String url) {//后台回来会重新开始
-                if ((int) imgLoading.getTag() != position)
-                    return;
-                if (imgLoading.getProgress() == 0 && imgLoading.getVisibility() != View.VISIBLE) {
-                    imgLoading.setVisibility(View.VISIBLE);
-                    imageView.setImageDrawable(null);
-                }
-            }
+    protected void loadNetImg(final String chatImg, final int position, final ProgressBar imgLoading, final ImageView imageView) {
+        PolyvImageLoader.getInstance()
+                .loadImage(parentView.getContext(),
+                        chatImg,
+                        position,
+                        R.drawable.polyv_image_load_err,
+                        new IPolyvProgressListener() {
+                            @Override
+                            public void onStart(String url) {
+                                if ((int) imgLoading.getTag() != position)
+                                    return;
+                                if (imgLoading.getProgress() == 0 && imgLoading.getVisibility() != View.VISIBLE) {
+                                    imgLoading.setVisibility(View.VISIBLE);
+                                    imageView.setImageDrawable(null);
+                                }
+                            }
 
-            @Override
-            public void onProgress(String url, boolean isComplete, int percentage, long bytesRead, long totalBytes) {
-                if ((int) imgLoading.getTag() != position)
-                    return;
-                if (isComplete) {
-                    imgLoading.setVisibility(View.GONE);
+                            @Override
+                            public void onProgress(String url, boolean isComplete, int percentage, long bytesRead, long totalBytes) {
+                                if ((int) imgLoading.getTag() != position)
+                                    return;
+                                if (isComplete) {
+                                    imgLoading.setVisibility(View.GONE);
 
-                    imgLoading.setProgress(100);
-                } else if (imageView.getDrawable() == null) {//onFailed之后可能触发onProgress
-                    imgLoading.setVisibility(View.VISIBLE);
-                    imgLoading.setProgress(percentage);
-                }
-            }
+                                    imgLoading.setProgress(100);
+                                } else if (imageView.getDrawable() == null) {//onFailed之后可能触发onProgress
+                                    imgLoading.setVisibility(View.VISIBLE);
+                                    imgLoading.setProgress(percentage);
+                                }
+                            }
 
-            @Override
-            public void onFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                if ((int) imgLoading.getTag() != position)
-                    return;
-                imgLoading.setVisibility(View.GONE);
-                imgLoading.setProgress(0);
-            }
-        };
-        PolyvMyProgressManager.addListener(chatImg, position, onProgressListener);
+                            @Override
+                            public void onResourceReady(Drawable drawable) {
+                                removeImgUrl(chatImg, position);
+                                imageView.setImageDrawable(drawable);
+                            }
+
+                            @Override
+                            public void onFailed(@Nullable Exception e, Object model) {
+                                if ((int) imgLoading.getTag() != position)
+                                    return;
+                                imgLoading.setVisibility(View.GONE);
+                                imgLoading.setProgress(0);
+                            }
+                        });
+
         putImgUrl(chatImg, position);
-        loadChatImg(chatImg, onProgressListener, imageView, position);
     }
 
     protected void putImgUrl(String imgUrl, int position) {
@@ -201,28 +204,6 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
                 }
             }
         }
-    }
-
-    private void loadChatImg(final String chatImg, final PolyvOnProgressListener onProgressListener, final ImageView view, final int position) {
-        Glide.with(parentView.getContext())
-                .load(chatImg)
-                .apply(new RequestOptions().error(com.easefun.polyv.commonui.R.drawable.polyv_image_load_err))//dontAnimate，不显示gif
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        onProgressListener.onFailed(e, model, target, isFirstResource);
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        PolyvMyProgressManager.removeListener(chatImg, position);
-                        removeImgUrl(chatImg, position);
-                        onProgressListener.onProgress(chatImg, true, 100, 0, 0);
-                        return false;
-                    }
-                })
-                .into(view);
     }
 // </editor-fold>
 }
