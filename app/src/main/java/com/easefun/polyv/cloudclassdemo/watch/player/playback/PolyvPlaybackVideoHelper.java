@@ -1,8 +1,10 @@
 package com.easefun.polyv.cloudclassdemo.watch.player.playback;
 
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTCacheProcessor;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTVodProcessor;
@@ -14,6 +16,9 @@ import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -117,13 +122,28 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
     /**
      * 开始本地播放
      *
-     * @param unzipDownloadedFile 解压后的下载文件，里面包括ppt，js，video。
-     * @param videoId             视频在直播中的id
+     * @param unzipDownloadedFile 解压后的下载文件，里面包括ppt，js，video 和 config.json配置文件。
      * @param playbackVideoParams 播放参数
      */
-    public void startLocal(File unzipDownloadedFile, String videoId, PolyvPlaybackVideoParams playbackVideoParams) {
-        //从文件名取出videoPoolId。
-        String videoPoolId = unzipDownloadedFile.getName();
+    public void startLocal(File unzipDownloadedFile, PolyvPlaybackVideoParams playbackVideoParams) {
+        //解析config.json文件
+        File configJson = new File(unzipDownloadedFile, "config.json");
+        String configJsonString = FileIOUtils.readFile2String(configJson);
+        if (TextUtils.isEmpty(configJsonString)) {
+            LogUtils.e("config.json文件丢失,无法播放本地视频");
+            return;
+        }
+
+        String videoLiveId;
+        String videoPoolId;
+        try {
+            JSONObject configObject = new JSONObject(configJsonString);
+            videoLiveId = configObject.getString("videoId");
+            videoPoolId = configObject.getString("videoPoolId");
+        } catch (JSONException e) {
+            LogUtils.e("config.json文件内容异常，无法播放本地视频");
+            return;
+        }
 
         //取出视频文件
         File videoDir = new File(unzipDownloadedFile, "video/");
@@ -134,7 +154,7 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
         startLocal(videoFile.getAbsolutePath(), playbackVideoParams);
 
         //给pptView设置js文件路径
-        videoItem.getPPTItem().loadFromLocal(unzipDownloadedFile, videoPoolId, videoId);
+        videoItem.getPPTItem().loadFromLocal(unzipDownloadedFile, videoPoolId, videoLiveId);
     }
 
     public void stopPlay() {
