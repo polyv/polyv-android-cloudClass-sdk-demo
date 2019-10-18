@@ -24,7 +24,7 @@ allprojects {
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
         }
-        maven { url 'https://dl.bintray.com/polyv/android' }
+        maven { url 'https://dl.bintray.com/polyv/abn' }
     }
 }
 
@@ -33,11 +33,10 @@ ext {
     minSdkVersion = 16
     targetSdkVersion = 27
     versionCode = 80
-    versionName = "0.8.0"
+    versionName = "0.8.0.01"
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-//apply from:"add_dependencies_to_pom.gradle"

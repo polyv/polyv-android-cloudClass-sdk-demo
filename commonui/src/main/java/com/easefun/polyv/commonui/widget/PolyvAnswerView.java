@@ -132,6 +132,12 @@ public class PolyvAnswerView extends FrameLayout {
                 isQuestionAnswer = true;
             }
         });
+        answerWebView.setOnWebViewLoadFinishedListener(new PolyvAnswerWebView.OnWebViewLoadFinishedListener() {
+            @Override
+            public void onLoadFinished() {
+                ivClose.setVisibility(INVISIBLE);
+            }
+        });
 
         if (LOAD_WEB_URL) {
             answerWebView.loadWeb();

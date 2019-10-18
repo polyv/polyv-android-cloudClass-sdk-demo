@@ -49,13 +49,15 @@ public class PolyvImageLoader {
      * 加载图片
      */
     public void loadImage(Context context, String url, ImageView imageView) {
+        url = makeUrlHttps(url);
         loadEngine.loadImage(context, url, imageView);
     }
 
     /**
      * 加载图片：带有进度监听。
      */
-    public void loadImage(Context context, final String url, final int position, @DrawableRes int errorRes, final IPolyvProgressListener listener) {
+    public void loadImage(Context context, String url, final int position, @DrawableRes int errorRes, final IPolyvProgressListener listener) {
+        url = makeUrlHttps(url);
         loadEngine.loadImage(context, url, position, errorRes, listener);
     }
 
@@ -63,6 +65,7 @@ public class PolyvImageLoader {
      * 加载图片，不进行本地磁盘缓存
      */
     public void loadImageNoDiskCache(Context context, String url, @DrawableRes int placeHolder, @DrawableRes int error, ImageView imageView) {
+        url = makeUrlHttps(url);
         loadEngine.loadImageNoDiskCache(context, url, placeHolder, error, imageView);
     }
 
@@ -71,6 +74,24 @@ public class PolyvImageLoader {
      */
     @WorkerThread
     public File saveImageAsFile(Context context, String url) throws ExecutionException, InterruptedException {
+        url = makeUrlHttps(url);
         return loadEngine.saveImageAsFile(context, url);
+    }
+
+    /**
+     * 将http协议的请求地址转换成用https协议。
+     * 如果不是http协议的url，则返回原url。
+     *
+     * @param url url
+     * @return https url。
+     */
+    private String makeUrlHttps(String url) {
+        if (url.startsWith("https")) {
+            return url;
+        } else if (url.startsWith("http")) {
+            return url.replaceFirst("http", "https");
+        } else {
+            return url;
+        }
     }
 }

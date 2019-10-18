@@ -1,9 +1,5 @@
 apply plugin: 'com.android.application'
 
-static def currentTime() {
-    return new Date().format("yyyy-MM-dd-HH-mm-ss",TimeZone.getTimeZone("UTC"))
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
@@ -22,6 +18,14 @@ android {
             abiFilters 'arm64-v8a', "armeabi-v7a", "x86" // DO NOT MODIFY THIS LINE, IT'S UPDATED BY BUILD MACHINE AUTOMATICALLY.
         }
     }
+    signingConfigs {
+        release {
+            storeFile file("../sign.jks")
+            storePassword "123456"
+            keyAlias "key"
+            keyPassword "123456"
+        }
+    }
     lintOptions {
         checkReleaseBuilds false
         // Or, if you prefer, you can continue to check for errors in release builds,
@@ -32,36 +36,23 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         qatest {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    signingConfigs {
-        release {
-            storeFile file("../sign.jks")
-            storePassword "123456"
-            keyAlias "key"
-            keyPassword "123456"
-        }
-    }
-    buildTypes {
-        release {
             signingConfig signingConfigs.release
         }
     }
-
-    android.applicationVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "${variant.name}_${variant.versionName}_${currentTime()}.apk"
-        }
-    }
+//    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+//    }
 }
 
 dependencies {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config>
+        <domain includeSubdomains="true">api.polyv.net</domain>
+        <domain includeSubdomains="true">apichat.polyv.net</domain>
+        <domain includeSubdomains="true">api.live.polyv.net</domain>
+        <domain includeSubdomains="true">live.polyv.net</domain>
+        <domain includeSubdomains="true">chat.polyv.net</domain>
+        <domain includeSubdomains="true">livestatic.videocc.net</domain>
+        <domain includeSubdomains="true">player.polyv.net</domain>
+        <domain includeSubdomains="true">api.chat.polyv.net</domain>
+        <domain includeSubdomains="true">livejson.polyv.net</domain>
+        <domain includeSubdomains="true">liveimages.videocc.net</domain>
+        <trust-anchors>
+            <certificates src="@raw/key"/>
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
