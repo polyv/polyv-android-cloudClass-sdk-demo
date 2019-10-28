@@ -31,9 +31,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'n
     api 'com.android.support:design:27.1.1'
-    api 'com.easefun.polyv:polyvSDKCloudClass:0.8.0'
+    api 'com.easefun.polyv:polyvSDKCloudClass:0.8.1'
     //glide
     api ('jp.wasabeef:glide-transformations:3.3.0'){
 //        exclude group:'com.github.bumptech.glide',module:'glide'
