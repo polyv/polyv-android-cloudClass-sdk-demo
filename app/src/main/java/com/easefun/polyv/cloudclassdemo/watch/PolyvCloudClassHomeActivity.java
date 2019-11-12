@@ -57,6 +57,7 @@ import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.widget.PolyvSlideSwitchView;
 import com.easefun.polyv.commonui.player.widget.PolyvVodVideoItem;
 import com.easefun.polyv.commonui.utils.PolyvChatEventBus;
+import com.easefun.polyv.commonui.utils.PolyvSingleRelayBus;
 import com.easefun.polyv.commonui.widget.PolyvAnswerView;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
@@ -68,13 +69,12 @@ import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.disposables.Disposable;
 import io.socket.client.Socket;
 import okhttp3.ResponseBody;
 import retrofit2.HttpException;
@@ -178,11 +178,6 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
         initialParams();
 
-        //如果用户被踢，则不初始化
-        if (checkKickTips(channelId)) {
-            return;
-        }
-
         setContentView(R.layout.polyv_activity_cloudclass_home);
 
         initial();
@@ -259,7 +254,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         }
 
         PolyvLinkMicWrapper.getInstance().destroy(linkMicLayout);
-        PolyvChatEventBus.clear();
+        PolyvSingleRelayBus.clear();
     }
     // </editor-fold>
 
@@ -794,20 +789,20 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
     // <editor-fold defaultstate="collapsed" desc="登录聊天室">
     private void loginChatRoom() {
-        PolyvChatEventBus.clear();
+        PolyvSingleRelayBus.clear();
         //先添加监听器再登录
         chatManager.addConnectStatusListener(new PolyvConnectStatusListener() {
             @Override
             public void onConnectStatusChange(int status, @Nullable Throwable t) {
                 //由于登录成功后，Fragment可能还没初始化完成，所以这里使用Rxjava的ReplayRelay把信息保存下来，在Fragment初始化完成那里获取
-                PolyvChatEventBus.get().post(new PolyvChatBaseFragment.ConnectStatus(status, t));
+                PolyvSingleRelayBus.get().post(new PolyvChatBaseFragment.ConnectStatus(status, t));
             }
         });
         chatManager.addNewMessageListener(new PolyvNewMessageListener2() { // 用于监听登录的相关消息
             @Override
             public void onNewMessage(String message, String event, String socketListen) {
                 //由于登录成功后，Fragment可能还没初始化完成，所以这里使用Rxjava的ReplayRelay把信息保存下来，在Fragment初始化完成那里获取
-                PolyvChatEventBus.get().post(new PolyvChatBaseFragment.EventMessage(message, event, socketListen));
+                PolyvRxBus.get().post(new PolyvChatBaseFragment.EventMessage(message, event, socketListen));
             }
 
             @Override

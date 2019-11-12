@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -65,6 +67,7 @@ import com.easefun.polyv.commonui.model.PolyvCustomRewardBean;
 import com.easefun.polyv.commonui.model.PolyvGiftMessageBean;
 import com.easefun.polyv.commonui.utils.PolyvChatEventBus;
 import com.easefun.polyv.commonui.utils.PolyvPictureUtils;
+import com.easefun.polyv.commonui.utils.PolyvSingleRelayBus;
 import com.easefun.polyv.commonui.utils.PolyvTextImageLoader;
 import com.easefun.polyv.commonui.utils.PolyvToast;
 import com.easefun.polyv.commonui.utils.PolyvUriPathHelper;
@@ -104,6 +107,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     private static final int REQUEST_SELECT_PHOTO = 0x01;
     private static final int REQUEST_OPEN_CAMERA = 0x02;
 
+    private static final String LOGIN_REFUSE = "LOGIN_REFUSE";
+
     private static final int Q1_MESSAGE = 1;
     private static final int Q2_MESSAGE = 2;
     //只看讲师信息的集合（讲师包括：管理员、讲师、助教）
@@ -138,6 +143,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 
     private TextView likeNum;
     private Disposable giftDispose;
+    private Handler handler = new Handler(Looper.getMainLooper());
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="初始化">
@@ -247,8 +254,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
             }
         });
         giftLayout.setOnDismissListener(() -> {
-            LogUtils.d(moreLayout.getVisibility()==View.VISIBLE);
-            if (moreLayout.getVisibility()!=View.VISIBLE){
+            LogUtils.d(moreLayout.getVisibility() == View.VISIBLE);
+            if (moreLayout.getVisibility() != View.VISIBLE) {
                 getChatEditContainer().setVisibility(View.GONE);
             }
         });
@@ -882,7 +889,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     }
 
     private void acceptConnectStatus() {
-        disposables.add(PolyvChatEventBus.get().toObservable(ConnectStatus.class).subscribe(new Consumer<ConnectStatus>() {
+        disposables.add(PolyvSingleRelayBus.get().toObservable(ConnectStatus.class).subscribe(new Consumer<ConnectStatus>() {
             @Override
             public void accept(ConnectStatus connectStatus) throws Exception {
                 int status = connectStatus.status;
@@ -950,12 +957,13 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                 customEvent = PolyvEventHelper.gson.fromJson(message, PolyvCustomEvent.class);
                 if (!isHistory && customEvent.getUser() != null && !chatManager.userId.equals(customEvent.getUser().getUserId())) {
                     PolyvCustomEvent finalCustomEvent = customEvent;
-                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                    handler.post(new Runnable() {
                         @Override
                         public void run() {
                             toast.makeText(getContext(), finalCustomEvent.getTip(), PolyvToast.LENGTH_LONG).show(true);
+
                         }
-                    }));
+                    });
                 } else {
                     return null;
                 }
@@ -972,7 +980,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     }
 
     private void acceptEventMessage() {
-        disposables.add(PolyvChatEventBus.get().toObservable(EventMessage.class).buffer(500, TimeUnit.MILLISECONDS).map(new Function<List<EventMessage>, List<PolyvChatListAdapter.ChatTypeItem>[]>() {
+        disposables.add(PolyvRxBus.get().toObservable(EventMessage.class).buffer(500, TimeUnit.MILLISECONDS).map(new Function<List<EventMessage>, List<PolyvChatListAdapter.ChatTypeItem>[]>() {
             @Override
             public List<PolyvChatListAdapter.ChatTypeItem>[] apply(List<EventMessage> eventMessages) throws Exception {
                 final List<PolyvChatListAdapter.ChatTypeItem> tempChatItems = new ArrayList<>();
@@ -1012,12 +1020,12 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                         startMarquee((CharSequence) speakEvent.getObjects()[0]);//开启跑马灯公告
                                     }
                                     //发送弹幕
-                                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                    handler.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             sendDanmu((CharSequence) speakEvent.getObjects()[0]);
                                         }
-                                    }));
+                                    });
                                 }
                                 break;
                             //图片类型发言
@@ -1072,13 +1080,13 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                 if (removeContentEvent != null) {
                                     removeItem(tempChatItems, removeContentEvent.getId(), false, false);
                                     removeItem(tempTeacherChatItems, removeContentEvent.getId(), true, false);
-                                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                    handler.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             String chatMessageId = removeContentEvent.getId();
                                             removeItemWithMessageId(chatMessageId);
                                         }
-                                    }));
+                                    });
                                 }
                                 break;
                             //清空聊天记录
@@ -1087,7 +1095,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                 if (removeHistoryEvent != null) {
                                     tempChatItems.clear();
                                     tempTeacherChatItems.clear();
-                                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                    handler.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             teacherItems.clear();
@@ -1095,7 +1103,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                             chatListAdapter.notifyDataSetChanged();
                                             toast.makeText(getContext(), "管理员清空了聊天记录！", PolyvToast.LENGTH_LONG).show(true);
                                         }
-                                    }));
+                                    });
                                 }
                                 break;
                             //自定义信息（可以使用自己的方式去显示，这里暂不添加到列表里）
@@ -1106,16 +1114,27 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                             case PolyvChatManager.EVENT_KICK:
                                 final PolyvKickEvent kickEvent = PolyvEventHelper.getEventObject(PolyvKickEvent.class, message, event);
                                 if (kickEvent != null) {
-                                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                    handler.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             if (chatManager.userId.equals(kickEvent.getUser().getUserId())) {
-                                                PolyvBaseActivity.setKickValue(kickEvent.getChannelId(), true);
-                                                PolyvBaseActivity.checkKickTips(getActivity(), kickEvent.getChannelId(), "您已被管理员踢出聊天室！");
+                                                PolyvBaseActivity.showKickTips(getActivity(), "您已被管理员踢出聊天室！");
                                             }
                                         }
-                                    }));
+                                    });
                                 }
+                                break;
+                            //被踢后，登录聊天室会回调(用户被踢后不能再登录聊天室，可以在后端取消踢出后恢复)
+                            case LOGIN_REFUSE:
+                                disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //收到该事件需要退出登录，否则会一直重连
+                                        chatManager.disconnect();
+                                        bgStatus.hide();
+                                        PolyvBaseActivity.showKickTips(getActivity(), "您已被管理员踢出聊天室！");
+                                    }
+                                }));
                                 break;
                             //欢迎语（登录时，用户是否被禁言通过这里的loginEvent获取）
                             case PolyvChatManager.EVENT_LOGIN:
@@ -1213,7 +1232,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     // <editor-fold defaultstate="collapsed" desc="公告跑马灯处理"> 
     private void startMarquee(final CharSequence msg) {
         disposableGonggaoCd();
-        disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 ((ViewGroup) tvGongGao.getParent()).setVisibility(View.VISIBLE);
@@ -1227,7 +1246,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                 tvGongGao.stopScroll();
                 tvGongGao.startScroll();
             }
-        }));
+        });
     }
 
     private void startCountDown(long time) {

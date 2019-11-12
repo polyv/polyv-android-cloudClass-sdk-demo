@@ -23,7 +23,6 @@ import android.widget.ScrollView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.cloudclass.PolyvSocketEvent;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
@@ -43,9 +42,7 @@ import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.google.gson.Gson;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -66,7 +63,6 @@ public class PolyvAnswerView extends FrameLayout {
     private ViewGroup answerContainer;
     //    private ImageView close;
     private Disposable messageDispose;
-    private CompositeDisposable delayDispose = new CompositeDisposable();
 
     private static final int DELAY_SOCKET_MSG = 2 * 1000;
 
@@ -77,6 +73,7 @@ public class PolyvAnswerView extends FrameLayout {
     private LinearLayout ll;
     private ImageView ivClose;
 
+    private volatile boolean isDestroy = false;
 
     public PolyvAnswerView(@NonNull Context context) {
         this(context, null);
@@ -92,12 +89,13 @@ public class PolyvAnswerView extends FrameLayout {
     }
 
     private void initialView(Context context) {
+        isDestroy = false;
         View.inflate(context, R.layout.polyv_answer_web_layout, this);
         answerWebView = findViewById(R.id.polyv_question_web);
         answerContainer = findViewById(R.id.polyv_answer_web_container);
         scrollView = findViewById(R.id.polyv_answer_scroll);
         ll = findViewById(R.id.polyv_answer_ll);
-        ivClose=findViewById(R.id.polyv_answer_close);
+        ivClose = findViewById(R.id.polyv_answer_close);
 
         answerWebView.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -132,15 +130,17 @@ public class PolyvAnswerView extends FrameLayout {
                     @Override
                     public void accept(final PolyvSocketMessageVO polyvSocketMessage) throws Exception {
                         final String event = polyvSocketMessage.getEvent();
-                        if(event.contains("SIGN_IN") || event.contains("Lottery") || event.contains("LOTTERY")){
+                        if (event.contains("SIGN_IN") || event.contains("Lottery") || event.contains("LOTTERY")) {
                             processSocketMessage(polyvSocketMessage, event);
-                        }else{
-                            delayDispose.add(PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer<Long>() {
+                        } else {
+                            PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer<Long>() {
                                 @Override
                                 public void accept(Long aLong) throws Exception {
-                                    processSocketMessage(polyvSocketMessage, event);
+                                    if (!isDestroy){
+                                        processSocketMessage(polyvSocketMessage, event);
+                                    }
                                 }
-                            }));
+                            });
                         }
                     }
                 });
@@ -276,7 +276,8 @@ public class PolyvAnswerView extends FrameLayout {
         answerWebView.requestFocusFromTouch();
         answerContainer.setVisibility(VISIBLE);
     }
-    private void hideAnswerContainer(){
+
+    private void hideAnswerContainer() {
         answerContainer.setVisibility(INVISIBLE);
     }
 
@@ -307,17 +308,14 @@ public class PolyvAnswerView extends FrameLayout {
     }
 
     public void destroy() {
+        isDestroy = true;
         if (answerWebView != null) {
             answerWebView = null;
         }
 
-        if(messageDispose != null){
+        if (messageDispose != null) {
             messageDispose.dispose();
             messageDispose = null;
-        }
-        if(delayDispose != null){
-            delayDispose.dispose();
-            delayDispose = null;
         }
     }
 
@@ -364,7 +362,7 @@ public class PolyvAnswerView extends FrameLayout {
         @SuppressLint("ClickableViewAccessibility")
         private void possiblyResizeChildOfContent() {
             //当答题卡不可见时，答题卡不处理任何键盘事件
-            if (answerContainer.getVisibility()!=VISIBLE){
+            if (answerContainer.getVisibility() != VISIBLE) {
                 return;
             }
 

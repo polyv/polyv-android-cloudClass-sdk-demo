@@ -877,11 +877,6 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             showDialog("提示", "通话所需的%s权限被拒绝，请到应用设置的权限管理中恢复", true, permissions.toArray(new String[permissions.size()]));
             return;
         }
-        // 可能由于在允许权限的过程中，老师关闭了连麦，故这里需要进行判断
-        if (PolyvBaseActivity.checkKick(polyvChatManager.roomId)) {
-            Toast.makeText(context, "您当前无法申请发言", Toast.LENGTH_SHORT).show();
-            return;
-        }
         PolyvCommonLog.d(TAG,"onGranted");
         controller.handsUp(joinSuccess);
         return;

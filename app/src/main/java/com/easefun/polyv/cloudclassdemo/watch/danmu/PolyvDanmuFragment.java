@@ -152,6 +152,9 @@ public class PolyvDanmuFragment extends Fragment {
 
     //发送
     public void sendDanmaku(CharSequence message) {
+        if (mContext == null) {
+            return;
+        }
         BaseDanmaku danmaku = mContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
         danmaku.text = message;
         danmaku.padding = 0;
