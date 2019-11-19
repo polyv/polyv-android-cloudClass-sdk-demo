@@ -10,11 +10,14 @@ import android.widget.TextView;
 import com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView;
 import com.easefun.polyv.cloudclass.chat.PolyvChatAuthorization;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
+import com.easefun.polyv.cloudclass.chat.PolyvChatUser;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvSpeakEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvTAnswerEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
 import com.easefun.polyv.cloudclass.chat.history.PolyvSpeakHistory;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackImg;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackSpeak;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatGroupFragment;
@@ -24,8 +27,15 @@ import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.itemview.PolyvItemVie
 import com.easefun.polyv.cloudclassdemo.watch.chat.config.PolyvChatUIConfig;
 import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
 import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
-import com.easefun.polyv.commonui.widget.PolyvCircleProgressView;
+import com.easefun.polyv.commonui.utils.PolyvWebUtils;
 import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
+import com.easefun.polyv.commonui.widget.PolyvCircleProgressView;
+
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_ASSISTANT;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_GUEST;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_MANAGER;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_STUDENT;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_TEACHER;
 
 /**
  * @author df
@@ -53,6 +63,22 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
         receiveMessage = $(com.easefun.polyv.commonui.R.id.gtv_receive_message);
         chatImg = $(com.easefun.polyv.commonui.R.id.iv_chat_img);
         imgLoading = $(com.easefun.polyv.commonui.R.id.cpv_img_loading);
+
+        receiveMessage.setWebLinkClickListener(new GifSpanTextView.WebLinkClickListener() {
+            @Override
+            public void webLinkOnClick(String url) {
+                // TODO: 2019/11/11 监听消息的链接点击事件
+                PolyvWebUtils.openWebLink(url,context);
+            }
+        });
+
+        receiveMessage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                processItemLongClick(receiveMessage,true,receiveMessage.getText().toString());
+                return true;
+            }
+        });
     }
 
     private void initCommonView() {
@@ -167,8 +193,38 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
             if ((authorizationBean = chatImgHistory.getUser().getAuthorization()) != null) {
                 chatAuthorization = new PolyvChatAuthorization(authorizationBean.getActor(), authorizationBean.getFColor(), authorizationBean.getBgColor());
             }
+        } else if (object instanceof PolyvChatPlaybackSpeak) {//历史回放信息
+            PolyvChatPlaybackSpeak chatPlaybackSpeak = (PolyvChatPlaybackSpeak) object;
+            if (chatPlaybackSpeak.getUser() != null) {
+                userType = chatPlaybackSpeak.getUser().getUserType();
+                actor = chatPlaybackSpeak.getUser().getActor();
+                nick = chatPlaybackSpeak.getUser().getNick();
+                pic = chatPlaybackSpeak.getUser().getPic();
+                message = (CharSequence) chatPlaybackSpeak.getObjects()[0];
+                PolyvChatUser.AuthorizationBean authorizationBean;
+                if ((authorizationBean = chatPlaybackSpeak.getUser().getAuthorization()) != null) {
+                    chatAuthorization = new PolyvChatAuthorization(authorizationBean.getActor(), authorizationBean.getFColor(), authorizationBean.getBgColor());
+                }
+            }
+        } else if (object instanceof PolyvChatPlaybackImg) {//历史回放图片信息
+            PolyvChatPlaybackImg chatPlaybackImg = (PolyvChatPlaybackImg) object;
+            if (chatPlaybackImg.getUser() != null) {
+                userType = chatPlaybackImg.getUser().getUserType();
+                actor = chatPlaybackImg.getUser().getActor();
+                nick = chatPlaybackImg.getUser().getNick();
+                pic = chatPlaybackImg.getUser().getPic();
+                if (chatPlaybackImg.getContent() != null && chatPlaybackImg.getContent().getSize() != null) {
+                    chatImg = chatPlaybackImg.getContent().getUploadImgUrl();
+                    imgHeight = (int) chatPlaybackImg.getContent().getSize().getHeight();
+                    imgWidth = (int) chatPlaybackImg.getContent().getSize().getWidth();
+                    PolyvChatUser.AuthorizationBean authorizationBean;
+                    if ((authorizationBean = chatPlaybackImg.getUser().getAuthorization()) != null) {
+                        chatAuthorization = new PolyvChatAuthorization(authorizationBean.getActor(), authorizationBean.getFColor(), authorizationBean.getBgColor());
+                    }
+                }
+            }
         } else if (object instanceof PolyvChatPrivateFragment.PolyvQuestionTipsEvent) {//自定义的私聊的问候语信息
-            userType = PolyvChatManager.USERTYPE_TEACHER;
+            userType = USERTYPE_TEACHER;
             actor = "讲师";
             nick = "讲师";
             pic = "http://livestatic.videocc.net/uploaded/images/webapp/avatar/default-teacher.png";
@@ -217,16 +273,16 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
         //设置不同用户类型的字体颜色
         int fontColor;
         switch (userType) {
-            case PolyvChatManager.USERTYPE_TEACHER:
+            case USERTYPE_TEACHER:
                 fontColor = PolyvChatUIConfig.FontColor.color_teacher;
                 break;
-            case PolyvChatManager.USERTYPE_ASSISTANT:
+            case USERTYPE_ASSISTANT:
                 fontColor = PolyvChatUIConfig.FontColor.color_assistant;
                 break;
-            case PolyvChatManager.USERTYPE_STUDENT:
+            case USERTYPE_STUDENT:
                 fontColor = PolyvChatUIConfig.FontColor.color_student;
                 break;
-            case PolyvChatManager.USERTYPE_MANAGER:
+            case USERTYPE_MANAGER:
                 fontColor = PolyvChatUIConfig.FontColor.color_manager;
                 break;
             default:
@@ -239,7 +295,13 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
             receiveMessageHolder.chatImg.setVisibility(View.GONE);
             receiveMessageHolder.imgLoading.setVisibility(View.GONE);
             receiveMessageHolder.receiveMessage.setVisibility(View.VISIBLE);
-            receiveMessageHolder.receiveMessage.setText(message);
+            if(USERTYPE_TEACHER.equals(userType)  || USERTYPE_ASSISTANT.equals(userType)
+                    || USERTYPE_MANAGER.equals(userType) || USERTYPE_GUEST.equals(userType)){
+                receiveMessageHolder.receiveMessage.setTextInner(message,true);
+            }else {
+                receiveMessageHolder.receiveMessage.setText(message);
+            }
+
         } else if (chatImg != null) {//设置图片类型的发言信息
             receiveMessageHolder.receiveMessage.setVisibility(View.GONE);
             receiveMessageHolder.chatImg.setVisibility(View.VISIBLE);
@@ -267,4 +329,5 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
         typeTv.getBackground().setColorFilter(Color.parseColor(bgColor), PorterDuff.Mode.SRC_OVER);
         typeTv.setTextColor(Color.parseColor(s));
     }
+
 }

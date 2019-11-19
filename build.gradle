@@ -32,12 +32,11 @@ ext {
     compileSdkVersion = 27
     minSdkVersion = 16
     targetSdkVersion = 27
-    versionCode = 80
-    versionName = "0.8.0"
+    versionCode = 100
+    versionName = "0.10.0"
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-//apply from:"add_dependencies_to_pom.gradle"

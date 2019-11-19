@@ -22,10 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ActivityUtils;
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.KeyboardUtils;
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.cloudclass.PolyvSocketEvent;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionResultVO;
@@ -38,11 +34,17 @@ import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignIn2JsVO;
 import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignInVO;
 import com.easefun.polyv.cloudclass.video.PolyvAnswerWebView;
 import com.easefun.polyv.commonui.R;
+import com.easefun.polyv.commonui.utils.PolyvWebUtils;
+import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBaseTransformer;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ActivityUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.KeyboardUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -75,7 +77,7 @@ public class PolyvAnswerView extends FrameLayout {
     private ViewGroup answerContainer;
     //    private ImageView close;
     private Disposable messageDispose;
-    private CompositeDisposable disposables = new CompositeDisposable();
+    private Disposable busDisposable = new CompositeDisposable();
 
     private static final int DELAY_SOCKET_MSG = 2 * 1000;
 
@@ -96,6 +98,8 @@ public class PolyvAnswerView extends FrameLayout {
     private ImageView ivClose;
     private AlertDialog alertDialog;
 
+    private volatile boolean isDestroy=false;
+
 
     public PolyvAnswerView(@NonNull Context context) {
         this(context, null);
@@ -110,7 +114,9 @@ public class PolyvAnswerView extends FrameLayout {
         initialView(context);
     }
 
-    private void initialView(Context context) {
+    private void initialView(final Context context) {
+
+        isDestroy=false;
         View.inflate(context, R.layout.polyv_answer_web_layout, this);
         answerWebView = findViewById(R.id.polyv_question_web);
         answerContainer = findViewById(R.id.polyv_answer_web_container);
@@ -130,6 +136,19 @@ public class PolyvAnswerView extends FrameLayout {
             @Override
             public void onChoose() {
                 isQuestionAnswer = true;
+            }
+        });
+        answerWebView.setOnWebLinkSkipListener(new PolyvAnswerWebView.OnWebLinkSkipListener() {
+            @Override
+            public void onWebLinkSkip(String action) {
+                PolyvCommonLog.d(TAG,"receive action :"+action);
+                PolyvWebUtils.openWebLink(action,context);
+            }
+        });
+        answerWebView.setOnWebViewLoadFinishedListener(new PolyvAnswerWebView.OnWebViewLoadFinishedListener() {
+            @Override
+            public void onLoadFinished() {
+                ivClose.setVisibility(INVISIBLE);
             }
         });
 
@@ -160,16 +179,18 @@ public class PolyvAnswerView extends FrameLayout {
     }
 
     private void delay(final Runnable runnable) {
-        disposables.add(PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer() {
+        PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer() {
             @Override
             public void accept(Object o) {
-                runnable.run();
+                if (!isDestroy){
+                    runnable.run();
+                }
             }
-        }));
+        });
     }
 
     private void acceptBusEvent() {
-        disposables.add(PolyvRxBus.get().toObservable(BUS_EVENT.class)
+        busDisposable =(PolyvRxBus.get().toObservable(BUS_EVENT.class)
                 .compose(new PolyvRxBaseTransformer<BUS_EVENT, BUS_EVENT>())
                 .subscribe(new Consumer<BUS_EVENT>() {
                     @Override
@@ -424,6 +445,7 @@ public class PolyvAnswerView extends FrameLayout {
     }
 
     public void destroy() {
+        isDestroy=true;
         if (answerWebView != null) {
             answerWebView = null;
         }
@@ -431,9 +453,9 @@ public class PolyvAnswerView extends FrameLayout {
             messageDispose.dispose();
             messageDispose = null;
         }
-        if (disposables != null) {
-            disposables.dispose();
-            disposables = null;
+        if (busDisposable != null) {
+            busDisposable.dispose();
+            busDisposable = null;
         }
     }
 

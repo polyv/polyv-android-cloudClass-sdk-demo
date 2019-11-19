@@ -19,8 +19,12 @@ import pl.droidsonroids.gif.GifDrawable;
 public class PolyvTextImageLoader {
 
     public static CharSequence messageToSpan(CharSequence charSequence, int size, boolean useGif, Context context) {
-        if (charSequence instanceof String) {
-            charSequence = Html.fromHtml((String) charSequence);//html转义
+        return messageToSpan(charSequence, size, useGif, context, false);
+    }
+
+    public static CharSequence messageToSpan(CharSequence charSequence, int size, boolean useGif, Context context, boolean isToHtmlFormat) {
+        if (charSequence instanceof String && isToHtmlFormat) {
+            charSequence = Html.fromHtml((String) charSequence);//html转义，<>会转为""
         }
         int reqWidth;
         int reqHeight;

@@ -16,7 +16,7 @@
             android:id="@+id/iv_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+            android:visibility="gone"
             android:src="@drawable/polyv_iv_hostonly_switch" />
 
         <com.easefun.polyv.commonui.widget.PolyvPressedImageView
@@ -47,6 +47,7 @@
         android:imeOptions="actionSend|flagNoFullscreen"
         android:paddingLeft="8dp"
         android:paddingRight="40dp"
+        android:maxLength="200"
         android:singleLine="true"
         android:textColor="#000000"
         android:textColorHint="#c7c7c7"

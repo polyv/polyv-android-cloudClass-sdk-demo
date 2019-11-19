@@ -2,16 +2,16 @@ package com.easefun.polyv.cloudclassdemo.watch.chat;
 
 import android.widget.Toast;
 
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvQuestionMessage;
 import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
 import com.easefun.polyv.cloudclass.chat.event.PolyvTAnswerEvent;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.commonui.R;
-import com.easefun.polyv.commonui.utils.PolyvChatEventBus;
 import com.easefun.polyv.commonui.utils.PolyvTextImageLoader;
 import com.easefun.polyv.commonui.utils.PolyvToast;
+import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 
 import io.reactivex.functions.Consumer;
 
@@ -23,17 +23,6 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
     @Override
     public int layoutId() {
         return R.layout.polyv_fragment_personchat;
-    }
-
-    @Override
-    public void loadDataDelay(boolean isFirst) {
-        super.loadDataDelay(isFirst);
-//        if (!isFirst)
-//            return;
-//        initCommonView();
-//        addQuestionTips();
-//        acceptEventMessage();
-//        listenListUnreadChange();
     }
 
     @Override
@@ -85,7 +74,7 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
 
     // <editor-fold defaultstate="collapsed" desc="聊天室事件监听及处理">
     private void acceptEventMessage() {
-        disposables.add(PolyvChatEventBus.get().toObservable(EventMessage.class).subscribe(new Consumer<EventMessage>() {
+        disposables.add(PolyvRxBus.get().toObservable(EventMessage.class).subscribe(new Consumer<EventMessage>() {
             @Override
             public void accept(EventMessage eventMessage) throws Exception {
                 String event = eventMessage.event;

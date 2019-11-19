@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.FileUtils;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackImg;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.commonui.R;
@@ -182,6 +183,11 @@ public class PolyvChatImageViewer extends FrameLayout {
         } else if (chatTypeItem.object instanceof PolyvSendLocalImgEvent) {
             PolyvSendLocalImgEvent sendLocalImgEvent = (PolyvSendLocalImgEvent) chatTypeItem.object;
             chatImgUrl = sendLocalImgEvent.getImageFilePath();
+        } else if (chatTypeItem.object instanceof PolyvChatPlaybackImg) {
+            PolyvChatPlaybackImg chatPlaybackImg = (PolyvChatPlaybackImg) chatTypeItem.object;
+            if (chatPlaybackImg.getContent() != null) {
+                chatImgUrl = chatPlaybackImg.getContent().getUploadImgUrl();
+            }
         }
         return chatImgUrl;
     }

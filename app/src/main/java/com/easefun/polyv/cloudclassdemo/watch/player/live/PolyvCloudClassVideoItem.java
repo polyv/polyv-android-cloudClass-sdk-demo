@@ -2,8 +2,8 @@ package com.easefun.polyv.cloudclassdemo.watch.player.live;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.CountDownTimer;
 import android.graphics.Bitmap;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
@@ -18,9 +18,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.TimeUtils;
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.IPolyvAuxiliaryVideoViewListenerEvent;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvPlayError;
@@ -56,6 +53,9 @@ import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.TimeUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -323,6 +323,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 controller.handsUpAuto();
 
                 stopLiveCountDown();
+
             }
 
             @Override
@@ -456,6 +457,9 @@ public class PolyvCloudClassVideoItem extends FrameLayout
             public void onNoLiveAtPresent() {
                 isNoLiveAtPresent = true;
                 ToastUtils.showShort("暂无直播");
+                if(controller != null){
+                    controller.onLiveEnd();
+                }
 
                 PolyvTeacherStatusInfo dataBean = new PolyvTeacherStatusInfo();
                 dataBean.setWatchStatus(LIVE_NO_STREAM);
@@ -497,6 +501,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
             }
         });
     }
+
 
     private void sendVideoStartMessage() {
         if(!isJoinLinkMic){

@@ -97,8 +97,11 @@ public class PolyvLiveInfoFragment extends Fragment {
             return;
         }
         String style = "style=\" width:100%;\"";
-        content = content.replaceAll("img src=\"//", "img src=\\\"http://");
+        content = content.replaceAll("img src=\"//", "img src=\\\"https://");
         content = content.replace("<img ", "<img " + style + " ");
+        content = content.replaceAll("<p>", "<p style=\"word-break:break-all\">");
+        content = content.replaceAll("<table>", "<table border='1' rules=all>");
+        content = content.replaceAll("<td>", "<td width=\"36\">");
 //        content = "<a href=\"https://live.polyv.cn/watch/110827\" target=\"_blank\" style>https://live.polyv.cn/watch/110827</a>&nbsp;<p><br></p><p><a href=\"https://www.baidu.com\" target=\"_blank\" style>www.baidu.com</a><br></p>";
         if (!TextUtils.isEmpty(content)) {
             if (wv_desc == null) {

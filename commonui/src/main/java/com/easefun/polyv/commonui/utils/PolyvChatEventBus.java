@@ -5,6 +5,11 @@ import com.jakewharton.rxrelay2.ReplayRelay;
 
 import io.reactivex.Observable;
 
+/**
+ * 发送聊天室状态请用{@link PolyvSingleRelayBus}
+ * 发送聊天消息请用{@link com.easefun.polyv.foundationsdk.rx.PolyvRxBus}
+ */
+@Deprecated
 public class PolyvChatEventBus {
     //xxxRelay的xxx等同于xxxSuject/xxxProcessor
     private final Relay<Object> mBus;

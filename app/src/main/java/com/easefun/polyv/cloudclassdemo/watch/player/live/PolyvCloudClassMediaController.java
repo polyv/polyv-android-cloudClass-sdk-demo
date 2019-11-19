@@ -816,10 +816,17 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         moreLayout.onChangeAudioOrVideoMode(mediaPlayMode);
     }
 
+
     public void onVideoViewPrepared(){
         if (isPaused){
             togglePauseBtn(true);
         }
+
+        polyvCloudClassPlayerHelper.startSEITimer();
+    }
+
+    public void onLiveEnd(){
+        polyvCloudClassPlayerHelper.stopSeiTimer();
     }
     // </editor-fold>
 

@@ -8,7 +8,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
-import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTVodProcessor;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTWebView;
 import com.easefun.polyv.businesssdk.model.ppt.PolyvPPTAuthentic;
 import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
@@ -23,8 +22,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
-import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.AUTHORIZATION_PPT_PAINT;
-import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.PPT_PAINT_STATUS;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICECONTROL;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEDRAW;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEID;
@@ -107,8 +104,15 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
             delayDisposes.add(PolyvRxTimer.delay(delayTime, new Consumer<Long>() {
                 @Override
                 public void accept(Long aLong) throws Exception {
-                    PolyvCommonLog.d(TAG, "receive ppt message: delay"+delayTime);
-                    sendWebMessage(polyvSocketMessageVO.getMessage());
+                    PolyvCommonLog.d(TAG, "receive ppt message: delay"+polyvSocketMessageVO.getMessage());
+                    String message = polyvSocketMessageVO.getMessage();
+                    if(delayTime >0){
+                        int lastPos = message.lastIndexOf("}");
+                        message = message.substring(0,lastPos)+",\"delayTime\":"+delayTime+"}";
+                    }
+
+                    PolyvCommonLog.d(TAG, "receive ppt message: delay"+message);
+                    sendWebMessage(message);
                 }
             }));
         }

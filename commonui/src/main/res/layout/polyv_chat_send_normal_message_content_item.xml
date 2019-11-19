@@ -9,6 +9,7 @@
     >
 
     <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
+        android:textIsSelectable="true"
         android:id="@+id/gtv_send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

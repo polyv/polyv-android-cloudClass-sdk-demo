@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e9ebf5">
+
+    <com.easefun.polyv.commonui.widget.PolyvChatRecyclerView
+        android:id="@+id/chat_message_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/fl_bottom"
+        android:overScrollMode="never"
+        android:paddingBottom="10dp" />
+
+    <com.easefun.polyv.commonui.widget.PolyvPressedHalfBgView
+        android:id="@+id/tv_unread"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fl_bottom"
+        android:background="#d04a90e2"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="有更多新消息，点击查看"
+        android:textColor="#ffffff"
+        android:textSize="14sp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <FrameLayout
+        android:id="@+id/fl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:id="@+id/ll_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/ic_chat_edit_group"
+                layout="@layout/polyv_chat_edit_group"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
+
+            <include
+                android:id="@+id/ic_chat_emo_list_layout"
+                layout="@layout/polyv_chat_emo_list_layout"
+                android:layout_width="match_parent"
+                android:layout_height="236dp" />
+
+            <include
+                android:id="@+id/ic_chat_add_more_layout"
+                layout="@layout/polyv_chat_add_more"
+                android:layout_width="match_parent"
+                android:layout_height="106dp" />
+        </LinearLayout>
+    </FrameLayout>
+</RelativeLayout>

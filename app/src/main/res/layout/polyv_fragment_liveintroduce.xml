@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<RelativeLayout
     android:id="@+id/rl_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -58,39 +62,50 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:maxEms="8"
+                    android:maxEms="11"
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:id="@+id/tv_publisher"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="30dp"
                     tools:text="主持人主持人主持人主持人主持人主持人"
                     android:textColor="@color/text_gray"
                     android:textSize="12sp"
                     android:drawableLeft="@drawable/polyv_icon_publisher"
                     android:drawablePadding="6dp" />
 
-                <TextView
-                    android:id="@+id/tv_likes"
+                <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="30dp"
-                    android:text="12"
-                    android:textColor="@color/text_gray"
-                    android:textSize="12sp"
-                    android:drawableLeft="@drawable/polyv_icon_praise"
-                    android:drawablePadding="6dp" />
+                    android:layout_weight="3">
 
-                <TextView
-                    android:id="@+id/tv_viewer"
+                    <TextView
+                        android:id="@+id/tv_likes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:drawableLeft="@drawable/polyv_icon_praise"
+                        android:drawablePadding="6dp"
+                        android:text="12"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp" />
+                </FrameLayout>
+
+                <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12"
-                    android:textColor="@color/text_gray"
-                    android:textSize="12sp"
-                    android:drawableLeft="@drawable/polyv_icon_viewer"
-                    android:drawablePadding="6dp" />
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/tv_viewer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/polyv_icon_viewer"
+                        android:drawablePadding="6dp"
+                        android:text="12"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp" />
+                </FrameLayout>
 
             </LinearLayout>
 
@@ -139,3 +154,5 @@
     </RelativeLayout>
 
 </RelativeLayout>
+
+</ScrollView>

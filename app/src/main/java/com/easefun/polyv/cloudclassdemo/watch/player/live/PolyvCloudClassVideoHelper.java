@@ -37,6 +37,7 @@ import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketSliceControlVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketSliceIdVO;
 import com.easefun.polyv.cloudclass.model.PolyvTeacherStatusInfo;
+import com.easefun.polyv.cloudclass.video.PolyvCloudClassSeiManager;
 import com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.IPolyvHomeProtocol;
@@ -87,6 +88,7 @@ import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTPro
 import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.CHAT_LOGIN;
 import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.ERASE_STATUS;
 import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.PPT_PAINT_STATUS;
+import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.SETSEIDATA;
 import static com.easefun.polyv.businesssdk.model.ppt.PolyvPPTAuthentic.PermissionType.VOICE;
 import static com.easefun.polyv.businesssdk.sp.PolyvPreConstant.LINK_MIC_TOKEN;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICECONTROL;
@@ -126,7 +128,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private boolean joinSuccess, subShowPPT;//连麦是否显示再大屏
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private Disposable viewerJoinLinkDispose;
+    private Disposable viewerJoinLinkDispose,seiDispose;
 
     // 需请求的权限组
     private String[] permissions = new String[]{
@@ -263,6 +265,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                     ActivityUtils.getTopActivity().finish();
                 }
             }
+
         });
 
     }
@@ -852,6 +855,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             viewerJoinLinkDispose.dispose();
             viewerJoinLinkDispose = null;
         }
+
     }
 
     @Override
@@ -1419,6 +1423,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         cancleJoinListTimer();
         clearLinkStatus();
         clearStatus();
+        stopSeiTimer();
     }
 
     private void clearStatus() {
@@ -1630,6 +1635,36 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     public boolean isSupportRTC() {
         return supportRTC;
     }
+
+    public void startSEITimer() {
+        if(seiDispose != null){
+            seiDispose.dispose();
+        }
+        seiDispose = PolyvRxTimer.timer(1500, new Consumer<Long>() {
+            @Override
+            public void accept(Long aLong) throws Exception {
+                if (joinSuccess || videoView == null || !videoView.isPlaying()) {
+                    return;
+                }
+                long ts = PolyvCloudClassSeiManager.getRTCSeiInfo(videoView.getIjkMediaPlayer());
+                long cache = videoView.getIjkMediaPlayer().getVideoCachedDuration();
+                ts = ts - cache;
+                PolyvCommonLog.d(TAG, "sei ts :" + ts+"  cache:"+videoView.getIjkMediaPlayer().getVideoCachedDuration());
+                if (ts <= 0) {
+                    return;
+                }
+                pptView.sendWebMessage(SETSEIDATA, "{\"time\":" + ts + "}");
+            }
+        });
+    }
+
+    public void stopSeiTimer(){
+        if(seiDispose != null){
+            seiDispose.dispose();
+            seiDispose = null;
+        }
+    }
+
 
     // </editor-fold>
 }

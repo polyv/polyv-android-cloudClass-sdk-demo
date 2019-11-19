@@ -80,9 +80,7 @@ public class PolyvChatRecyclerView extends RecyclerView {
         unreadView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unreadView.setVisibility(View.GONE);
-                unreadCount = 0;
-                callOnUnreadChange(unreadCount);
+                hideUnredaView();
                 if (getAdapter() != null) {
                     if ((getAdapter().getItemCount() - 1) - ((LinearLayoutManager) getLayoutManager()).findLastVisibleItemPosition() <= 10)
                         smoothScrollToPosition(getAdapter().getItemCount() - 1);
@@ -91,6 +89,16 @@ public class PolyvChatRecyclerView extends RecyclerView {
                 }
             }
         });
+    }
+
+    public void hideUnredaView() {
+        if (unreadView != null) {
+            unreadView.setVisibility(View.GONE);
+        }
+        int tempUnreadCount = unreadCount;
+        unreadCount = 0;
+        if (tempUnreadCount != 0)
+            callOnUnreadChange(unreadCount);
     }
 
     public void addOnScrollListener() {
@@ -111,11 +119,7 @@ public class PolyvChatRecyclerView extends RecyclerView {
                         }
                     }
                     if (!lastScrollVertically_One) {
-                        if (unreadView != null) {
-                            unreadView.setVisibility(View.GONE);
-                        }
-                        unreadCount = 0;
-                        callOnUnreadChange(unreadCount);
+                        hideUnredaView();
                     }
                 }
             }

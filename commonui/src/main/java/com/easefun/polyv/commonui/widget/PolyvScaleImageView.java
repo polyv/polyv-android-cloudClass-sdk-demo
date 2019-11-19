@@ -64,7 +64,9 @@ public class PolyvScaleImageView extends AppCompatImageView {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
                 if (canScale()) {
-                    if (getIvScaleX() < midScaleX) {
+                    if (getIvScaleX() < scaleX) {
+                        reset();
+                    } else if (getIvScaleX() < midScaleX) {
                         scaleMatrix.postScale(midScaleX / getIvScaleX(), midScaleX / getIvScaleX(), getWidth() / 2.0f, getHeight() / 2.0f);
                         setImageMatrix(scaleMatrix);
                     } else {
