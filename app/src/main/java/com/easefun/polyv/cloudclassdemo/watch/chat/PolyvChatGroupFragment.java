@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.easefun.polyv.businesssdk.sub.gif.RelativeImageSpan;
@@ -28,6 +27,7 @@ import com.easefun.polyv.cloudclass.chat.event.PolyvKickEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLikesEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLoginEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLoginRefuseEvent;
+import com.easefun.polyv.cloudclass.chat.event.PolyvReloginEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvRemoveContentEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvRemoveHistoryEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvSpeakEvent;
@@ -57,7 +57,6 @@ import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +137,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
             @Override
             public void onClick(View v) {
                 onlyHostSwitch.setSelected(!onlyHostSwitch.isSelected());
-                toast.makeText(getContext(), onlyHostSwitch.isSelected() ? "只看讲师信息" : "查看所有人信息", PolyvToast.LENGTH_LONG).show(true);
+                toast.makeText(getContext(), onlyHostSwitch.isSelected() ? "只看讲师和我" : "查看所有人", PolyvToast.LENGTH_LONG).show(true);
                 chatListAdapter.setChatTypeItems(onlyHostSwitch.isSelected() ? teacherItems : chatTypeItems);
                 chatListAdapter.notifyDataSetChanged();
                 chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
@@ -803,6 +802,19 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                             case PolyvChatManager.EVENT_UNSHIELD:
                                 PolyvUnshieldEvent unshieldEvent = PolyvEventHelper.getEventObject(PolyvUnshieldEvent.class, message, event);
                                 break;
+                            case PolyvChatManager.EVENT_RELOGIN:
+                                final PolyvReloginEvent reloginEvent = PolyvEventHelper.getEventObject(PolyvReloginEvent.class, message, event);
+                                if (reloginEvent != null) {
+                                    disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (chatManager.userId.equals(reloginEvent.getUser().getUserId())) {
+                                                PolyvBaseActivity.showReloginTip(getActivity(), reloginEvent.getChannelId(), "该账号已在其他设备登录！");
+                                            }
+                                        }
+                                    }));
+                                }
+                                break;
                         }
                     }
 
@@ -850,16 +862,17 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     }
 
     private boolean isOnlyHostType(String userType, String userId) {
-        //只看讲师类型，包括管理员、讲师、助教，自己
+        //只看讲师类型，包括管理员、讲师、助教、嘉宾，自己
         return isTeacherType(userType) || chatManager.userId.equals(userId);
     }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="is、has方法">
     public static boolean isTeacherType(String userType) {
-        //这里把管理员、讲师、助教都视为只看讲师的类型
+        //这里把管理员、讲师、助教、嘉宾都视为只看讲师的类型
         return PolyvChatManager.USERTYPE_MANAGER.equals(userType)
                 || PolyvChatManager.USERTYPE_TEACHER.equals(userType)
+                || PolyvChatManager.USERTYPE_GUEST.equals(userType)
                 || PolyvChatManager.USERTYPE_ASSISTANT.equals(userType);
     }
     // </editor-fold>

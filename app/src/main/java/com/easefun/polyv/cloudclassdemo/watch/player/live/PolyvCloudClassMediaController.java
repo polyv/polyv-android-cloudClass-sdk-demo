@@ -18,7 +18,6 @@ import android.widget.MediaController;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.model.video.PolyvBitrateVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvDefinitionVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvLiveLinesVO;
@@ -36,6 +35,7 @@ import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 
 import java.util.List;
 
@@ -294,7 +294,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 
 
     public void updateMoreLayout(int pos) {
-            moreLayout.updateLinesStatus(pos);
+        moreLayout.updateLinesStatus(pos);
     }
 
     private void hideBitPopup() {
@@ -361,6 +361,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     public void release() {
 
     }
+
     @Override
     public void addHelper(PolyvCloudClassVideoHelper polyvCloudClassPlayerHelper) {
         this.polyvCloudClassPlayerHelper = polyvCloudClassPlayerHelper;
@@ -391,6 +392,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     public void onLongBuffering(String tip) {
         showBitrateChangeView();
     }
+
     @Override
     public void hide() {
         super.hide();
@@ -401,9 +403,9 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     @Override
     public void show() {
         super.show();
-        if(polyvCloudClassPlayerHelper.isSupportRTC()
+        if (polyvCloudClassPlayerHelper.isSupportRTC()
                 && polyvCloudClassPlayerHelper.isJoinLinkMick()
-                && PolyvScreenUtils.isLandscape(context)){
+                && PolyvScreenUtils.isLandscape(context)) {
             topBack.setVisibility(VISIBLE);
         }
     }
@@ -439,7 +441,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
     public void showCameraView() {
-        if(polyvCloudClassPlayerHelper != null  && polyvCloudClassPlayerHelper.isJoinLinkMick()){
+        if (polyvCloudClassPlayerHelper != null && polyvCloudClassPlayerHelper.isJoinLinkMick()) {
             return;
         }
         PolyvTeacherStatusInfo detail = new PolyvTeacherStatusInfo();
@@ -465,6 +467,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             showPPTSubView = !showPPTSubView;
         }
     }
+
     //关闭小窗口后 更新控制栏
     public void updateControllerWithCloseSubView() {
         showCamer = true;
@@ -492,10 +495,11 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
     public void handsUpAuto() {
-        if(polyvCloudClassPlayerHelper.isParticipant() && !polyvCloudClassPlayerHelper.isJoinLinkMick()){
+        if (polyvCloudClassPlayerHelper.isParticipant() && !polyvCloudClassPlayerHelper.isJoinLinkMick()) {
             performClickLinkMic();
         }
     }
+
     //将ppt显示在主屏位置 因为在连麦后 要主动切换ppt到主屏
     public void switchPPTToMainScreen() {
         if (!showPPTSubView) {//如果已经显示在主屏了 不再执行此逻辑
@@ -541,21 +545,24 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
     /**
-     * 更新连麦状态
+     * 更新连麦状态为：准备下麦/准备连麦。
+     * <p>
      *
-     * @param link
+     * @param unLinkState true表示改变当前状态为准备下麦，false表示改变当前状态为准备上麦
      */
-    public void updateLinkMicStatus(boolean link) {
-
-        videoHandsUpPort.setSelected(link);
-        videoHandsUpLand.setSelected(link);
-
-        enableLinkBtn(true);
+    public void updateLinkBtn2Ready(boolean unLinkState) {
+        videoHandsUpPort.setSelected(unLinkState);
+        videoHandsUpLand.setSelected(unLinkState);
     }
 
-    public void enableLinkBtn(boolean enable) {
-        videoHandsUpPort.setEnabled(enable);
-        videoHandsUpLand.setEnabled(enable);
+    /**
+     * 是否启用连麦按钮
+     *
+     * @param enableForLinkMicOpen 当讲师打开连麦，则传true表示启用连麦按钮；否则传false。
+     */
+    public void enableLinkBtn(boolean enableForLinkMicOpen) {
+        videoHandsUpPort.setEnabled(enableForLinkMicOpen);
+        videoHandsUpLand.setEnabled(enableForLinkMicOpen);
     }
 
     @Override
@@ -565,7 +572,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 //            videoHandsUpPort.setVisibility(visiable);
 //        }
 
-        if(joinLinkMic){
+        if (joinLinkMic) {
             return;
         }
         if (videoHandsUpLand != null) {
@@ -609,14 +616,14 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 
         videoRefreshLand.setVisibility(VISIBLE);
         videoRefreshPort.setVisibility(VISIBLE);
-        if (isPaused){
+        if (isPaused) {
             togglePauseBtn(true);
         }
 
         videoDanmuLand.setVisibility(VISIBLE);
         videoDanmuPort.setVisibility(VISIBLE);
 
-        if(showPPT){
+        if (showPPT) {
             videoScreenSwitchLand.setVisibility(VISIBLE);
             videoPptChangeSwitchPort.setVisibility(VISIBLE);
         }
@@ -739,7 +746,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         }
 
         void refreshDanmuStatus() {
-            if(joinLinkMic){//连麦成功后 不执行弹幕逻辑
+            if (joinLinkMic) {//连麦成功后 不执行弹幕逻辑
                 return;
             }
             if (isServerDanmuOpen) {
@@ -784,7 +791,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     public interface OnClickOpenStartSendDanmuListener {
         void onStartSendDanmu();
     }
-        // </editor-fold>
+    // </editor-fold>
 
 
     // <editor-fold defaultstate="collapsed" desc="按钮控制相关方法">
@@ -794,13 +801,12 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
     /**
-     *
      * @param justChangeUi 是否只改变UI，如果为false，则会进行真正的暂停或者重新拉流。
      */
     private void togglePauseBtn(boolean justChangeUi) {
-        isPaused=!isPaused;
+        isPaused = !isPaused;
         boolean toPause = isPaused;
-        if (!justChangeUi){
+        if (!justChangeUi) {
             if (toPause) {
                 polyvVideoView.pause();
             } else {
@@ -817,15 +823,15 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     }
 
 
-    public void onVideoViewPrepared(){
-        if (isPaused){
+    public void onVideoViewPrepared() {
+        if (isPaused) {
             togglePauseBtn(true);
         }
 
         polyvCloudClassPlayerHelper.startSEITimer();
     }
 
-    public void onLiveEnd(){
+    public void onLiveEnd() {
         polyvCloudClassPlayerHelper.stopSeiTimer();
     }
     // </editor-fold>
@@ -908,11 +914,11 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         videoHandsUpPort.performClick();
     }
 
-    public void performClickCamera(){
-        if(ScreenUtils.isPortrait()){
+    public void performClickCamera() {
+        if (ScreenUtils.isPortrait()) {
             videoPptChangeSwitchPort.performClick();
             videoScreenSwitchLand.setSelected(!videoScreenSwitchLand.isSelected());
-        }else {
+        } else {
             videoScreenSwitchLand.performClick();
             videoPptChangeSwitchPort.setSelected(!videoPptChangeSwitchPort.isSelected());
         }

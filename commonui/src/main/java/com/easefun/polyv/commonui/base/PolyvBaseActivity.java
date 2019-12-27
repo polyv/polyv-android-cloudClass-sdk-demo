@@ -49,6 +49,21 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
                 .setCancelable(false)
                 .show();
     }
+
+    public static boolean showReloginTip(final Activity activity, String channelId, String... message) {
+        new AlertDialog.Builder(activity)
+                .setTitle("温馨提示")
+                .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        activity.finish();
+                    }
+                })
+                .setCancelable(false)
+                .show();
+        return true;
+    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="处理异常启动时的相关方法">

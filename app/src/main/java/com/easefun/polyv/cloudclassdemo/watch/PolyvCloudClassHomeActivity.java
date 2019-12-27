@@ -340,7 +340,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     // <editor-fold defaultstate="collapsed" desc="初始化">
     private void initialStudentIdAndNickName() {
         if(!PolyvVClassGlobalConfig.IS_VCLASS){
-            viewerId = "" + Build.SERIAL;
+            viewerId = "" +"viewer123";
             viewerName = "学员" + viewerId;
         }else {
             //初始化观众id和观众昵称，用于统计数据
@@ -352,6 +352,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             }
             viewerName = PolyvVClassGlobalConfig.username;
         }
+
+        PolyvVClassGlobalConfig.userId = userId;
 
     }
 

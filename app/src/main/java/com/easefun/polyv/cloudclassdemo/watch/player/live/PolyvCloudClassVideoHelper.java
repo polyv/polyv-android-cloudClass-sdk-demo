@@ -63,6 +63,7 @@ import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 import com.easefun.polyv.linkmic.model.PolyvLinkMicJoinStatus;
 import com.easefun.polyv.linkmic.model.PolyvLinkMicSwitchView;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ActivityUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
@@ -96,7 +97,7 @@ import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEID;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.OPEN_MICROPHONE;
 import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.EVENT_LOGIN;
 import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.EVENT_MUTE_USER_MICRO;
-import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.EVENT_RELOGIN;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.EVENT_REJOIN_MIC;
 import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.O_TEACHER_INFO;
 import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.SE_JOIN_LEAVE;
 import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.SE_JOIN_REQUEST;
@@ -326,20 +327,21 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             }
             return;
         }
-        muteVideoView();
+//        muteVideoView();
     }
 
     private void muteVideoView() {
         //防止连麦以后静音 然后退到后台又静音得问题
-        if (videoView != null && videoView.isPlaying()) {
-            videoViewVolume = videoView.getVolume();
-            videoView.setVolume(0);
+        if (videoView != null && videoView.isPlaying() && videoView.getIjkMediaPlayer() != null) {
+//            videoViewVolume = videoView.getVolume();
+//            videoView.setVolume(0);
+            videoView.getIjkMediaPlayer().setVolume(0, 0);
         }
     }
 
     @Override
     public void resume() {
-        openVideoViewSound();
+//        openVideoViewSound();
         if (joinSuccess) {
             return;
         }
@@ -401,7 +403,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         if(!TextUtils.isEmpty(token)){
             PolyvLinkMicToken linkMicToken = PolyvGsonUtil.fromJson(PolyvLinkMicToken.class,token);
             if((System.currentTimeMillis() - linkMicToken.getTs()) < TOKEN_VALIDATE){
-                polyvChatManager.sendScoketMessage(EVENT_RELOGIN,linkMicToken.getToken());
+                polyvChatManager.sendScoketMessage(EVENT_REJOIN_MIC,linkMicToken.getToken());
             }
         }
     }
@@ -520,7 +522,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     public void processJoinResponseMessage() {
         PolyvLinkMicWrapper.getInstance().joinChannel("");
-        controller.updateLinkMicStatus(true);
+        controller.enableLinkBtn(true);
+        controller.updateLinkBtn2Ready(true);
         startLinkTimer(false);
     }
 
@@ -727,7 +730,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             S_HANDLER.post(new Runnable() {
                 @Override
                 public void run() {
-                    controller.updateLinkMicStatus(false);
+                    controller.updateLinkBtn2Ready(false);
                     controller.enableLinkBtn(true);
                 }
             });
@@ -818,7 +821,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                 @Override
                 public void run() {
                     ToastUtils.showLong("关闭连麦");
-                    controller.updateLinkMicStatus(false);
+                    controller.updateLinkBtn2Ready(false);
                     startLinkTimer(true);
                     linkMicLayout.setKeepScreenOn(false);
                 }
@@ -837,10 +840,12 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             public void accept(Long l) throws Exception {
                 if (leave) {
                     PolyvLinkMicWrapper.getInstance().leaveChannel();
-                    controller.updateLinkMicStatus(false);
+                    controller.updateLinkBtn2Ready(false);
+                    controller.enableLinkBtn(false);
                 } else {
 //                    PolyvLinkMicWrapper.getInstance().joinChannel("");
-                    controller.updateLinkMicStatus(true);
+                    controller.updateLinkBtn2Ready(true);
+                    controller.enableLinkBtn(true);
                 }
             }
         });

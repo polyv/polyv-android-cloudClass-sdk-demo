@@ -5,14 +5,17 @@ import android.widget.Toast;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvQuestionMessage;
 import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
+import com.easefun.polyv.cloudclass.chat.event.PolyvReloginEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvTAnswerEvent;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.commonui.R;
+import com.easefun.polyv.commonui.base.PolyvBaseActivity;
 import com.easefun.polyv.commonui.utils.PolyvTextImageLoader;
 import com.easefun.polyv.commonui.utils.PolyvToast;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -93,6 +96,19 @@ public class PolyvChatPrivateFragment extends PolyvChatBaseFragment {
                                 //把带表情的信息解析保存下来
                                 tAnswerEvent.setObjects(PolyvTextImageLoader.messageToSpan(tAnswerEvent.getContent(), ConvertUtils.dp2px(14), false, getContext()));
                             }
+                        }
+                        break;
+                    case PolyvChatManager.EVENT_RELOGIN:
+                        final PolyvReloginEvent reloginEvent = PolyvEventHelper.getEventObject(PolyvReloginEvent.class, message, event);
+                        if (reloginEvent != null) {
+                            disposables.add(AndroidSchedulers.mainThread().createWorker().schedule(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (chatManager.userId.equals(reloginEvent.getUser().getUserId())) {
+                                        PolyvBaseActivity.showReloginTip(getActivity(), reloginEvent.getChannelId(), "该账号已在其他设备登录！");
+                                    }
+                                }
+                            }));
                         }
                         break;
                 }

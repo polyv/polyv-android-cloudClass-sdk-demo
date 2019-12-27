@@ -15,10 +15,8 @@ import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
-import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -40,7 +38,7 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     protected PolyvPPTWebView polyvPPTWebView;
     protected ImageView pptLoadingView;
     private Disposable socketDispose;
-    private CompositeDisposable delayDisposes = new CompositeDisposable();
+//    private CompositeDisposable delayDisposes = new CompositeDisposable();
 
     public PolyvPPTView(Context context) {
         this(context, null);
@@ -101,9 +99,9 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
                 ONSLICEOPEN.equals(event) || ONSLICEID.equals(event)) {
             PolyvCommonLog.d(TAG, "receive ppt message:"+event);
             hideLoading();
-            delayDisposes.add(PolyvRxTimer.delay(delayTime, new Consumer<Long>() {
-                @Override
-                public void accept(Long aLong) throws Exception {
+//            delayDisposes.add(PolyvRxTimer.delay(delayTime, new Consumer<Long>() {
+//                @Override
+//                public void accept(Long aLong) throws Exception {
                     PolyvCommonLog.d(TAG, "receive ppt message: delay"+polyvSocketMessageVO.getMessage());
                     String message = polyvSocketMessageVO.getMessage();
                     if(delayTime >0){
@@ -113,8 +111,8 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
 
                     PolyvCommonLog.d(TAG, "receive ppt message: delay"+message);
                     sendWebMessage(message);
-                }
-            }));
+//                }
+//            }));
         }
     }
 
@@ -161,10 +159,10 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
             socketDispose = null;
         }
 
-        if (delayDisposes != null) {
-            delayDisposes.dispose();
-            delayDisposes = null;
-        }
+//        if (delayDisposes != null) {
+//            delayDisposes.dispose();
+//            delayDisposes = null;
+//        }
     }
 
     @Override

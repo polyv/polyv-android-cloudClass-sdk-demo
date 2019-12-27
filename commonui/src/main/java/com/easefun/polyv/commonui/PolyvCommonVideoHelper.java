@@ -49,7 +49,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     protected PolyvAuxiliaryVideoview subVideoview;
     protected Q controller;
     protected View loadingView, noStreamView, audioModeView,screenShotView;
-    protected static int videoViewVolume;
+//    protected static int videoViewVolume;
 
     protected  static final Handler S_HANDLER;
     protected PolyvPermissionManager permissionManager;
@@ -262,14 +262,14 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
 
     public void initVolume(){
-        this.videoViewVolume = videoView.getVolume();
+//        this.videoViewVolume = videoView.getVolume();
     }
 
     public void restartPlay() {
         if (playOption == null) {
             return;
         }
-        openVideoViewSound();
+//        openVideoViewSound();
         startPlay(playOption);
     }
 
@@ -281,8 +281,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
     
     protected void openVideoViewSound() {
-        if(videoView != null && videoViewVolume >0){
-            videoView.setVolume(videoViewVolume);
+        if(videoView != null/* && videoViewVolume >0*/ && videoView.getIjkMediaPlayer() != null){
+//            videoView.setVolume(videoViewVolume);
+            videoView.getIjkMediaPlayer().setVolume(1, 1);
         }
     }
 
@@ -314,9 +315,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     public void destory() {
         PolyvCommonLog.d(TAG, "destroy helper video");
-        if(videoViewVolume >0){
-            PolyvControlUtils.setVolume(context, videoViewVolume);
-        }
+//        if(videoViewVolume >0){
+//            PolyvControlUtils.setVolume(context, videoViewVolume);
+//        }
 
         videoView.destroy();
         controller.destroy();

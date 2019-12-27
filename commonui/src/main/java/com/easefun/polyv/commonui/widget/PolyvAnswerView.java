@@ -225,9 +225,6 @@ public class PolyvAnswerView extends FrameLayout {
                     @Override
                     public void run() {
                         PolyvQuestionSResult polyvQuestionSResult = PolyvGsonUtil.fromJson(PolyvQuestionSResult.class, msg);
-                        if (polyvQuestionSResult != null && "S".equals(polyvQuestionSResult.getType())) {
-                            return;
-                        }
                         curQuestionId = notNull(polyvQuestionSResult).getQuestionId();
                         isQuestionAnswer = false;
                         lockToPortrait();//讲师发题
@@ -244,9 +241,6 @@ public class PolyvAnswerView extends FrameLayout {
                         PolyvQuestionResultVO socketVO;
                         socketVO = PolyvGsonUtil.fromJson(PolyvQuestionResultVO.class, msg);
                         if (socketVO == null) {
-                            return;
-                        }
-                        if (socketVO.getResult() != null && "S".equals(socketVO.getResult().getType())) {
                             return;
                         }
                         lockToPortrait();//答题结果
