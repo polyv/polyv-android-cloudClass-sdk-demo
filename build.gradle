@@ -33,7 +33,7 @@ ext {
     minSdkVersion = 16
     targetSdkVersion = 27
     versionCode = 75
-    versionName = "0.7.5"
+    versionName = "0.7.5.1"
 
     support = [
             appCompatV7: 'com.android.support:appcompat-v7:25.3.1',
