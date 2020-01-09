@@ -27,6 +27,7 @@ import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLoginEvent;
+import com.easefun.polyv.cloudclass.chat.event.PolyvSendCupEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvTeacherInfo;
 import com.easefun.polyv.cloudclass.chat.event.linkmic.PolyvJoinLeaveSEvent;
 import com.easefun.polyv.cloudclass.chat.event.linkmic.PolyvJoinRequestSEvent;
@@ -124,7 +125,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private static final String JOIN_DEFAULT_TYPE = "JOIN_DEFAULT_TYPE";
 
     protected PolyvChatManager polyvChatManager;
-    private Disposable linkJoinTimer, getLinkMicJoins;
+    private Disposable linkJoinTimer, getLinkMicJoins,delayToJoinAsParticipant;
     private static final int REQUEST_CODE = 612;
     private boolean joinSuccess, subShowPPT;//连麦是否显示再大屏
 
@@ -193,6 +194,8 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                 .opstrs(ops)
                 .addRequestCode(REQUEST_CODE)
                 .setPermissionsListener(this);
+
+        registerSocketEventListener();
     }
 
     @Override
@@ -551,6 +554,20 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         getLinkMicJoins(false);
     }
 
+    public String getSessionId() {
+        if (videoView != null && videoView.getModleVO() != null && videoView.getModleVO().getChannelSessionId() != null) {
+            return videoView.getModleVO().getChannelSessionId();
+        }
+        return sessionId;
+    }
+
+    public String getRoomId() {
+        if (videoView != null && videoView.getModleVO() != null && videoView.getModleVO().getChannelId() != 0) {
+            return videoView.getModleVO().getChannelId() + "";
+        }
+        return roomId;
+    }
+
     /**
      * 此处版本迭代后  没有通知 协议表现发生变化
      * version 1：该协议用于客户端交换摄像头  sdk进行响应
@@ -642,7 +659,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                         }
                     }
                 },
-                roomId, sessionId,true
+                getRoomId(), getSessionId(),true
         );
     }
 
@@ -812,6 +829,30 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         }
     }
 
+    private void registerSocketEventListener() {
+        PolyvChatManager.getInstance().addNewMessageListener(new PolyvNewMessageListener() {
+            @Override
+            public void onNewMessage(String message, String event) {
+                if (PolyvChatManager.EVENT_SEND_CUP.equals(event)) {
+                    PolyvSendCupEvent sendCupEvent = PolyvEventHelper.getEventObject(PolyvSendCupEvent.class, message, event);
+                    if (sendCupEvent != null && sendCupEvent.getOwner() != null && sendCupEvent.getOwner().getUserId() != null) {
+                        if (joinRequests != null) {
+                            for (PolyvJoinInfoEvent joinInfoEvent : joinRequests.values()) {
+                                if (sendCupEvent.getOwner().getUserId().equals(joinInfoEvent.getLoginId())) {
+                                    joinInfoEvent.setCupNum(sendCupEvent.getOwner().getNum());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onDestroy() {
+            }
+        });
+    }
+
     private void processLeaveMessage(String userId) {
 
         if (userId.equals(PolyvLinkMicWrapper.getInstance().getLinkMicUid())) {
@@ -865,7 +906,9 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     @Override
     public void onDestroy() {
-
+        if (delayToJoinAsParticipant!=null){
+            delayToJoinAsParticipant.dispose();
+        }
         PolyvDemoClient.getInstance().onDestory();
     }
 
@@ -997,6 +1040,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                     long longUid = uid & 0xFFFFFFFFL;
                     if(!isParticipant){
                         polyvLinkMicAdapter.addOwner(longUid + "", joinRequests.get(longUid + ""));
+                        linkMicParent.updateBottomController(true);
                     }else {
                         linkMicParent.updateBottomController(false);
                         PolyvLinkMicWrapper.getInstance().muteLocalAudio(true);
@@ -1056,6 +1100,9 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                     controller.onLeaveLinkMic();
                     videoView.setNeedGestureDetector(true);
 
+                    joinRequests.clear();
+                    noCachesIds.clear();
+
                     //更新聊天室得位置
                     updateChatLocation(false);
                 }
@@ -1086,7 +1133,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             S_HANDLER.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (TextUtils.isEmpty(roomId)) {
+                    if (TextUtils.isEmpty(getRoomId())) {
                         ToastUtils.showLong("请重新登录 获取正确状态");
                         leaveChannel();
                         return;
@@ -1204,6 +1251,16 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     }
 
     public void processUserOffline(String longUid) {
+        PolyvJoinInfoEvent joinInfoEvent = joinRequests.get(longUid);
+        if (joinInfoEvent != null) {
+            PolyvJoinInfoEvent.ClassStatus classStatus = joinInfoEvent.getClassStatus();
+            if (classStatus == null) {
+                classStatus = new PolyvJoinInfoEvent.ClassStatus();
+            }
+            classStatus.setVoice(0);
+            joinInfoEvent.setClassStatus(classStatus);
+        }
+
         int pos = polyvLinkMicAdapter.getJoinsPos(longUid);
 
         //主屏的连麦者被移除  讲师移到主屏
@@ -1269,7 +1326,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     }
 
     private void sendJoinSuccess() {
-        polyvChatManager.sendJoinSuccessMessage(sessionId, PolyvLinkMicWrapper.getInstance().getLinkMicUid());
+        polyvChatManager.sendJoinSuccessMessage(getSessionId(), PolyvLinkMicWrapper.getInstance().getLinkMicUid());
     }
 
     private void showSubView() {
@@ -1369,7 +1426,13 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
         if(isParticipant){
            if(!joinSuccess){
-               joinLinkByParticipant();
+               //延迟2.5秒了再以参与者身份加入连麦。
+               delayToJoinAsParticipant=PolyvRxTimer.delay(2500, new Consumer<Object>() {
+                   @Override
+                   public void accept(Object o) throws Exception {
+                       joinLinkByParticipant();
+                   }
+               });
            }else {
                controller.showStopLinkDialog(joinSuccess,false);
            }
@@ -1440,6 +1503,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     private void clearLinkStatus() {
         if (joinSuccess) {
+            leaveChannel();
             PolyvLinkMicWrapper.getInstance().leaveChannel();
         } else {
             leaveChannel();

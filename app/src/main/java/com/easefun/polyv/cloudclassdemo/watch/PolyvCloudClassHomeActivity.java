@@ -610,6 +610,42 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             }
 
             @Override
+            public void callOnLotteryWinNew(String lotteryId, String winnerCode, String viewerId,
+                                            String receiveInfo,String seesionId) {
+                PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
+                                .postLotteryWinnerInfoNew(channelId, lotteryId, winnerCode, PolyvCloudClassHomeActivity.this.viewerId, receiveInfo,seesionId),
+                        String.class, new PolyvrResponseCallback<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                LogUtils.d("抽奖信息上传成功" + s);
+                            }
+
+                            @Override
+                            public void onFailure(PolyvResponseBean<String> responseBean) {
+                                super.onFailure(responseBean);
+                                LogUtils.e("抽奖信息上传失败" + responseBean);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                super.onError(e);
+                                LogUtils.e("抽奖信息上传失败");
+                                if (e instanceof HttpException) {
+                                    try {
+                                        ResponseBody errorBody = ((HttpException) e).response().errorBody();
+                                        if (errorBody != null) {
+                                            LogUtils.e(errorBody.string());
+                                        }
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+            }
+
+
+            @Override
             public void callOnAbandonLottery() {
                 PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
                                 .postLotteryAbandon(channelId, viewerId), String.class,
@@ -930,6 +966,10 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
                         setupChatPlaybackFragment();
                         refreshChatPagerAdapter();
+
+                        if (isParticipant && polyvLiveClassDetailVO.isViewerSignalEnabled() && linkMicParent != null) {
+                            linkMicParent.showLookAtMeView();
+                        }
                     }
                 }, new Consumer<Throwable>() {
                     @Override

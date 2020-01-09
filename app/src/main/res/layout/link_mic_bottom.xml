@@ -44,43 +44,54 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
+
     <LinearLayout
         android:gravity="center"
         android:orientation="horizontal"
         android:id="@+id/link_mic_bottom_controller"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
             android:visibility="gone"
-            android:layout_margin="12dp"
+            android:layout_weight="1"
             android:id="@+id/controller_brush"
             android:src="@drawable/polyv_controller_link_brush_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageView
-            android:layout_margin="12dp"
+            android:layout_weight="1"
             android:id="@+id/controller_mic"
             android:src="@drawable/polyv_controller_link_mic_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageView
-            android:layout_margin="12dp"
+            android:layout_weight="1"
             android:id="@+id/controller_camera"
             android:src="@drawable/polyv_controller_link_cam_selector"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageView
-            android:layout_margin="12dp"
+            android:layout_weight="1"
             android:id="@+id/controller_camera_switch"
             android:src="@drawable/btncamex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <ImageView
-            android:layout_margin="12dp"
+            android:layout_weight="1"
             android:id="@+id/controller_link_mic_call"
             android:src="@drawable/btnbye"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <com.easefun.polyv.commonui.widget.PolyvLookAtMeView
+        android:id="@+id/controller_look_at_me"
+        android:src="@drawable/btn_look_at_me"
+        android:clickable="true"
+        android:layout_marginLeft="20dp"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>

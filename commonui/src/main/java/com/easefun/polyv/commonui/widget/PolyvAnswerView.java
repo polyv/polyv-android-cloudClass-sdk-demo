@@ -306,6 +306,8 @@ public class PolyvAnswerView extends FrameLayout {
                     }
                 }
                 PolyvLottery2JsVO winnerVo = new PolyvLottery2JsVO(win, vo.getPrize(), winnerCode);
+                winnerVo.setCollectInfo(vo.getCollectInfo());
+                winnerVo.setWinnersList(vo.getWinnersList());
                 String winnerJson1 = winnerVo.toJson();
                 LogUtils.d(winnerJson1);
                 final boolean winTemp = win;
@@ -323,6 +325,8 @@ public class PolyvAnswerView extends FrameLayout {
                 PolyvLotteryWinnerVO winnerVO = PolyvGsonUtil.fromJson(PolyvLotteryWinnerVO.class, msg);
                 showAnswerContainer(event);
                 final PolyvLottery2JsVO winnerJsonVO = new PolyvLottery2JsVO(true, notNull(winnerVO).getPrize(), winnerVO.getWinnerCode());
+                winnerJsonVO.setWinnersList(winnerVO.getWinnersList());
+                winnerJsonVO.setCollectInfo(winnerVO.getCollectInfo());
                 String winnerJson2 = winnerJsonVO.toJson();
                 if (winnerJsonVO.isWin()) {
                     answerWebView.setWinnerCode(winnerJsonVO.getWinnerCode());

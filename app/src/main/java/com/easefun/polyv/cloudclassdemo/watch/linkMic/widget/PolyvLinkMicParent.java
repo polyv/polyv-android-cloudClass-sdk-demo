@@ -74,6 +74,13 @@ public class PolyvLinkMicParent {
         linkMicBottomView.addClassHelper(livePlayerHelper);
     }
 
+    //显示看我按钮
+    public void showLookAtMeView() {
+        if (linkMicBottomView != null) {
+            linkMicBottomView.showLookAtMeView();
+        }
+    }
+
     public void hideBrushColor(boolean showPaint) {
         linkMicBottomView.hideBrushColor(showPaint);
     }

@@ -16,10 +16,14 @@ import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.player.live.PolyvCloudClassVideoHelper;
+import com.easefun.polyv.commonui.widget.PolyvLookAtMeView;
 import com.easefun.polyv.commonui.widget.PolyvMediaCheckView;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.EVENT_MUTE_USER_MICRO;
 import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.TEACHER_SET_PERMISSION;
@@ -46,6 +50,9 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
     private PolyvMediaCheckView lastSelectedColor;
 
     private PolyvCloudClassVideoHelper cloudClassVideoHelper;
+
+    private PolyvLookAtMeView lookAtMeView;
+    private Disposable lookAtMeDisposable;
 
     public PolyvLinkMicBottomView(Context context) {
         this(context, null);
@@ -153,7 +160,7 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
             post(new Runnable() {
                 @Override
                 public void run() {
-                    ViewGroup.LayoutParams controller = linkMicBottomController.getLayoutParams();
+                    ViewGroup.MarginLayoutParams controller = (MarginLayoutParams) linkMicBottomController.getLayoutParams();
                     ViewGroup.LayoutParams brush = linkMicBrushLayout.getLayoutParams();
                     MarginLayoutParams erase = (MarginLayoutParams) controllerErase.getLayoutParams();
 
@@ -161,6 +168,10 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
                     erase.topMargin = 0;
                     controller.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     controller.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    controller.topMargin = PolyvScreenUtils.dip2px(getContext(), 10);
+                    controller.bottomMargin = PolyvScreenUtils.dip2px(getContext(), 10);
+                    controller.leftMargin = 0;
+                    controller.rightMargin = 0;
                     brush.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     brush.width = ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -178,7 +189,7 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
             post(new Runnable() {
                 @Override
                 public void run() {
-                    ViewGroup.LayoutParams controller = linkMicBottomController.getLayoutParams();
+                    ViewGroup.MarginLayoutParams controller = (MarginLayoutParams) linkMicBottomController.getLayoutParams();
                     ViewGroup.LayoutParams brush = linkMicBrushLayout.getLayoutParams();
                     MarginLayoutParams erase = (MarginLayoutParams) controllerErase.getLayoutParams();
 
@@ -186,6 +197,10 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
                     erase.topMargin = PolyvScreenUtils.dip2px(getContext(),12);
                     controller.height = ViewGroup.LayoutParams.MATCH_PARENT;
                     controller.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    controller.leftMargin = PolyvScreenUtils.dip2px(getContext(), 10);
+                    controller.rightMargin = PolyvScreenUtils.dip2px(getContext(), 10);
+                    controller.topMargin = 0;
+                    controller.bottomMargin = 0;
                     brush.height = ViewGroup.LayoutParams.MATCH_PARENT;
                     brush.width = ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -213,6 +228,7 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
         controllerCamera = (ImageView) findViewById(R.id.controller_camera);
         controllerCameraSwitch = (ImageView) findViewById(R.id.controller_camera_switch);
         controllerLinkMicCall = (ImageView) findViewById(R.id.controller_link_mic_call);
+        lookAtMeView = findViewById(R.id.controller_look_at_me);
 
         showPaint = controllerBrush.isSelected();
     }
@@ -328,9 +344,57 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
         }
     }
 
+    //显示看我按钮
+    public void showLookAtMeView() {
+        if (lookAtMeView != null) {
+            moveLookAtMeViewToBottomControllerLayout();
+            lookAtMeView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void moveLookAtMeViewToBottomControllerLayout() {
+        if (linkMicBottomController != null && linkMicBottomController.getVisibility() == View.VISIBLE
+                && lookAtMeView.getParent() != linkMicBottomController) {
+            ((ViewGroup)lookAtMeView.getParent()).removeView(lookAtMeView);
+            LinearLayout.LayoutParams lp = (LayoutParams) lookAtMeView.getLayoutParams();
+            lp.weight = 1;
+            lp.leftMargin = 0;
+            linkMicBottomController.addView(lookAtMeView);
+        }
+    }
+
+    private void moveLookAtMeViewToBottomLayout() {
+        if (lookAtMeView != null && lookAtMeView.getVisibility() == View.VISIBLE
+                && lookAtMeView.getParent() != linkMicBottomLayout) {
+            ((ViewGroup)lookAtMeView.getParent()).removeView(lookAtMeView);
+            LinearLayout.LayoutParams lp = (LayoutParams) lookAtMeView.getLayoutParams();
+            lp.weight = 0;
+            lp.leftMargin = PolyvScreenUtils.dip2px(getContext(), 20);
+            linkMicBottomLayout.addView(lookAtMeView);
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (lookAtMeDisposable != null) {
+            lookAtMeDisposable.dispose();
+        }
+        lookAtMeDisposable = PolyvLookAtMeView.registerLookAtMeEvent(new Consumer<PolyvLookAtMeView.LookAtMeEvent>() {
+            @Override
+            public void accept(PolyvLookAtMeView.LookAtMeEvent lookAtMeEvent) throws Exception {
+                PolyvChatManager.getInstance().sendLookAtMeMessage();
+            }
+        });
+    }
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        if (lookAtMeDisposable != null) {
+            lookAtMeDisposable.dispose();
+            lookAtMeDisposable = null;
+        }
         cloudClassVideoHelper = null;
     }
 
@@ -343,8 +407,21 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
         controllerCameraSwitch.setVisibility(isVideo?VISIBLE:GONE);
     }
 
+    private void resetMicCameraControllerButtonStatus() {
+        controllerMic.setSelected(false);
+        controllerCamera.setSelected(false);
+    }
 
     public void updateLinkMicController(boolean show) {
-        linkMicBottomLayout.setVisibility(show?VISIBLE:GONE);
+        linkMicBottomController.setVisibility(show?VISIBLE:GONE);
+
+        resetMicCameraControllerButtonStatus();
+        if (show) {
+            if (lookAtMeView != null && lookAtMeView.getVisibility() == View.VISIBLE) {
+                moveLookAtMeViewToBottomControllerLayout();
+            }
+        } else {
+            moveLookAtMeViewToBottomLayout();
+        }
     }
 }
