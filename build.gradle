@@ -24,6 +24,8 @@ allprojects {
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/releases/'
         }
+        //增加fix的仓库依赖
+        maven { url 'https://dl.bintray.com/polyv/fix' }
         maven { url 'https://dl.bintray.com/polyv/android' }
     }
 }
