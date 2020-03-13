@@ -39,12 +39,12 @@
         android:layout_marginTop="-1dp"
         android:background="#F3F3F4" />
 
-    <android.support.v4.view.ViewPager
+    <com.easefun.polyv.commonui.widget.PolyvSimpleViewPager
         android:id="@+id/chat_viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/chat_top_select_layout"
         android:background="@color/white">
 
-    </android.support.v4.view.ViewPager>
+    </com.easefun.polyv.commonui.widget.PolyvSimpleViewPager>
 </LinearLayout>

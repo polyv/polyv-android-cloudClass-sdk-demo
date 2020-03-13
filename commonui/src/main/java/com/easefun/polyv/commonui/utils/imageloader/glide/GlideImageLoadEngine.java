@@ -115,4 +115,19 @@ public class GlideImageLoadEngine implements IImageLoadEngine {
                         .diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(imageView);
     }
+
+    @Override
+    public Drawable getImageAsDrawable(Context context, String url) {
+        try {
+            return Glide.with(context)
+                    .load(url)
+                    .submit(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

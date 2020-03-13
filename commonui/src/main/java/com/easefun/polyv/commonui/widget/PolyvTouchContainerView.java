@@ -236,16 +236,12 @@ public class PolyvTouchContainerView extends FrameLayout {
     }
 
     private ViewGroup.MarginLayoutParams getLayoutParamsLayout() {
-        ViewGroup.MarginLayoutParams rlp = null;
-        if (getParent() instanceof RelativeLayout) {
-            rlp = (RelativeLayout.LayoutParams) getLayoutParams();
-        } else if (getParent() instanceof LinearLayout) {
-            rlp = (LinearLayout.LayoutParams) getLayoutParams();
-        } else if (getParent() instanceof FrameLayout) {
-            rlp = (FrameLayout.LayoutParams) getLayoutParams();
+        ViewGroup.LayoutParams lp=getLayoutParams();
+        if (lp instanceof ViewGroup.MarginLayoutParams){
+            return (MarginLayoutParams) lp;
+        }else {
+            return null;
         }
-
-        return rlp;
     }
 
     public void setOriginLeft(int originLeft) {

@@ -1,6 +1,7 @@
 package com.easefun.polyv.commonui.utils.imageloader;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.WorkerThread;
 import android.widget.ImageView;
@@ -23,4 +24,6 @@ public interface IImageLoadEngine {
     void loadImage(Context context, String url, int position, @DrawableRes int errorRes, IPolyvProgressListener listener);
 
     void loadImageNoDiskCache(Context context, String url, @DrawableRes int placeHolder, @DrawableRes int error, ImageView imageView);
+
+    Drawable getImageAsDrawable(Context context, String url);
 }

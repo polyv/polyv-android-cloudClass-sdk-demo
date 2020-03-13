@@ -31,8 +31,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.KeyboardUtils;
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
 import com.easefun.polyv.businesssdk.sub.gif.GifImageSpan;
 import com.easefun.polyv.businesssdk.sub.gif.RelativeImageSpan;
@@ -61,6 +59,8 @@ import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvSDCardUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.KeyboardUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -514,8 +514,12 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         for (int i = 0; i <= lastPosition - firstPosition; i++) {
             PolyvChatListAdapter.ChatTypeItem chatTypeItem = chatListAdapter.getChatTypeItems().get(i + firstPosition);
             if (chatTypeItem.object == sendLocalImgEvent) {
-                PolyvSendMessageHolder sendMessageHolder = (PolyvSendMessageHolder) chatMessageList.getChildViewHolder(chatMessageList.getChildAt(i));
-                return sendMessageHolder;
+                RecyclerView.ViewHolder viewHolder = chatMessageList.getChildViewHolder(chatMessageList.getChildAt(i));
+                if (viewHolder instanceof PolyvSendMessageHolder) {
+                    return (PolyvSendMessageHolder) viewHolder;
+                } else {
+                    return null;
+                }
             }
         }
         return null;

@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
-import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvBaseVideoView;
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
@@ -24,8 +23,8 @@ import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
-import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 
 /**
  * @author df
@@ -148,7 +147,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     //true：ppt在主屏，false：ppt在副屏
     public void changeView(boolean changeToVideoView) {
-        if(pptContianer == null || pptView == null){
+        if (pptContianer == null || pptView == null || videoView == null) {
             return;
         }
         PolyvCommonLog.d(TAG,"show ppt sub:"+changeToVideoView);

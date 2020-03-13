@@ -504,7 +504,9 @@ public class PolyvAnswerView extends FrameLayout {
                     if (bottomPlaceHolder == null) {
                         bottomPlaceHolder = new View(getContext());
                     }
-                    ll.addView(bottomPlaceHolder, ViewGroup.LayoutParams.MATCH_PARENT, heightDifference - 100);
+                    if (bottomPlaceHolder.getParent() == null) {
+                        ll.addView(bottomPlaceHolder, ViewGroup.LayoutParams.MATCH_PARENT, heightDifference - 100);
+                    }
                     ll.post(new Runnable() {
                         @Override
                         public void run() {

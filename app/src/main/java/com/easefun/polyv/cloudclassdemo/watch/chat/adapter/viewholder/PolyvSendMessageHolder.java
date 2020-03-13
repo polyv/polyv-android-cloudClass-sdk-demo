@@ -109,7 +109,7 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object, PolyvCha
                     if (adapter != null && adapter.getOnChatImgViewClickListener() != null) {
                         adapter.getOnChatImgViewClickListener().onClick(sendMessageHolder.chatImg, position);
                     }
-                }
+            }
             });
             sendMessageHolder.resendMessageButton.setOnClickListener(new View.OnClickListener() {
                 @Override

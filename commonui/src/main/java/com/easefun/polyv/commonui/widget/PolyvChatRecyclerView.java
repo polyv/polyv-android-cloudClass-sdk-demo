@@ -173,7 +173,9 @@ public class PolyvChatRecyclerView extends RecyclerView {
         if (heightZero) {
             hasScrollEvent = true;
         } else {
-            super.smoothScrollToPosition(position);
+            if (position!=RecyclerView.NO_POSITION){
+                super.smoothScrollToPosition(position);
+            }
         }
     }
 

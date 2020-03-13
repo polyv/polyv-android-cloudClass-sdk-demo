@@ -246,7 +246,7 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
                 currentBitratePos == polyvLiveBitrateVO.getDefinitions().size() - 1) {
             return;
         }
-        if (bitRatePopupWindow == null) {
+        if (bitRatePopupWindow == null) {hide();
             creatBitrateChangeWindow();
         }
         //获取需要在其上方显示的控件的位置信息
@@ -397,7 +397,9 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
     public void hide() {
         super.hide();
         moreLayout.hide();
-
+        if (topBack != null) {
+            topBack.setVisibility(GONE);
+        }
     }
 
     @Override
@@ -723,10 +725,14 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
             videoDanmuPort.setSelected(isDanmuToggleOpen);
             videoDanmuLand.setSelected(isDanmuToggleOpen);
             if (isDanmuToggleOpen) {
-                danmuFragment.show();
+                if (danmuFragment!=null){
+                    danmuFragment.show();
+                }
                 tvStartSendDanmuLand.setVisibility(VISIBLE);
             } else {
-                danmuFragment.hide();
+                if (danmuFragment!=null){
+                    danmuFragment.hide();
+                }
                 tvStartSendDanmuLand.setVisibility(GONE);
             }
         }
@@ -747,6 +753,9 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
 
         void refreshDanmuStatus() {
             if (joinLinkMic) {//连麦成功后 不执行弹幕逻辑
+                return;
+            }
+            if (danmuFragment == null) {
                 return;
             }
             if (isServerDanmuOpen) {

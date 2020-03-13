@@ -117,6 +117,9 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
 
     protected SurfaceView createSurfaceView() {
         SurfaceView surfaceView = PolyvLinkMicWrapper.getInstance().createRendererView(PolyvAppUtils.getApp());
+        if (surfaceView == null) {
+            return null;
+        }
         surfaceView.setZOrderOnTop(true);
         surfaceView.setZOrderMediaOverlay(true);
         surfaceView.setId(CAMERA_VIEW_ID);
@@ -348,7 +351,9 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
         }
 
         int pos = joinInfoEvent.getPos();
-        this.teacherLogoView.setVisibility(View.GONE);
+        if (this.teacherLogoView != null) {
+            this.teacherLogoView.setVisibility(View.GONE);
+        }
         View toTeacherView = parentView.getChildAt(pos);
         View teacherLogoView = toTeacherView.findViewById(R.id.teacher_logo);
         if(teacherLogoView == null){
@@ -362,6 +367,9 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
 
     public void switchView(String originUid){
         PolyvJoinInfoEvent joinInfoEvent = joins.get(originUid);
+        if (uids.isEmpty()){
+            return;
+        }
         PolyvJoinInfoEvent firstInfo = joins.get(uids.get(0));
         if(joinInfoEvent == null){
             PolyvCommonLog.e(TAG,"no such uid");
@@ -457,7 +465,7 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
                 @Override
                 public void onClick(View v) {
                     selectedLinkMicView = camerLayout;
-                    if(itemClicker != null && !isAudio){
+                    if(itemClicker != null ){
                         itemClicker.onClick(v);
                     }
                 }

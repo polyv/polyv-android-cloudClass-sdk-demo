@@ -4,19 +4,23 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.easefun.polyv.businesssdk.sub.gif.RelativeImageSpan;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvConnectStatusListener;
 import com.easefun.polyv.cloudclass.chat.PolyvLocalMessage;
+import com.easefun.polyv.cloudclass.chat.event.PLVRewardEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvBanIpEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvCloseRoomEvent;
@@ -37,22 +41,35 @@ import com.easefun.polyv.cloudclass.chat.history.PolyvHistoryConstant;
 import com.easefun.polyv.cloudclass.chat.history.PolyvSpeakHistory;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendChatImageListener;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
+import com.easefun.polyv.cloudclass.feature.point_reward.IPolyvPointRewardDataSource;
+import com.easefun.polyv.cloudclass.feature.point_reward.PLVPointRewardDataSource;
 import com.easefun.polyv.cloudclass.model.PolyvChatFunctionSwitchVO;
+import com.easefun.polyv.cloudclass.model.point_reward.PolyvPointRewardSettingVO;
 import com.easefun.polyv.cloudclass.net.PolyvApiManager;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.cloudclassdemo.watch.chat.menu.PolyvTuWenMenuFragment;
+import com.easefun.polyv.cloudclassdemo.watch.chat.point_reward.dialog.PolyvPointRewardDialog;
+import com.easefun.polyv.cloudclassdemo.watch.chat.point_reward.effect.IPolyvPointRewardEventProducer;
+import com.easefun.polyv.cloudclassdemo.watch.chat.point_reward.effect.PolyvPointRewardEffectQueue;
+import com.easefun.polyv.cloudclassdemo.watch.chat.point_reward.effect.PolyvPointRewardEffectWidget;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.base.PolyvBaseActivity;
 import com.easefun.polyv.commonui.utils.PolyvSingleRelayBus;
 import com.easefun.polyv.commonui.utils.PolyvTextImageLoader;
 import com.easefun.polyv.commonui.utils.PolyvToast;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.commonui.widget.PolyvCornerBgTextView;
 import com.easefun.polyv.commonui.widget.PolyvGreetingTextView;
 import com.easefun.polyv.commonui.widget.PolyvLikeIconView;
 import com.easefun.polyv.commonui.widget.PolyvMarqueeTextView;
+import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBaseTransformer;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
+import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,6 +97,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     private boolean isOnlyHostCanSendMessage = true;
     //连接状态ui
     private PolyvCornerBgTextView bgStatus;
+    //送花父布局
+    private FrameLayout flFlower;
     //只看讲师、送花、点赞、更多、选择照片按钮、拍摄按钮
     private ImageView onlyHostSwitch, flower, like;
     private PolyvLikeIconView liv_like;
@@ -88,6 +107,18 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     private SwipeRefreshLayout chatPullLoad;
     //欢迎语
     private PolyvGreetingTextView greetingText;
+
+
+    //********积分打赏
+    //积分打赏按钮
+    private ImageView ivShowPointReward;
+    //积分打赏弹窗
+    private PolyvPointRewardDialog pointRewardWindow;
+    //积分打赏数据接口
+    private IPolyvPointRewardDataSource pointRewardRepository;
+    //积分打赏事件队列
+    private IPolyvPointRewardEventProducer pointRewardEventProducer;
+
     //    private PolyvGreetingView greetingView;
     //当前列表中显示的是否是禁言状态，在当前列表中是否是房间关闭状态，重连时当前列表中是否是房间关闭状态
     private boolean isBanIp, isCloseRoom, isCloseRoomReconnect;
@@ -99,6 +130,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     private boolean isNormalLive = false;//是否普通直播
     private boolean isShowLikeTips = false;//普通直播是否显示点赞语
     private boolean isShowGreeting = true;//根据后台设置是否显示欢迎语
+    private boolean isPointRewardEnabled = false;//根据后台设置 是否显示积分打赏
+    private RelativeLayout plvRlGroupChatFragment;
     private Handler handler = new Handler(Looper.getMainLooper());
     // </editor-fold>
 
@@ -118,9 +151,13 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         acceptConnectStatus();
         acceptEventMessage();
         listenSendChatImgStatus();
+        initPointReward();
     }
 
     private void initView() {
+        flFlower = findViewById(R.id.polyv_group_chat_fl_flower);
+        plvRlGroupChatFragment = findViewById(R.id.plv_rl_group_chat_fragment);
+
         //下拉控件
         chatPullLoad = findViewById(R.id.chat_pull_load);
         chatPullLoad.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light,
@@ -215,6 +252,17 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 
         //欢迎语
         greetingText = findViewById(R.id.greeting_text);
+
+        //积分打赏按钮
+        ivShowPointReward = findViewById(R.id.plv_iv_show_point_reward);
+        ivShowPointReward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pointRewardWindow.show();
+            }
+        });
+
+
 //        greetingView = findViewById(R.id.greeting_view);
     }
     // </editor-fold>
@@ -358,17 +406,40 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                         if (isOnlyHostType(chatImgHistory.getUser().getUserType(), chatImgHistory.getUser().getUserId())) {
                             tempTeacherChatItems.add(0, chatTypeItem);
                         }
+                        continue;
                     }
-                    continue;
                 }
                 JSONObject jsonObject_user = jsonObject.optJSONObject("user");
                 if (jsonObject_user != null) {
                     String uid = jsonObject_user.optString("uid");
-                    if (PolyvHistoryConstant.UID_REWARD.equals(uid) || PolyvHistoryConstant.UID_CUSTOMMSG.equals(uid)) {
-                        //打赏/自定义信息，这里过滤掉
+                    JSONObject jsonObject_content = jsonObject.optJSONObject("content");
+
+                    if (PolyvHistoryConstant.UID_REWARD.equals(uid)) {
+                        //处理打赏
+                        PLVRewardEvent.ContentBean rewardContentsBean = PolyvEventHelper.gson.fromJson(jsonObject_content.toString(), PLVRewardEvent.ContentBean.class);
+                        PLVRewardEvent rewardEvent = new PLVRewardEvent();
+                        if (rewardContentsBean != null) {
+                            rewardEvent.setContent(rewardContentsBean);
+                            rewardEvent.setEVENT(PolyvChatManager.EVENT_REWARD);
+                            rewardEvent.setRoomId(jsonObject_user.optInt("roomId"));
+
+                            String goodImage = rewardEvent.getContent().getGimg();
+                            String nickName = rewardEvent.getContent().getUnick();
+                            int goodNum = rewardEvent.getContent().getGoodNum();
+                            Spannable rewardSpan = generateRewardSpan(nickName, goodImage, goodNum);
+                            if (rewardSpan != null) {
+                                rewardEvent.setObjects(rewardSpan);
+                                int eventType = PolyvChatListAdapter.ChatTypeItem.TYPE_TIPS;
+                                PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(rewardEvent, eventType, PolyvChatManager.SE_MESSAGE);
+                                tempChatItems.add(0, chatTypeItem);
+                            }
+                        }
                         continue;
                     }
-                    JSONObject jsonObject_content = jsonObject.optJSONObject("content");
+                    if (PolyvHistoryConstant.UID_CUSTOMMSG.equals(uid)) {
+                        //自定义信息，这里过滤掉
+                        continue;
+                    }
                     if (jsonObject_content != null) {
                         //content不为字符串的信息，这里过滤掉
                         continue;
@@ -381,6 +452,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                     } else {
                         type = PolyvChatListAdapter.ChatTypeItem.TYPE_RECEIVE;
                     }
+
                     //把带表情的信息解析保存下来
                     speakHistory.setObjects(PolyvTextImageLoader.messageToSpan(speakHistory.getContent(), ConvertUtils.dp2px(14), false, getContext()));
                     PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(speakHistory, type, PolyvChatManager.SE_MESSAGE);
@@ -547,19 +619,38 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         if (dataBeanList == null)
             return;
         for (PolyvChatFunctionSwitchVO.DataBean dataBean : dataBeanList) {
-            if (PolyvChatFunctionSwitchVO.ENABLE_Y.equals(dataBean.getEnabled())) {
-                //如果后台的聊天室打开了发送图片的开关
-                if (PolyvChatFunctionSwitchVO.TYPE_VIEWER_SEND_IMG_ENABLED.equals(dataBean.getType())) {
-                    selectPhotoLayout.setVisibility(View.VISIBLE);
-                    openCameraLayout.setVisibility(View.VISIBLE);
-                } else if (PolyvChatFunctionSwitchVO.TYPE_WELCOME.equals(dataBean.getType())) {
-                    isShowGreeting = true;
-                }
-            } else {
-                if (PolyvChatFunctionSwitchVO.TYPE_WELCOME.equals(dataBean.getType())) {
-                    isShowGreeting = false;
-                }
+//            if (PolyvChatFunctionSwitchVO.ENABLE_Y.equals(dataBean.getEnabled())) {
+//                //如果后台的聊天室打开了发送图片的开关
+//                if (PolyvChatFunctionSwitchVO.TYPE_VIEWER_SEND_IMG_ENABLED.equals(dataBean.getType())) {
+//                    selectPhotoLayout.setVisibility(View.VISIBLE);
+//                    openCameraLayout.setVisibility(View.VISIBLE);
+//                } else if (PolyvChatFunctionSwitchVO.TYPE_WELCOME.equals(dataBean.getType())) {
+//                    isShowGreeting = true;
+//                }
+//            } else {
+//                if (PolyvChatFunctionSwitchVO.TYPE_WELCOME.equals(dataBean.getType())) {
+//                    isShowGreeting = false;
+//                }
+//            }
+            boolean isSwitchEnabled=dataBean.isEnabled();
+            switch (dataBean.getType()) {
+                //观众发送图片开关
+                case PolyvChatFunctionSwitchVO.TYPE_VIEWER_SEND_IMG_ENABLED:
+                    if (isSwitchEnabled){
+                        selectPhotoLayout.setVisibility(View.VISIBLE);
+                        openCameraLayout.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                //欢迎语开关
+                case PolyvChatFunctionSwitchVO.TYPE_WELCOME:
+                    isShowGreeting=isSwitchEnabled;
+                    break;
+                //送花开关
+                case PolyvChatFunctionSwitchVO.TYPE_SEND_FLOWERS_ENABLED:
+                    flFlower.setVisibility(isSwitchEnabled?View.VISIBLE:View.GONE);
+                    break;
             }
+
         }
     }
 
@@ -815,6 +906,30 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                     }));
                                 }
                                 break;
+                            //道具打赏
+                            case PolyvChatManager.EVENT_REWARD:
+                                PLVRewardEvent rewardEvent = PolyvEventHelper.getEventObject(PLVRewardEvent.class, message, event);
+                                if (rewardEvent == null) {
+                                    break;
+                                }
+                                if (pointRewardEventProducer != null) {
+                                    if (ScreenUtils.isPortrait()) {
+                                        //横屏不处理积分打赏事件
+                                        pointRewardEventProducer.addEvent(rewardEvent);
+                                    }
+                                }
+                                if (rewardEvent.getContent() != null) {
+                                    String goodImage = rewardEvent.getContent().getGimg();
+                                    String nickName = rewardEvent.getContent().getUnick();
+                                    int goodNum=rewardEvent.getContent().getGoodNum();
+                                    Spannable rewardSpan = generateRewardSpan(nickName, goodImage,goodNum);
+                                    if (rewardSpan != null) {
+                                        rewardEvent.setObjects(rewardSpan);
+                                        eventType = PolyvChatListAdapter.ChatTypeItem.TYPE_TIPS;
+                                        eventObject = rewardEvent;
+                                    }
+                                }
+                                break;
                         }
                     }
 
@@ -846,6 +961,23 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         span.setSpan(new RelativeImageSpan(drawable, RelativeImageSpan.ALIGN_CENTER), span.length() - 1, span.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return span;
     }
+
+    private Spannable generateRewardSpan(String nickName, String goodImageUrl, int goodNum) {
+        SpannableStringBuilder span = new SpannableStringBuilder(nickName + " 赠送p");
+        int drawableSpanStart = span.length() - 1;
+        int drawableSpanEnd = span.length();
+        if (goodNum!=1){
+            span.append(" x"+goodNum);
+        }
+        Drawable drawable = PolyvImageLoader.getInstance().getImageAsDrawable(getContext(), goodImageUrl);
+        if (drawable == null) {
+            return null;
+        }
+        int textSize = ConvertUtils.dp2px(12);
+        drawable.setBounds(0, 0, textSize * 2, textSize * 2);
+        span.setSpan(new RelativeImageSpan(drawable, RelativeImageSpan.ALIGN_CENTER), drawableSpanStart, drawableSpanEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return span;
+    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="只看讲师相关">
@@ -864,6 +996,135 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     private boolean isOnlyHostType(String userType, String userId) {
         //只看讲师类型，包括管理员、讲师、助教、嘉宾，自己
         return isTeacherType(userType) || chatManager.userId.equals(userId);
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="积分打赏">
+    private void initPointReward() {
+        if (getActivity() == null) {
+            return;
+        }
+
+        //******* 积分打赏动效 start
+        PolyvPointRewardEffectWidget polyvPointRewardEffectWidget = new PolyvPointRewardEffectWidget(getActivity());
+        RelativeLayout.LayoutParams lpOfEffectView = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lpOfEffectView.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        plvRlGroupChatFragment.addView(polyvPointRewardEffectWidget, lpOfEffectView);
+        //******* 积分打赏动效 end
+
+        //****** 积分打赏事件队列 start
+        pointRewardEventProducer = new PolyvPointRewardEffectQueue();
+        polyvPointRewardEffectWidget.setEventProducer(pointRewardEventProducer);
+        //****** 积分打赏事件队列 end
+
+        //****** 积分打赏弹窗 start
+        final String channelId = chatManager.roomId;
+        final String viewerId = chatManager.userId;
+        final String nickname = chatManager.nickName;
+        final String avatarUrl = chatManager.imageUrl;
+
+        pointRewardWindow = new PolyvPointRewardDialog((AppCompatActivity) getActivity(), new PolyvPointRewardDialog.OnMakePointRewardListener() {
+            @Override
+            public void onMakeReward(int goodNum, int goodId) {
+                if (pointRewardRepository == null) {
+                    return;
+                }
+                //积分打赏
+                pointRewardRepository.makeReward(channelId, goodId, goodNum, viewerId, nickname, avatarUrl, new IPolyvPointRewardDataSource.IPointRewardListener<Integer>() {
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        pointRewardWindow.updateRemainingPoint(integer);
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        ToastUtils.showShort(throwable.getMessage());
+                    }
+                });
+            }
+        }, new PolyvPointRewardDialog.OnShowListener() {
+            @Override
+            public void onShow() {
+                //获取剩余积分
+                pointRewardRepository.getRemainingRewardPoint(channelId, viewerId, nickname, new IPolyvPointRewardDataSource.IPointRewardListener<Integer>() {
+                    @Override
+                    public void onSuccess(Integer integer) {
+                        pointRewardWindow.updateRemainingPoint(integer);
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        ToastUtils.showShort(throwable.getMessage());
+                    }
+                });
+            }
+        });
+
+
+        pointRewardRepository = new PLVPointRewardDataSource();
+        pointRewardRepository.getPointRewardSetting(chatManager.roomId, new IPolyvPointRewardDataSource.IPointRewardListener<PolyvPointRewardSettingVO>() {
+            @Override
+            public void onSuccess(final PolyvPointRewardSettingVO polyvPointRewardSettingVO) {
+                LogUtils.d(PolyvGsonUtil.toJson(polyvPointRewardSettingVO));
+                if ("Y".equals(polyvPointRewardSettingVO.getDonatePointEnabled())
+                        && "Y".equals(polyvPointRewardSettingVO.getChannelDonatePointEnabled())) {
+                    //当积分打赏设置和频道积分打赏设置都打开时，积分打赏功能才算打开
+
+                    isPointRewardEnabled = true;
+
+                    //只有enable的道具才显示在积分打赏弹窗
+                    List<PolyvPointRewardSettingVO.GoodsBean> enabledGoods = new ArrayList<>(polyvPointRewardSettingVO.getGoods().size());
+                    for (PolyvPointRewardSettingVO.GoodsBean good : polyvPointRewardSettingVO.getGoods()) {
+                        if ("Y".equals(good.getGoodEnabled())) {
+                            enabledGoods.add(good);
+                        }
+                    }
+                    polyvPointRewardSettingVO.setGoods(enabledGoods);
+
+                    //手动为每个道具赋予一个道具Id，从1开始递增。
+                    for (int i = 0; i < polyvPointRewardSettingVO.getGoods().size(); i++) {
+                        polyvPointRewardSettingVO.getGoods().get(i).setGoodId(i + 1);
+                    }
+
+                    pointRewardWindow.setPointRewardSettingVO(polyvPointRewardSettingVO);
+                    ivShowPointReward.setVisibility(View.VISIBLE);
+
+
+                } else {
+                    isPointRewardEnabled = false;
+                    ivShowPointReward.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailed(Throwable throwable) {
+                //获取积分打赏设置，不显示错误提示
+                PolyvCommonLog.exception(throwable);
+            }
+        });
+        //****** 积分打赏弹窗 end
+
+//        //测试按钮
+//        ViewGroup viewGroup = getActivity().findViewById(android.R.id.content);
+//        Button btn = new Button(getActivity());
+//        btn.setText("测试积分打赏");
+//        btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                pointRewardRepository.makeReward(channelId, 1, 1, viewerId, nickname, avatarUrl, new IPolyvPointRewardDataSource.IPointRewardListener<Integer>() {
+//                    @Override
+//                    public void onSuccess(Integer integer) {
+//                        LogUtils.d(integer);
+//                    }
+//
+//                    @Override
+//                    public void onFailed(Throwable throwable) {
+//                        LogUtils.e(throwable);
+//                    }
+//                });
+//            }
+//        });
+//        viewGroup.addView(btn, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
     // </editor-fold>
 
@@ -941,6 +1202,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     public void onDestroy() {
         super.onDestroy();
         disposableGonggaoCd();
+        pointRewardRepository.destroy();
+        pointRewardEventProducer.destroy();
     }
     // </editor-fold>
 }

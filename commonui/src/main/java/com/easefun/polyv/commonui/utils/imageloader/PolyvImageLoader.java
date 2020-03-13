@@ -1,6 +1,7 @@
 package com.easefun.polyv.commonui.utils.imageloader;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.WorkerThread;
 import android.widget.ImageView;
@@ -79,6 +80,14 @@ public class PolyvImageLoader {
     }
 
     /**
+     * 将Url转化成Drawable返回
+     */
+    @WorkerThread
+    public Drawable getImageAsDrawable(Context context, String url) {
+        return loadEngine.getImageAsDrawable(context, makeUrlHttps(url));
+    }
+
+    /**
      * 将http协议的请求地址转换成用https协议。
      * 如果不是http协议的url，则返回原url。
      *
@@ -86,11 +95,16 @@ public class PolyvImageLoader {
      * @return https url。
      */
     private String makeUrlHttps(String url) {
+        if (url == null) {
+            return "";
+        }
         if (url.startsWith("https")) {
             return url;
         } else if (url.startsWith("http")) {
             return url.replaceFirst("http", "https");
-        } else {
+        } else if (url.startsWith("//")){
+            return "https:"+url;
+        }else {
             return url;
         }
     }

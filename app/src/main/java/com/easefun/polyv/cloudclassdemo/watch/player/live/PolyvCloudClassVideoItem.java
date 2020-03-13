@@ -602,6 +602,8 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         if (landscapeDanmuSender != null) {
             landscapeDanmuSender.dismiss();
         }
+
+        stopLiveCountDown();
     }
 
     @Override

@@ -272,7 +272,9 @@ public class PolyvLinkMicBottomView extends LinearLayout implements View.OnClick
         if(!PolyvChatManager.getInstance().sendMuteEvent(linkMicMedia)){
             controllerCamera.setSelected(!controllerCamera.isSelected());
         }else {
-            cloudClassVideoHelper.processMediaMessage(linkMicMedia);
+            if (cloudClassVideoHelper!=null){
+                cloudClassVideoHelper.processMediaMessage(linkMicMedia);
+            }
         }
     }
 

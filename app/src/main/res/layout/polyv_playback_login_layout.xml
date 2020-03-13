@@ -40,6 +40,16 @@
         android:textSize="16sp" />
 
     <EditText
+        android:id="@+id/playback_app_secret"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dm_42"
+        android:layout_margin="@dimen/dm_10"
+        android:hint="@string/login_appSecert"
+        android:textColorHint="@color/place_holder_color"
+        android:textCursorDrawable="@null"
+        android:textSize="16sp" />
+
+    <EditText
         android:id="@+id/playback_video_id"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dm_42"

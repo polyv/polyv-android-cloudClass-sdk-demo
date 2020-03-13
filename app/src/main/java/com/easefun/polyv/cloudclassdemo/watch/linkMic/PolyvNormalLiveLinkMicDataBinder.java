@@ -251,10 +251,10 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder {
         } else {
             child = parentView.getChildAt(pos - 2);
         }
-        SurfaceView surfaceView = child.findViewById(CAMERA_VIEW_ID);
         if(child == null){
             return false;
         }
+        SurfaceView surfaceView = child.findViewById(CAMERA_VIEW_ID);
 
         surfaceView.setVisibility(mute ? View.INVISIBLE : View.VISIBLE);
         return true;

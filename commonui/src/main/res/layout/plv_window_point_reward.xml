@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/plv_rl_point_reward_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:clickable="true"
+        android:focusable="true">
+
+        <View
+            android:id="@+id/plv_v_top_transparent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/plv_v_point_reward_top" />
+
+        <!--        top-->
+        <View
+            android:id="@+id/plv_v_point_reward_top"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_above="@id/plv_v_point_reward_middle"
+            android:background="#CF3F4E" />
+
+        <ImageView
+            android:id="@+id/plv_iv_point_reward_close"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignTop="@id/plv_v_point_reward_top"
+            android:src="@drawable/plv_iv_close_point_reward" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_alignTop="@id/plv_v_point_reward_top"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="积分打赏"
+            android:textColor="#FFF8C6"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="64dp"
+            android:layout_height="2dp"
+            android:layout_alignBottom="@id/plv_iv_point_reward_close"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="2dp"
+            android:background="#FFF8C6" />
+
+        <!--        middle-->
+        <LinearLayout
+            android:id="@+id/plv_v_point_reward_middle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/plv_v_point_reward_bottom"
+            android:background="@drawable/plv_gradient_point_reward_bg"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/plv_iv_point_reward_tie"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/plv_iv_tie_point_reward" />
+
+                <TextView
+                    android:id="@+id/plv_tv_point_reward_remaining_point"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:layout_marginRight="16dp"
+                    android:text="我的积分：0"
+                    android:textColor="#FFF8C6"
+                    android:textSize="16sp" />
+            </FrameLayout>
+
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/plv_vp_point_reward"
+                android:layout_width="match_parent"
+                android:layout_height="130dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp" />
+
+            <com.easefun.polyv.commonui.widget.PolyvBeadWidget
+                android:id="@+id/plv_bead_point_reward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                app:bead_margin="8dp"
+                app:bead_radius="3dp"
+                app:selected_bead_color="#FFF8C6"
+                app:unselected_bead_color="#A2333E">
+
+            </com.easefun.polyv.commonui.widget.PolyvBeadWidget>
+        </LinearLayout>
+
+
+        <!--bottom-->
+        <View
+            android:id="@+id/plv_v_point_reward_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:background="#CF3F4E" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignTop="@id/plv_v_point_reward_bottom"
+            android:layout_marginLeft="19dp"
+            android:layout_marginRight="85dp">
+
+            <RadioGroup
+                android:id="@+id/plv_rg_point_reward_send_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/plv_rb_point_reward_reward_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:background="@drawable/plv_selecotr_point_reward_point_to_send_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:minWidth="36dp"
+                    android:text="1"
+                    android:textColor="@drawable/plv_selector_text_point_reward_point_to_send"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/plv_rb_point_reward_reward_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/plv_selecotr_point_reward_point_to_send_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:minWidth="36dp"
+                    android:text="5"
+                    android:textColor="@drawable/plv_selector_text_point_reward_point_to_send"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/plv_rb_point_reward_reward_10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/plv_selecotr_point_reward_point_to_send_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:minWidth="36dp"
+                    android:text="10"
+                    android:textColor="@drawable/plv_selector_text_point_reward_point_to_send"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/plv_rb_point_reward_reward_66"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/plv_selecotr_point_reward_point_to_send_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:minWidth="36dp"
+                    android:text="66"
+                    android:textColor="@drawable/plv_selector_text_point_reward_point_to_send"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/plv_rb_point_reward_reward_88"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/plv_selecotr_point_reward_point_to_send_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:minWidth="36dp"
+                    android:text="88"
+                    android:textColor="@drawable/plv_selector_text_point_reward_point_to_send"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/plv_rb_point_reward_reward_666"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
+                    android:background="@drawable/plv_selecotr_point_reward_point_to_send_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:minWidth="36dp"
+                    android:text="666"
+                    android:textColor="@drawable/plv_selector_text_point_reward_point_to_send"
+                    android:textSize="12sp" />
+            </RadioGroup>
+        </HorizontalScrollView>
+
+
+        <Button
+            android:id="@+id/plv_btn_point_reward_make_reward"
+            android:layout_width="64dp"
+            android:layout_height="24dp"
+            android:layout_alignTop="@id/plv_v_point_reward_bottom"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/plv_shape_point_reward_point_to_send_check"
+            android:text="发送"
+            android:textColor="#C6404C"
+            android:textSize="14sp" />
+    </RelativeLayout>
+</FrameLayout>

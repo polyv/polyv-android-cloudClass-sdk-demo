@@ -2,7 +2,7 @@ polyv-android-cloudClass-sdk-demo
 ===
 
 [![build passing](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
-[![GitHub release](https://img.shields.io/badge/release-v0.11.1-blue.svg)](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/releases/tag/v0.11.1)
+[![GitHub release](https://img.shields.io/badge/release-v0.12.0-blue.svg)](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/releases/tag/v0.12.0)
 
 本项目从属于广州易方信息科技股份有限公司旗下的POLYV保利威视频云核心产品“云课堂”，是一款云课堂教学的示例 APP。该 demo 包含了视频教学直播、ppt 在线演示同步播放、教学连麦、在线聊天功能，以及直播回放功能。非常适合直播视频教学的应用场景。想要集成本项目提供的 SDK，需要在[保利威视频云平台](http://www.polyv.net/)注册账号，并开通相关服务。
 
@@ -58,6 +58,7 @@ polyv-android-cloudClass-sdk-demo
 
 0.11.1版API文档请看[v0.11.1 API](http://repo.polyv.net/android/cloudclass/javadoc/0.11.1/index.html)
 
+0.12.0版API文档请看[v0.12.0 API](http://repo.polyv.net/android/cloudclass/javadoc/0.12.0/index.html)
 
 
 

@@ -6,32 +6,13 @@
     android:background="#ffffff"
     android:padding="8dp">
 
-    <LinearLayout
-        android:id="@+id/ll_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true">
 
-        <ImageView
-            android:id="@+id/iv_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:src="@drawable/polyv_iv_hostonly_switch" />
-
-        <com.easefun.polyv.commonui.widget.PolyvPressedImageView
-            app:disabled_color="#D3D3D3"
-            app:pressed_color="#14a2f4"
-            app:selected_color="#14a2f4"
-            android:clickable="true"
-            android:id="@+id/iv_emojileft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:src="@drawable/emoji"
-            android:visibility="gone" />
-    </LinearLayout>
-
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/plv_iv_show_point_reward"
+        android:src="@drawable/plv_iv_show_point_reward"
+        android:layout_width="32dp"
+        android:layout_height="32dp" />
 
     <com.easefun.polyv.businesssdk.sub.gif.GifEditText
         android:id="@+id/et_talk"
@@ -40,8 +21,8 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
-        android:layout_toLeftOf="@+id/right_layout"
-        android:layout_toRightOf="@id/ll_switch"
+        android:layout_toLeftOf="@id/right_layout"
+        android:layout_toRightOf="@id/plv_iv_show_point_reward"
         android:background="@drawable/polyv_et_chat_corner"
         android:hint="在这里可以跟老师互动哦"
         android:imeOptions="actionSend|flagNoFullscreen"
@@ -67,6 +48,7 @@
 
     <LinearLayout
         android:id="@+id/right_layout"
+        android:layout_centerVertical="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true">
@@ -76,27 +58,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/iv_flower"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="6dp"
-                android:src="@drawable/flower"
+            <FrameLayout
                 android:visibility="gone"
-                 />
+                android:id="@+id/polyv_group_chat_fl_flower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/iv_flower"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="6dp"
+                    android:src="@drawable/flower"
+                    android:visibility="gone"
+                    />
 
-            <ImageView
-                android:id="@+id/like"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="6dp"
-                android:src="@drawable/polyv_icon_likes"
-                android:visibility="gone"
-                />
-
+                <ImageView
+                    android:id="@+id/like"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="6dp"
+                    android:src="@drawable/polyv_icon_likes"
+                    android:visibility="gone"
+                    />
+            </FrameLayout>
             <ImageView
                 android:id="@+id/add_more"
                 android:layout_width="28dp"
