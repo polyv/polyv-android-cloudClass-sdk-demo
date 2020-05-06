@@ -92,7 +92,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
     private RelativeLayout rlTop;
     private PolyvLoadingLayout loadingview;
     private TextView preparingview;
-    private View noStream;
+    private View noStream, stopStream;
     private View rootView;
     private ImageView subBackLand;
     private FrameLayout flSubBackAndGradient;
@@ -232,6 +232,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         tipsviewLight = findViewById(R.id.tipsview_light);
         tipsviewVolume = findViewById(R.id.tipsview_volume);
         noStream = findViewById(R.id.no_stream);
+        stopStream = findViewById(R.id.stop_stream);
         audioModeLayoutRoot = findViewById(R.id.fl_audio_mode_layout_root);
         marqueeView = findViewById(R.id.polyv_marquee_view);
         tvStartTimeCountDown = findViewById(R.id.tv_start_time_count_down);
@@ -273,6 +274,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         polyvCloudClassVideoView.setAudioModeView(audioModeView);
         polyvCloudClassVideoView.setMediaController(controller);
         polyvCloudClassVideoView.setNoStreamIndicator(noStream);
+        polyvCloudClassVideoView.setStopStreamIndicator(stopStream);
         polyvCloudClassVideoView.setPlayerBufferingIndicator(loadingview);
         loadingview.bindVideoView(polyvCloudClassVideoView);
         polyvCloudClassVideoView.setSubVideoView(subVideoview);
@@ -475,6 +477,11 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 PolyvLinkMicWrapper.getInstance().leaveChannel();
 
                 startLiveTimeCountDown(liveStartTime);
+            }
+
+            @Override
+            public void onLiveStop() {
+                //直播暂停状态，可以通过videoView.setStopStreamIndicator方法设置暂停时显示的占位图
             }
         });
         polyvCloudClassVideoView.setOnGestureClickListener(new IPolyvVideoViewListenerEvent.OnGestureClickListener() {

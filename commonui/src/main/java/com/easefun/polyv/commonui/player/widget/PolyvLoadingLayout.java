@@ -21,8 +21,6 @@ import com.easefun.polyv.commonui.R;
 
 import java.util.Locale;
 
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-
 public class PolyvLoadingLayout extends FrameLayout {
     private ProgressBar loadingProgress;
     private TextView loadingSpeed;
@@ -35,15 +33,15 @@ public class PolyvLoadingLayout extends FrameLayout {
             if (msg.what == 1) {
                 if (videoView instanceof PolyvCloudClassVideoView ||
                         (videoView instanceof PolyvPlaybackVideoView && ((PolyvPlaybackVideoView) videoView).getPlayType() == PolyvPlayType.ONLINE_PLAY)) {
-                    IjkMediaPlayer mp = videoView.getIjkMediaPlayer();
-                    if (mp != null) {
-                        long tcpSpeed = mp.getTcpSpeed();
+                    long tcpSpeed = videoView.getTcpSpeed();
+                    if (tcpSpeed >= 0) {
                         loadingSpeed.setVisibility(View.VISIBLE);
                         loadingSpeed.setText(formatedSpeed(tcpSpeed, 1000));
 
                         handler.sendEmptyMessageDelayed(1, 500);
                     }
                 }
+
             }
         }
     };

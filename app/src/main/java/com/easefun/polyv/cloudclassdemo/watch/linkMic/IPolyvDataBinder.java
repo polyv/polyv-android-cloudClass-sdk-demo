@@ -6,6 +6,9 @@ import android.view.ViewGroup;
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -21,6 +24,10 @@ public abstract class IPolyvDataBinder {
     protected View ownerView, ownerMic,ownerLinkView;//自己的布局view
     protected ViewGroup parentView;
     protected ViewGroup selectedLinkMicView;
+    //收到RTC的mute audio事件时，因为连麦列表中没有那个用户，因此将他的Id保存在这里
+    List<String> unhandledMutedAudioList=new LinkedList<>();
+    List<String> unhandledMutedVideoList =new LinkedList<>();
+
 
     protected static final int SHOW_TIME = 5 * 1000;
     protected boolean isAudio;
@@ -47,6 +54,13 @@ public abstract class IPolyvDataBinder {
 
     public void updateSwitchViewStatus(String subLinkMicViewUid, String mainLinkMicViewUid) {
 
+    }
+
+    public void addUnHandledMutedAudioUser(String uid){
+        unhandledMutedAudioList.add(uid);
+    }
+    public void addUnhandledMutedVideoUser(String uid){
+        unhandledMutedVideoList.add(uid);
     }
 
     public ViewGroup getFirstLinkMicView() {

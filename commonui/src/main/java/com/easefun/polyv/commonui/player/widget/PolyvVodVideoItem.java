@@ -25,12 +25,11 @@ import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
+import com.easefun.polyv.commonui.player.PolyvMediaInfoType;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
-import com.easefun.polyv.commonui.player.PolyvMediaInfoType;
 
-import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListener,
         IPolyvVideoItem<PolyvVodVideoView, PolyvVodMediaController> {
@@ -189,7 +188,7 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
         });
         subVideoview.setOnSubVideoViewPlayStatusListener(new IPolyvAuxiliaryVideoViewListenerEvent.IPolyvAuxliaryVideoViewPlayStatusListener() {
             @Override
-            public void onCompletion(IMediaPlayer mp, @PolyvAuxiliaryVideoview.AdStage int adStage) {
+            public void onCompletion(@PolyvAuxiliaryVideoview.AdStage int adStage) {
                 String tips = adStage == PolyvAuxiliaryVideoview.PLAY_STAGE_HEADAD ? "片头广告"
                         : adStage == PolyvAuxiliaryVideoview.PLAY_STAGE_TAILAD ? "片尾广告" : "";
                 PolyvCommonLog.i(TAG, "sub " + tips + " onCompletion");

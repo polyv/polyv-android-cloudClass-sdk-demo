@@ -227,7 +227,7 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
 
         if (isAudio && !uid.equals(teacherId)) {//音频 只显示教师
             surfaceView.setVisibility(View.GONE);
-            holder.cameraLinkMicOff.setVisibility(View.GONE);
+            holder.cameraLinkMicOff.setVisibility   (View.GONE);
             return;
         }
 
@@ -240,6 +240,23 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
         }else {
             holder.teacherLogo.setVisibility(View.GONE);
         }
+
+        //处理由于延迟3秒请求连麦列表导致RTC 的mute 事件漏掉处理的情况
+        for (String id : unhandledMutedAudioList) {
+            if (uid.equals(id)){
+                holder.cameraLinkMicOff.setVisibility(View.VISIBLE);
+                unhandledMutedAudioList.remove(id);
+                break;
+            }
+        }
+        for (String id: unhandledMutedVideoList){
+            if (uid.equals(id)){
+                surfaceView.setVisibility(View.INVISIBLE);
+                unhandledMutedVideoList.remove(id);
+                break;
+            }
+        }
+
         long longUid = Long.valueOf(uid);
         if (uid.equals(myUid)) {
              PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,

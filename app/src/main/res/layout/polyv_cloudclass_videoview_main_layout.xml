@@ -30,6 +30,8 @@
 
         <include layout="@layout/polyv_nostream_layout"/>
 
+        <include layout="@layout/polyv_stopstream_layout"/>
+
     </com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView>
 
 

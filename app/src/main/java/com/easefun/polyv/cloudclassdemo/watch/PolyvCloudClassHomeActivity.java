@@ -165,6 +165,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private static final String NORMALLIVE_PLAYBACK = "normallive_playback";
     private static final String DEFAULT_NICKNAME = "POLYV";
     private static final String EXTRA_IS_PARTICIPANT = "is_participant";
+    private static final String EXTRA_RTC_TYPE="rtc_type";
     private static final String VIDEO_LISTTYPE = "video_listtype";
 
     //直播与点播类型选择
@@ -194,38 +195,21 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
     //回放视频所在列表的类型
     private int videoListType;
+
+    //rtc类型
+    private String rtcType="";
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="入口">
-    public static void startActivityForLive(Activity activity, String channelId, String userId, boolean isNormalLive) {
-        Intent intent = new Intent(activity, PolyvCloudClassHomeActivity.class);
-        intent.putExtra(CHANNELID_KEY, channelId);
-        intent.putExtra(USERID_KEY, userId);
-        intent.putExtra(NORMALLIVE, isNormalLive);
-        intent.putExtra(PLAY_TYPE_KEY, PLAYMODE_LIVE);
-        activity.startActivity(intent);
-    }
-
-
-    //从VClass进入
-    public static void startActivityForLiveFromVClass(Activity activity, String channelId, String userId, boolean isNormalLive, boolean isParticipant) {
-        Intent intent = new Intent(activity, PolyvCloudClassHomeActivity.class);
-        intent.putExtra(CHANNELID_KEY, channelId);
-        intent.putExtra(USERID_KEY, userId);
-        intent.putExtra(NORMALLIVE, isNormalLive);
-        intent.putExtra(PLAY_TYPE_KEY, PolyvPlayOption.PLAYMODE_LIVE);
-        intent.putExtra(EXTRA_IS_PARTICIPANT, isParticipant);
-        activity.startActivity(intent);
-    }
-
     //带有参与者标志位的直播入口
-    public static void startActivityForLiveWithParticipant(Activity activity, String channelId, String userId, boolean isNormalLive, boolean isParticipant) {
+    public static void startActivityForLiveWithParticipant(Activity activity, String channelId, String userId, boolean isNormalLive, boolean isParticipant,String rtcType) {
         Intent intent = new Intent(activity, PolyvCloudClassHomeActivity.class);
         intent.putExtra(CHANNELID_KEY, channelId);
         intent.putExtra(USERID_KEY, userId);
         intent.putExtra(NORMALLIVE, isNormalLive);
         intent.putExtra(PLAY_TYPE_KEY, PolyvPlayOption.PLAYMODE_LIVE);
         intent.putExtra(EXTRA_IS_PARTICIPANT, isParticipant);
+        intent.putExtra(EXTRA_RTC_TYPE,rtcType);
         activity.startActivity(intent);
     }
 
@@ -384,12 +368,10 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     private void initialTeacherInfo() {
 
         if (playMode == PLAYMODE_LIVE) {
-            teacherInfoLayout.init(livePlayerHelper, videoPptContainer);
+            teacherInfoLayout.init(livePlayerHelper, videoPptContainer, isParticipant, rtcType);
         } else {
             teacherInfoLayout.setVisibility(View.GONE);
         }
-
-        teacherInfoLayout.hideHandsUpLink(isParticipant);
     }
 
     private void initialParams() {
@@ -402,6 +384,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         playMode = intent.getIntExtra(PLAY_TYPE_KEY, PolyvPlayOption.PLAYMODE_VOD);
         isParticipant = intent.getBooleanExtra(EXTRA_IS_PARTICIPANT, false);
         videoListType = intent.getIntExtra(VIDEO_LISTTYPE, PolyvPlaybackListType.PLAYBACK);
+        rtcType=intent.getStringExtra(EXTRA_RTC_TYPE);
     }
 
     private void initialLinkMic() {

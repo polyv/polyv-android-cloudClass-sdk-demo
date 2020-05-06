@@ -900,7 +900,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                         @Override
                                         public void run() {
                                             if (chatManager.userId.equals(reloginEvent.getUser().getUserId())) {
-                                                PolyvBaseActivity.showReloginTip(getActivity(), reloginEvent.getChannelId(), "该账号已在其他设备登录！");
+                                                PolyvBaseActivity.showReloginTip(getActivity(), reloginEvent.getChannelId(), "当前账号已在其他地方登录，您将被退出观看");
                                             }
                                         }
                                     }));

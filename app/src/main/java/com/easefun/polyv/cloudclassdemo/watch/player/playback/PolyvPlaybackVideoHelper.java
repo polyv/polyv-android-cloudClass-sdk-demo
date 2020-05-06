@@ -12,8 +12,6 @@ import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
 
-import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-
 public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlaybackVideoItem,
         PolyvPlaybackVideoView, PolyvPlaybackMediaController> {
     private static final String TAG = PolyvPlaybackVideoHelper.class.getSimpleName();
@@ -88,6 +86,16 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
                 public void pptPrepare() {
                     pptView.setLoadingViewVisible(View.INVISIBLE);
                 }
+
+                @Override
+                public void pptPositionChange(boolean isVideoInMain) {
+
+                    if(!controller.isShowPPTSubView() && isVideoInMain) {
+                        controller.changePPTVideoLocation();
+                    } else if(controller.isShowPPTSubView() && !isVideoInMain){
+                        controller.changePPTVideoLocation();
+                    }
+                }
             });
         }
     }
@@ -144,7 +152,6 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
             videoView.enterBackground();
         else
             videoView.pause();
-        IjkMediaPlayer.native_profileEnd();
     }
 
 }

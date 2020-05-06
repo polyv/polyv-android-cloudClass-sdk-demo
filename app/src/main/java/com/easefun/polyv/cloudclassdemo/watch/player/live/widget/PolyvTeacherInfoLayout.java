@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -198,10 +199,18 @@ public class PolyvTeacherInfoLayout extends LinearLayout implements View.OnClick
 
     // <editor-fold defaultstate="collapsed" desc="外部调用">
     public void init(@NonNull PolyvCloudClassVideoHelper cloudClassVideoHelper,
-                     @NonNull PolyvTouchContainerView videoPptContainer) {
+                     @NonNull PolyvTouchContainerView videoPptContainer, boolean isParticipant, String rtcType) {
         this.cloudClassVideoHelper = cloudClassVideoHelper;
         cloudClassVideoHelper.bindCallMicView(linkMicStatusImg);
-//        insertTeacherCamera(videoPptContainer);
+
+        if ("urtc".equals(rtcType) || TextUtils.isEmpty(rtcType)) {
+            //当前类型不支持连麦
+            linkMicLayout.setVisibility(INVISIBLE);
+        } else {
+            //当前类型支持连麦
+            linkMicLayout.setVisibility(isParticipant ? INVISIBLE : VISIBLE);
+        }
+
     }
 
     public void fillTeacherInfo() {
@@ -362,11 +371,6 @@ public class PolyvTeacherInfoLayout extends LinearLayout implements View.OnClick
             }
         }
     }
-
-    public void hideHandsUpLink(boolean isParticipant) {
-        linkMicLayout.setVisibility(isParticipant ? INVISIBLE : VISIBLE);
-    }
-
     // </editor-fold>
 
 }

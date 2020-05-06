@@ -120,7 +120,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder {
                 if(isFront){
                     linkMicFrontView.addView(child, pos);
                 }else {
-                    frontParentView.setBackgroundColor(Color.parseColor("#D9000000"));
+//                    frontParentView.setBackgroundColor(Color.parseColor("#D9000000"));
                     ViewGroup.LayoutParams layoutParams = createLayoutParams(pos);
                     parentView.addView(child, Math.max(0,pos-2),layoutParams);//前排固定两个 ，所以添加的时候要从0开始必须-2
                 }

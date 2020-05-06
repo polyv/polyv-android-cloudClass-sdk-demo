@@ -96,6 +96,11 @@ public abstract class PolyvCommonMediacontroller<T extends PolyvCommonVideoView>
      */
     public abstract void changePPTVideoLocation();
 
+    /**
+     * @return ppt是否显示在副屏
+     */
+    public boolean isShowPPTSubView(){return showPPTSubView;}
+
 
     @Override
     public void setMediaPlayer(T player) {
