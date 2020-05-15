@@ -2,7 +2,7 @@ polyv-android-cloudClass-sdk-demo
 ===
 
 [![build passing](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
-[![GitHub release](https://img.shields.io/badge/release-v0.13.0-blue.svg)](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/releases/tag/v0.13.0)
+[![GitHub release](https://img.shields.io/badge/release-v0.13.1-blue.svg)](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/releases/tag/v0.13.1)
 
 ### ！！！集成请务必参考[wiki](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/wiki)文档
 
@@ -64,6 +64,7 @@ polyv-android-cloudClass-sdk-demo
 
 0.13.0版API文档请看[v0.13.0 API](http://repo.polyv.net/android/cloudclass/javadoc/0.13.0/index.html)
 
+0.13.1版API文档请看[v0.13.1 API](http://repo.polyv.net/android/cloudclass/javadoc/0.13.0/index.html)
 
 ## 支持功能
 
