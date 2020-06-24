@@ -27,7 +27,6 @@ import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionResultVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionSResult;
 import com.easefun.polyv.cloudclass.model.bulletin.PolyvBulletinVO;
-import com.easefun.polyv.cloudclass.model.lottery.PolyvLottery2JsVO;
 import com.easefun.polyv.cloudclass.model.lottery.PolyvLotteryEndVO;
 import com.easefun.polyv.cloudclass.model.lottery.PolyvLotteryWinnerVO;
 import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignIn2JsVO;
@@ -51,7 +50,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -98,7 +96,7 @@ public class PolyvAnswerView extends FrameLayout {
     private ImageView ivClose;
     private AlertDialog alertDialog;
 
-    private volatile boolean isDestroy=false;
+    private volatile boolean isDestroy = false;
 
 
     public PolyvAnswerView(@NonNull Context context) {
@@ -116,7 +114,7 @@ public class PolyvAnswerView extends FrameLayout {
 
     private void initialView(final Context context) {
 
-        isDestroy=false;
+        isDestroy = false;
         View.inflate(context, R.layout.polyv_answer_web_layout, this);
         answerWebView = findViewById(R.id.polyv_question_web);
         answerContainer = findViewById(R.id.polyv_answer_web_container);
@@ -141,8 +139,8 @@ public class PolyvAnswerView extends FrameLayout {
         answerWebView.setOnWebLinkSkipListener(new PolyvAnswerWebView.OnWebLinkSkipListener() {
             @Override
             public void onWebLinkSkip(String action) {
-                PolyvCommonLog.d(TAG,"receive action :"+action);
-                PolyvWebUtils.openWebLink(action,context);
+                PolyvCommonLog.d(TAG, "receive action :" + action);
+                PolyvWebUtils.openWebLink(action, context);
             }
         });
         answerWebView.setOnWebViewLoadFinishedListener(new PolyvAnswerWebView.OnWebViewLoadFinishedListener() {
@@ -182,7 +180,7 @@ public class PolyvAnswerView extends FrameLayout {
         PolyvRxTimer.delay(DELAY_SOCKET_MSG, new Consumer() {
             @Override
             public void accept(Object o) {
-                if (!isDestroy){
+                if (!isDestroy) {
                     runnable.run();
                 }
             }
@@ -190,7 +188,7 @@ public class PolyvAnswerView extends FrameLayout {
     }
 
     private void acceptBusEvent() {
-        busDisposable =(PolyvRxBus.get().toObservable(BUS_EVENT.class)
+        busDisposable = (PolyvRxBus.get().toObservable(BUS_EVENT.class)
                 .compose(new PolyvRxBaseTransformer<BUS_EVENT, BUS_EVENT>())
                 .subscribe(new Consumer<BUS_EVENT>() {
                     @Override
@@ -292,50 +290,21 @@ public class PolyvAnswerView extends FrameLayout {
                 break;
             //停止抽奖
             case PolyvSocketEvent.LOTTERY_END:
-                showAnswerContainer(event);
-                boolean win = false;
-                String winnerCode = "";
-                PolyvLotteryEndVO vo = PolyvGsonUtil.fromJson(PolyvLotteryEndVO.class, msg);
-                List<PolyvLotteryEndVO.DataBean> winnerList = notNull(vo).getData();
-                for (PolyvLotteryEndVO.DataBean bean : winnerList) {
-                    if (viewerId.equals(bean.getUserId())) {
-                        win = true;
-                        winnerCode = bean.getWinnerCode();
-                        answerWebView.setWinnerCode(winnerCode);
-                        break;
-                    }
+                final PolyvLotteryEndVO vo = PolyvGsonUtil.fromJson(PolyvLotteryEndVO.class, msg);
+                if (vo == null) {
+                    return;
                 }
-                PolyvLottery2JsVO winnerVo = new PolyvLottery2JsVO(win, vo.getPrize(), winnerCode);
-                winnerVo.setCollectInfo(vo.getCollectInfo());
-                winnerVo.setWinnersList(vo.getWinnersList());
-                String winnerJson1 = winnerVo.toJson();
-                LogUtils.d(winnerJson1);
-                final boolean winTemp = win;
-                answerWebView.callLotteryEnd(winnerJson1, vo.getSessionId(), vo.getLotteryId(), new Runnable() {
+                showAnswerContainer(event);
+                //设置winnerCode
+                if (!vo.getData().isEmpty()) {
+                    String winnerCode = vo.getData().get(0).getWinnerCode();
+                    answerWebView.setWinnerCode(winnerCode);
+                }
+                //消息直接发到h5
+                answerWebView.callLotteryEnd(msg, vo.getSessionId(), vo.getLotteryId(), new Runnable() {
                     @Override
                     public void run() {
-                        if (winTemp) {
-                            onWinLotteryShow();
-                        }
-                    }
-                });
-                break;
-            //未领奖的中奖人信息
-            case PolyvSocketEvent.LOTTERY_WINNER:
-                PolyvLotteryWinnerVO winnerVO = PolyvGsonUtil.fromJson(PolyvLotteryWinnerVO.class, msg);
-                showAnswerContainer(event);
-                final PolyvLottery2JsVO winnerJsonVO = new PolyvLottery2JsVO(true, notNull(winnerVO).getPrize(), winnerVO.getWinnerCode());
-                winnerJsonVO.setWinnersList(winnerVO.getWinnersList());
-                winnerJsonVO.setCollectInfo(winnerVO.getCollectInfo());
-                String winnerJson2 = winnerJsonVO.toJson();
-                if (winnerJsonVO.isWin()) {
-                    answerWebView.setWinnerCode(winnerJsonVO.getWinnerCode());
-                }
-                LogUtils.json(winnerJson2);
-                answerWebView.callLotteryWinner(winnerJson2, winnerVO.getSessionId(), winnerVO.getLotteryId(), new Runnable() {
-                    @Override
-                    public void run() {
-                        if (winnerJsonVO.isWin()) {
+                        if (!vo.getData().isEmpty()) {
                             onWinLotteryShow();
                         }
                     }
@@ -401,7 +370,7 @@ public class PolyvAnswerView extends FrameLayout {
 
     private void showAnswerContainer(String event) {
         KeyboardUtils.hideSoftInput(this);
-        if (!event.equals(PolyvSocketEvent.BULLETIN_SHOW)){
+        if (!event.equals(PolyvSocketEvent.BULLETIN_SHOW)) {
             //荣耀9i机型，公告如果请求focus会让<直播介绍>这个tab，出现水波纹点击效果，因此屏蔽。
             answerWebView.requestFocusFromTouch();
         }
@@ -410,6 +379,11 @@ public class PolyvAnswerView extends FrameLayout {
 
     private void hideAnswerContainer() {
         answerContainer.setVisibility(INVISIBLE);
+    }
+
+    public void showInteractiveCallback(String resultStr){
+        showAnswerContainer(resultStr);
+        answerWebView.interactiveCallback(resultStr);
     }
 
     public void setViewerId(String viewerId) {
@@ -443,7 +417,7 @@ public class PolyvAnswerView extends FrameLayout {
     }
 
     public void destroy() {
-        isDestroy=true;
+        isDestroy = true;
         if (answerWebView != null) {
             answerWebView = null;
         }

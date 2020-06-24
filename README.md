@@ -2,7 +2,7 @@ polyv-android-cloudClass-sdk-demo
 ===
 
 [![build passing](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
-[![GitHub release](https://img.shields.io/badge/release-v0.13.1-blue.svg)](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/releases/tag/v0.13.1)
+[![GitHub release](https://img.shields.io/badge/release-v0.14.0-blue.svg)](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/releases/tag/v0.14.0)
 
 ### ！！！集成请务必参考[wiki](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/wiki)文档
 

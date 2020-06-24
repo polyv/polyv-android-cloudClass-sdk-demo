@@ -836,12 +836,9 @@ public class PolyvCloudClassMediaController extends PolyvCommonMediacontroller<P
         if (isPaused) {
             togglePauseBtn(true);
         }
-
-        polyvCloudClassPlayerHelper.startSEITimer();
     }
 
     public void onLiveEnd() {
-        polyvCloudClassPlayerHelper.stopSeiTimer();
     }
     // </editor-fold>
 

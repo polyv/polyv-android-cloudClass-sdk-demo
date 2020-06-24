@@ -64,6 +64,7 @@ import java.util.Locale;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
+import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.SETSEIDATA;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICECONTROL;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICEID;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.OPEN_MICROPHONE;
@@ -81,7 +82,7 @@ import static com.easefun.polyv.cloudclass.model.PolyvLiveClassDetailVO.LiveStat
 public class PolyvCloudClassVideoItem extends FrameLayout
         implements IPolyvVideoItem<PolyvCloudClassVideoView, PolyvCloudClassMediaController>, View.OnClickListener {
 
-    private static final String TAG = "PolyvCloudClassVideoIte";
+    private static final String TAG = "PolyvCloudClassVideoItem";
     private AppCompatActivity context;
     private PolyvCloudClassMediaController controller;
     private PolyvCloudClassVideoView polyvCloudClassVideoView;
@@ -234,7 +235,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         noStream = findViewById(R.id.no_stream);
         stopStream = findViewById(R.id.stop_stream);
         audioModeLayoutRoot = findViewById(R.id.fl_audio_mode_layout_root);
-        marqueeView = findViewById(R.id.polyv_marquee_view);
+        marqueeView = context.findViewById(R.id.polyv_marquee_view);
         tvStartTimeCountDown = findViewById(R.id.tv_start_time_count_down);
 
         FragmentTransaction fragmentTransaction = context.getSupportFragmentManager().beginTransaction();
@@ -449,7 +450,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
                 PolyvTeacherStatusInfo live = new PolyvTeacherStatusInfo();
                 live.setWatchStatus(visiable == INVISIBLE ?
-                        PolyvLiveClassDetailVO.LiveStatus.LIVE_CLOSECALLLINKMIC:
+                        PolyvLiveClassDetailVO.LiveStatus.LIVE_CLOSECALLLINKMIC :
                         PolyvLiveClassDetailVO.LiveStatus.LIVE_OPENCALLLINKMIC);
                 PolyvRxBus.get().post(live);
             }
@@ -459,7 +460,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
             public void onNoLiveAtPresent() {
                 isNoLiveAtPresent = true;
                 ToastUtils.showShort("暂无直播");
-                if(controller != null){
+                if (controller != null) {
                     controller.onLiveEnd();
                 }
 
@@ -507,12 +508,22 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 controller.updateMoreLayout(pos);
             }
         });
+        polyvCloudClassVideoView.setOnSEIRefreshListener(new IPolyvVideoViewListenerEvent.OnSEIRefreshListener() {
+            @Override
+            public void onSEIRefresh(int seiType, byte[] seiData) {
+                long ts = Long.valueOf(new String(seiData));
+                PolyvCommonLog.d(TAG, "sei ts :" + ts);
+                if (polyvPPTItem != null) {
+                    polyvPPTItem.getPPTView().sendWebMessage(SETSEIDATA, "{\"time\":" + ts + "}");
+                }
+            }
+        });
     }
 
 
     private void sendVideoStartMessage() {
-        if(!isJoinLinkMic){
-            PolyvTeacherStatusInfo statusInfo =new PolyvTeacherStatusInfo();
+        if (!isJoinLinkMic) {
+            PolyvTeacherStatusInfo statusInfo = new PolyvTeacherStatusInfo();
             statusInfo.setWatchStatus(LIVE_START);
             PolyvRxBus.get().post(statusInfo);
         }
@@ -524,7 +535,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
     protected void notifyTeacherInfoShow(boolean show) {
         PolyvTeacherStatusInfo dataBean = new PolyvTeacherStatusInfo();
-        dataBean.setWatchStatus(show?LIVE_OPEN_PPT:LIVE_N0_PPT);
+        dataBean.setWatchStatus(show ? LIVE_OPEN_PPT : LIVE_N0_PPT);
         PolyvRxBus.get().post(dataBean);
     }
 
@@ -665,10 +676,10 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 long minutes = (millisUntilFinished % (60 * 60)) / 60;
                 long seconds = millisUntilFinished % 60;
 
-                String dayString=zeroFill(days);
-                String hourString=zeroFill(hours);
-                String minuteString=zeroFill(minutes);
-                String secondString=zeroFill(seconds);
+                String dayString = zeroFill(days);
+                String hourString = zeroFill(hours);
+                String minuteString = zeroFill(minutes);
+                String secondString = zeroFill(seconds);
 
                 String timeText;
                 if (days > 0) {
@@ -689,21 +700,22 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 tvStartTimeCountDown.setVisibility(View.GONE);
             }
 
-            private String zeroFill(long input){
+            private String zeroFill(long input) {
                 //三位数的就直接显示三位数了
-                if (input>99){
+                if (input > 99) {
                     return String.valueOf(input);
                 }
                 //二位数的就补零
-                String format="%02d";
-                return String.format(Locale.getDefault(),format,input);
+                String format = "%02d";
+                return String.format(Locale.getDefault(), format, input);
             }
         };
         startTimeCountDown.start();
     }
+
     //停止直播倒计时
-    private void stopLiveCountDown(){
-        if (startTimeCountDown!=null){
+    private void stopLiveCountDown() {
+        if (startTimeCountDown != null) {
             startTimeCountDown.cancel();
         }
         tvStartTimeCountDown.setVisibility(GONE);
@@ -797,7 +809,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 //            mlp.topMargin = linkMicLayoutHeight;//当连麦列表在顶部的时候
             mlp.leftMargin = linkMicLayoutWidth;
             //72 为连麦控制栏的宽度
-            mlp.rightMargin = PolyvScreenUtils.dip2px(getContext(),72);
+            mlp.rightMargin = PolyvScreenUtils.dip2px(getContext(), 72);
             polyvCloudClassVideoView.setLayoutParams(mlp);
         }
     }

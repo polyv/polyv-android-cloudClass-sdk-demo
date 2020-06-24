@@ -31,11 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
-    <!-- 跑马灯 -->
-    <com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView
-        android:id="@+id/polyv_marquee_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+
     <!-- 控制栏 -->
     <com.easefun.polyv.cloudclassdemo.watch.player.playback.PolyvPlaybackMediaController
         android:id="@+id/controller"

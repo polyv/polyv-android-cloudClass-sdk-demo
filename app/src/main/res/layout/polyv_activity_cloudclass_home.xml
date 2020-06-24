@@ -54,6 +54,16 @@
         android:visibility="invisible">
     </com.easefun.polyv.commonui.widget.PolyvTouchContainerView>
 
+    <!-- 跑马灯 -->
+    <com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView
+        android:id="@+id/polyv_marquee_view"
+        android:layout_width="match_parent"
+        android:layout_alignLeft="@id/player_container"
+        android:layout_alignTop="@id/player_container"
+        android:layout_alignBottom="@id/player_container"
+        android:layout_alignRight="@id/player_container"
+        android:layout_height="match_parent" />
+
 
     <!--问答-->
     <com.easefun.polyv.commonui.widget.PolyvAnswerView

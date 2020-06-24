@@ -37,7 +37,11 @@ import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvConnectStatusListener;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener2;
+import com.easefun.polyv.cloudclass.chat.PolyvSocketCallbackListener;
+import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
+import com.easefun.polyv.cloudclass.chat.event.PolyvReloginEvent;
 import com.easefun.polyv.cloudclass.config.PolyvVClassGlobalConfig;
+import com.easefun.polyv.cloudclass.model.PolyvInteractiveCallbackVO;
 import com.easefun.polyv.cloudclass.model.PolyvLiveClassDetailVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvJSQuestionVO;
@@ -83,6 +87,7 @@ import com.easefun.polyv.foundationsdk.net.PolyvResponseExcutor;
 import com.easefun.polyv.foundationsdk.net.PolyvrResponseCallback;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
+import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
@@ -534,6 +539,13 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
         answerView = findViewById(R.id.answer_layout);
         answerContainer = answerView.findViewById(R.id.polyv_answer_web_container);
         answerView.setViewerId(viewerId);
+        chatManager.setSocketCallbackListener(new PolyvSocketCallbackListener() {
+            @Override
+            public void socketCallback(PolyvInteractiveCallbackVO callbackVO) {
+                //发送互动应用到服务器的结果callback
+                answerView.showInteractiveCallback(PolyvGsonUtil.toJsonSimple(callbackVO));
+            }
+        });
         answerView.setAnswerJsCallback(new PolyvAnswerWebView.AnswerJsCallback() {
             @Override
             public void callOnHasAnswer(PolyvJSQuestionVO polyvJSQuestionVO) {
@@ -542,7 +554,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                     PolyvQuestionSocketVO socketVO = new PolyvQuestionSocketVO
                             (polyvJSQuestionVO.getAnswerId(), viewerName, polyvJSQuestionVO.getQuestionId(),
                                     channelId, chatManager.userId);
-                    chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, socketVO);
+                    chatManager.sendInteractiveSocketMessage(Socket.EVENT_MESSAGE, socketVO,3,PolyvInteractiveCallbackVO.EVENT_ANSWER);
                 }
             }
 
@@ -552,13 +564,13 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                 polyvQuestionnaireSocketVO.setNick(viewerName);
                 polyvQuestionnaireSocketVO.setRoomId(channelId);
                 polyvQuestionnaireSocketVO.setUserId(chatManager.userId);
-                chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, polyvQuestionnaireSocketVO);
+                chatManager.sendInteractiveSocketMessage(Socket.EVENT_MESSAGE, polyvQuestionnaireSocketVO,3,PolyvInteractiveCallbackVO.EVENT_QUESTIONNAIRE);
             }
 
             @Override
             public void callOnSignIn(PolyvSignIn2SocketVO socketVO) {
                 socketVO.setUser(new PolyvSignIn2SocketVO.UserBean(viewerName, viewerId));
-                chatManager.sendScoketMessage(Socket.EVENT_MESSAGE, socketVO);
+                chatManager.sendInteractiveSocketMessage(Socket.EVENT_MESSAGE, socketVO,3, PolyvInteractiveCallbackVO.EVENT_SIGN);
             }
 
             @Override
@@ -569,17 +581,23 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                             @Override
                             public void onSuccess(String s) {
                                 LogUtils.d("抽奖信息上传成功" + s);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 200);
+                                answerView.showInteractiveCallback(PolyvGsonUtil.toJsonSimple(vo));
                             }
 
                             @Override
                             public void onFailure(PolyvResponseBean<String> responseBean) {
                                 super.onFailure(responseBean);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 400);
+                                answerView.showInteractiveCallback(PolyvGsonUtil.toJsonSimple(vo));
                                 LogUtils.e("抽奖信息上传失败" + responseBean);
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 super.onError(e);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 400);
+                                answerView.showInteractiveCallback(PolyvGsonUtil.toJsonSimple(vo));
                                 LogUtils.e("抽奖信息上传失败");
                                 if (e instanceof HttpException) {
                                     try {
@@ -604,17 +622,23 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                             @Override
                             public void onSuccess(String s) {
                                 LogUtils.d("抽奖信息上传成功" + s);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 200);
+                                answerView.showInteractiveCallback(PolyvGsonUtil.toJsonSimple(vo));
                             }
 
                             @Override
                             public void onFailure(PolyvResponseBean<String> responseBean) {
                                 super.onFailure(responseBean);
                                 LogUtils.e("抽奖信息上传失败" + responseBean);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 400);
+                                answerView.showInteractiveCallback(PolyvGsonUtil.toJsonSimple(vo));
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 super.onError(e);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 400);
+                                answerView.showInteractiveCallback(PolyvGsonUtil.toJsonSimple(vo));
                                 LogUtils.e("抽奖信息上传失败");
                                 if (e instanceof HttpException) {
                                     try {
@@ -644,7 +668,6 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                             @Override
                             public void onFailure(PolyvResponseBean<String> responseBean) {
                                 super.onFailure(responseBean);
-                                LogUtils.d("放弃领奖信息上传失败 " + responseBean);
                             }
 
                             @Override
@@ -1199,6 +1222,25 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                 //由于登录成功后，Fragment可能还没初始化完成，所以这里使用Rxjava的ReplayRelay把信息保存下来，在Fragment初始化完成那里获取
 //                PolyvChatEventBus.get().post(new PolyvChatBaseFragment.EventMessage(message, event, socketListen));
                 PolyvRxBus.get().post(new PolyvChatBaseFragment.EventMessage(message, event, socketListen));
+
+                final PolyvReloginEvent reloginEvent = PolyvEventHelper.getEventObject(PolyvReloginEvent.class, message, event);
+                if (reloginEvent != null) {
+                    if (chatManager.userId.equals(reloginEvent.getUser().getUserId())) {
+                        if (livePlayerHelper != null) {
+                            livePlayerHelper.destory();
+                            livePlayerHelper = null;
+                        }
+                        if (playbackVideoHelper != null) {
+                            playbackVideoHelper.destory();
+                            playbackVideoHelper = null;
+                        }
+                        if (chatManager != null) {
+                            chatManager.destroy();
+                            chatManager = null;
+                        }
+                    }
+                }
+
             }
 
             @Override

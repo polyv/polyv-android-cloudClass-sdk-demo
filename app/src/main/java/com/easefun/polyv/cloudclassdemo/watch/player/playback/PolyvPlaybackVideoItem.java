@@ -84,7 +84,7 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
         polyvLightTipsView = (PolyvLightTipsView) findViewById(R.id.tipsview_light);
         tipsviewVolume = (PolyvVolumeTipsView) findViewById(R.id.tipsview_volume);
         tipsviewProgress = (PolyvProgressTipsView) findViewById(R.id.tipsview_progress);
-        marqueeView = findViewById(R.id.polyv_marquee_view);
+        marqueeView = ((Activity)context).findViewById(R.id.polyv_marquee_view);
 
         preparingview = findViewById(R.id.preparingview);
         //init controller

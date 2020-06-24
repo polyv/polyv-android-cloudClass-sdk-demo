@@ -96,8 +96,10 @@ public class PolyvCloudClassAudioModeView extends FrameLayout implements IPolyvC
                         for (int i = 1; i <= drawableCount; i++) {
                             String drawableName = "sound" + String.valueOf(10000 + i).substring(1);
                             int drawableId = PolyvCloudClassAudioModeView.this.getResources().getIdentifier(drawableName, "drawable", PolyvCloudClassAudioModeView.this.getContext().getPackageName());
-                            Drawable drawable = PolyvCloudClassAudioModeView.this.getResources().getDrawable(drawableId);
-                            animationDrawable.addFrame(drawable, ANIMATE_ONCE_DURATION / drawableCount);
+                            if(drawableId != 0) {
+                                Drawable drawable = PolyvCloudClassAudioModeView.this.getResources().getDrawable(drawableId);
+                                animationDrawable.addFrame(drawable, ANIMATE_ONCE_DURATION / drawableCount);
+                            }
                         }
                     }
                 })

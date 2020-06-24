@@ -454,7 +454,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                     }
 
                     //把带表情的信息解析保存下来
-                    speakHistory.setObjects(PolyvTextImageLoader.messageToSpan(speakHistory.getContent(), ConvertUtils.dp2px(14), false, getContext()));
+                    speakHistory.setObjects(PolyvTextImageLoader.messageToSpan(convertSpecialString(speakHistory.getContent()), ConvertUtils.dp2px(14), false, getContext()));
                     PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(speakHistory, type, PolyvChatManager.SE_MESSAGE);
                     tempChatItems.add(0, chatTypeItem);
                     if (isOnlyHostType(speakHistory.getUser().getUserType(), speakHistory.getUser().getUserId())) {
@@ -632,22 +632,22 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 //                    isShowGreeting = false;
 //                }
 //            }
-            boolean isSwitchEnabled=dataBean.isEnabled();
+            boolean isSwitchEnabled = dataBean.isEnabled();
             switch (dataBean.getType()) {
                 //观众发送图片开关
                 case PolyvChatFunctionSwitchVO.TYPE_VIEWER_SEND_IMG_ENABLED:
-                    if (isSwitchEnabled){
+                    if (isSwitchEnabled) {
                         selectPhotoLayout.setVisibility(View.VISIBLE);
                         openCameraLayout.setVisibility(View.VISIBLE);
                     }
                     break;
                 //欢迎语开关
                 case PolyvChatFunctionSwitchVO.TYPE_WELCOME:
-                    isShowGreeting=isSwitchEnabled;
+                    isShowGreeting = isSwitchEnabled;
                     break;
                 //送花开关
                 case PolyvChatFunctionSwitchVO.TYPE_SEND_FLOWERS_ENABLED:
-                    flFlower.setVisibility(isSwitchEnabled?View.VISIBLE:View.GONE);
+                    flFlower.setVisibility(isSwitchEnabled ? View.VISIBLE : View.GONE);
                     break;
             }
 
@@ -698,6 +698,17 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         }));
     }
 
+    private String convertSpecialString(String input) {
+        String output;
+        output = input.replace("&lt;", "<");
+        output = output.replace("&lt", "<");
+        output = output.replace("&gt;", ">");
+        output = output.replace("&gt", ">");
+        output = output.replace("&yen;", "¥");
+        output=output.replace("&yen","¥");
+        return output;
+    }
+
     private void acceptEventMessage() {
         disposables.add(PolyvRxBus.get().toObservable(EventMessage.class).buffer(500, TimeUnit.MILLISECONDS).map(new Function<List<EventMessage>, List<PolyvChatListAdapter.ChatTypeItem>[]>() {
             @Override
@@ -722,7 +733,9 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                     eventObject = speakEvent;
                                     eventType = PolyvChatListAdapter.ChatTypeItem.TYPE_RECEIVE;
                                     //把带表情的信息解析保存下来
-                                    speakEvent.setObjects(PolyvTextImageLoader.messageToSpan(speakEvent.getValues().get(0), ConvertUtils.dp2px(14), false, getContext()));
+                                    String speakMsg = speakEvent.getValues().get(0);
+                                    speakMsg = convertSpecialString(speakMsg);
+                                    speakEvent.setObjects(PolyvTextImageLoader.messageToSpan(speakMsg, ConvertUtils.dp2px(14), false, getContext()));
 
                                     //判断是不是只看讲师的类型
                                     if (isOnlyHostType(speakEvent.getUser().getUserType(), speakEvent.getUser().getUserId())) {
@@ -921,8 +934,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                 if (rewardEvent.getContent() != null) {
                                     String goodImage = rewardEvent.getContent().getGimg();
                                     String nickName = rewardEvent.getContent().getUnick();
-                                    int goodNum=rewardEvent.getContent().getGoodNum();
-                                    Spannable rewardSpan = generateRewardSpan(nickName, goodImage,goodNum);
+                                    int goodNum = rewardEvent.getContent().getGoodNum();
+                                    Spannable rewardSpan = generateRewardSpan(nickName, goodImage, goodNum);
                                     if (rewardSpan != null) {
                                         rewardEvent.setObjects(rewardSpan);
                                         eventType = PolyvChatListAdapter.ChatTypeItem.TYPE_TIPS;
@@ -966,8 +979,8 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         SpannableStringBuilder span = new SpannableStringBuilder(nickName + " 赠送p");
         int drawableSpanStart = span.length() - 1;
         int drawableSpanEnd = span.length();
-        if (goodNum!=1){
-            span.append(" x"+goodNum);
+        if (goodNum != 1) {
+            span.append(" x" + goodNum);
         }
         Drawable drawable = PolyvImageLoader.getInstance().getImageAsDrawable(getContext(), goodImageUrl);
         if (drawable == null) {
