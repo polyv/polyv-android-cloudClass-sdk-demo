@@ -21,7 +21,7 @@ polyv-android-cloudClass-sdk-demo
 * Android SDK 21或以上
 * Android Studio 3.0.0 或以上
 
-
+**注：开发者如需兼容minSdkVersion >= 16 (Android 4.x设备)，请按[OkHttp4.x版本降级到3.x兼容方案](https://github.com/polyv/polyv-android-cloudClass-sdk-demo/wiki/OkHttp4.x%E7%89%88%E6%9C%AC%E9%99%8D%E7%BA%A7%E5%88%B03.x%E5%85%BC%E5%AE%B9%E6%96%B9%E6%A1%88)处理。**
 
 ## 下载安装
 
