@@ -18,7 +18,7 @@ polyv-android-cloudClass-sdk-demo
 
 ## 运行环境
 * JDK 1.7 或以上
-* Android SDK 16或以上
+* Android SDK 21或以上
 * Android Studio 3.0.0 或以上
 
 
