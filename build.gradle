@@ -30,10 +30,10 @@ allprojects {
 
 ext {
     compileSdkVersion = 27
-    minSdkVersion = 16
+    minSdkVersion = 21
     targetSdkVersion = 27
-    versionCode = 75
-    versionName = "0.7.5.1"
+    versionCode = 140
+    versionName = "0.14.0"
 
     support = [
             appCompatV7: 'com.android.support:appcompat-v7:25.3.1',
@@ -50,3 +50,4 @@ ext {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+

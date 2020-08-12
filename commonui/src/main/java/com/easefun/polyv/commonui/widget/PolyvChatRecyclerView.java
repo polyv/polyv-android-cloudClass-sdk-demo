@@ -21,6 +21,8 @@ public class PolyvChatRecyclerView extends RecyclerView {
     private boolean heightZero;
     private boolean hasScrollEvent;
 
+    private OnUnreadCountChangeListener unreadCountChangeListener;
+
     private static final int FLAG_SCROLL = 1;
 
     @SuppressLint("HandlerLeak")
@@ -78,8 +80,7 @@ public class PolyvChatRecyclerView extends RecyclerView {
         unreadView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                unreadView.setVisibility(View.GONE);
-                unreadCount = 0;
+                hideUnredaView();
                 if (getAdapter() != null) {
                     if ((getAdapter().getItemCount() - 1) - ((LinearLayoutManager) getLayoutManager()).findLastVisibleItemPosition() <= 10)
                         smoothScrollToPosition(getAdapter().getItemCount() - 1);
@@ -88,6 +89,16 @@ public class PolyvChatRecyclerView extends RecyclerView {
                 }
             }
         });
+    }
+
+    public void hideUnredaView() {
+        if (unreadView != null) {
+            unreadView.setVisibility(View.GONE);
+        }
+        int tempUnreadCount = unreadCount;
+        unreadCount = 0;
+        if (tempUnreadCount != 0)
+            callOnUnreadChange(unreadCount);
     }
 
     public void addOnScrollListener() {
@@ -100,16 +111,15 @@ public class PolyvChatRecyclerView extends RecyclerView {
                     if (unreadCount >= 2 && getAdapter() != null) {
                         int temp_unreadCount = getAdapter().getItemCount() - 1 - ((LinearLayoutManager) getLayoutManager()).findLastVisibleItemPosition();
                         if (temp_unreadCount < unreadCount) {
+                            unreadCount = temp_unreadCount;
                             if (unreadView != null) {
-                                unreadView.setText("有" + (unreadCount = temp_unreadCount) + "条新信息，点击查看");
+                                unreadView.setText("有" + unreadCount + "条新信息，点击查看");
                             }
+                            callOnUnreadChange(unreadCount);
                         }
                     }
                     if (!lastScrollVertically_One) {
-                        if (unreadView != null) {
-                            unreadView.setVisibility(View.GONE);
-                        }
-                        unreadCount = 0;
+                        hideUnredaView();
                     }
                 }
             }
@@ -130,13 +140,32 @@ public class PolyvChatRecyclerView extends RecyclerView {
         }
     }
 
+    public void setOnUnreadCountChangeListener(OnUnreadCountChangeListener listener) {
+        unreadCountChangeListener = listener;
+    }
+
+    private void callOnUnreadChange(int currentUnreadCount) {
+        if (unreadCountChangeListener != null) {
+            unreadCountChangeListener.onChange(currentUnreadCount);
+        }
+    }
+
+    public interface OnUnreadCountChangeListener {
+        void onChange(int currentUnreadCount);
+    }
+
     @SuppressLint("SetTextI18n")
     private void changeUnreadViewWithCount(int count) {
         unreadCount += count;
+        callOnUnreadChange(unreadCount);
         if (unreadView != null) {
             unreadView.setVisibility(View.VISIBLE);
             unreadView.setText("有" + unreadCount + "条新信息，点击查看");
         }
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
     }
 
     @Override
@@ -144,7 +173,9 @@ public class PolyvChatRecyclerView extends RecyclerView {
         if (heightZero) {
             hasScrollEvent = true;
         } else {
-            super.smoothScrollToPosition(position);
+            if (position!=RecyclerView.NO_POSITION){
+                super.smoothScrollToPosition(position);
+            }
         }
     }
 
@@ -157,18 +188,22 @@ public class PolyvChatRecyclerView extends RecyclerView {
         }
     }
 
-    public void scrollToBottomOrShowMore(int count) {
+    //boolean isShowMore
+    public boolean scrollToBottomOrShowMore(int count) {
         if (heightZero) {
             if (!lastScrollVertically_One) {
                 hasScrollEvent = true;
             } else {
                 changeUnreadViewWithCount(count);
+                return true;
             }
         } else if (!lastScrollVertically_One) {
             if (getAdapter() != null)
                 super.scrollToPosition(getAdapter().getItemCount() - 1);
         } else if (getHeight() - getPaddingBottom() - getPaddingTop() < computeVerticalScrollRange()) {//排除item数为0的情况
             changeUnreadViewWithCount(count);
+            return true;
         }
+        return false;
     }
 }

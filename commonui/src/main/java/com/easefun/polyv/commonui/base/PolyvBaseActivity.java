@@ -16,9 +16,7 @@ import android.view.View;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -30,59 +28,41 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     private final static int APP_STATUS_KILLED = 0; // 表示应用是被杀死后在启动的
     private final static int APP_STATUS_RUNNING = 1; // 表示应用时正常的启动流程
     private static int APP_STATUS = APP_STATUS_KILLED; // 记录App的启动状态
-    protected boolean isCreateSuccess, isKick;
-    //静态变量记录学员是否被踢，如果被踢后，需要结束应用后才能再次进来观看直播，这个逻辑可以更改
-    private static Map<String, Boolean> kickMap = new HashMap<>();
+    protected boolean isCreateSuccess;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="处理聊天室用户被踢的相关方法">
     public boolean isInitialize() {
-        return isCreateSuccess && !isKick;
+        return isCreateSuccess;
     }
 
-    public static void setKickValue(String channelId, boolean isKick) {
-        kickMap.put(channelId, isKick);
-    }
-
-    public static boolean checkKick(String channelId) {
-        return kickMap.containsKey(channelId) && kickMap.get(channelId);
-    }
-
-    public static boolean checkKickTips(final Activity activity, String channelId, String... message) {
-        if (checkKick(channelId)) {
-            new AlertDialog.Builder(activity)
-                    .setTitle("温馨提示")
-                    .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            activity.finish();
-                        }
-                    })
-                    .setCancelable(false)
-                    .show();
-            return true;
-        }
-        return false;
+    public static void showKickTips(final Activity activity, String... message) {
+        new AlertDialog.Builder(activity)
+                .setTitle("温馨提示")
+                .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        activity.finish();
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 
     public static boolean showReloginTip(final Activity activity, String channelId, String... message) {
-            new AlertDialog.Builder(activity)
-                    .setTitle("温馨提示")
-                    .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
-                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            activity.finish();
-                        }
-                    })
-                    .setCancelable(false)
-                    .show();
-            return true;
-    }
-
-    public boolean checkKickTips(String channelId, String... message) {
-        return isKick = checkKickTips(this, channelId, message);
+        new AlertDialog.Builder(activity)
+                .setTitle("温馨提示")
+                .setMessage(message != null && message.length > 0 ? message[0] : "您未被授权观看本直播！")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        activity.finish();
+                    }
+                })
+                .setCancelable(false)
+                .show();
+        return true;
     }
     // </editor-fold>
 
@@ -133,10 +113,10 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             savedInstanceState.putParcelable("android:support:fragments", null);
+            savedInstanceState.putParcelable("android:fragments", null);
         }
         super.onCreate(savedInstanceState);
         isCreateSuccess = false;
-        isKick = false;
         boolean launchActivityItBaseActivity = false;
         try {
             launchActivityItBaseActivity = getLaunchActivityName() != null && PolyvBaseActivity.class.isAssignableFrom(Class.forName(getLaunchActivityName()));//父/等
@@ -188,7 +168,7 @@ public class PolyvBaseActivity extends AppCompatActivity implements PolyvPermiss
     //新增的findViewById()方法，用于兼容support 25
     @SuppressWarnings("unchecked")
     public <T extends View> T findView(@IdRes int id) {
-        return (T)super.findViewById(id);
+        return (T) super.findViewById(id);
     }
     // </editor-fold>
 

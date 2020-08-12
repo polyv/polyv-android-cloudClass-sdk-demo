@@ -11,11 +11,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.ToastUtils;
-import com.blankj.utilcode.util.Utils;
 import com.bumptech.glide.Glide;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.BaseSwipeAdapter;
@@ -27,6 +22,7 @@ import com.easefun.polyv.cloudclass.download.PolyvCloudClassPlaybackCacheVO;
 import com.easefun.polyv.cloudclass.download.PolyvDownloadDirManager;
 import com.easefun.polyv.cloudclass.download.listener.IPolyvCloudClassDownloaderBeforeStartListener;
 import com.easefun.polyv.cloudclass.download.listener.IPolyvCloudClassDownloaderSpeedListener;
+import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackListType;
 import com.easefun.polyv.cloudclass.video.PolyvCloudClassPlayErrorType;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.PolyvCloudClassHomeActivity;
@@ -40,6 +36,11 @@ import com.easefun.polyv.cloudclassdemo.watch.playback_cache.listener.registry.I
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.listener.registry.PolyvGlobalDownloaderListenerKeeper;
 import com.easefun.polyv.commonui.modle.db.PolyvCacheStatus;
 import com.easefun.polyv.commonui.modle.db.PolyvPlaybackCacheDBEntity;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ActivityUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.FileUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -385,6 +386,7 @@ public class PolyvDownloadListViewAdapter extends BaseSwipeAdapter {
                             channelId,
                             PolyvPlaybackCacheConfig.get().getUserId(),
                             downloadInfo.isNormal(),
+                            PolyvPlaybackListType.PLAYBACK,
                             false
                     );
                     break;

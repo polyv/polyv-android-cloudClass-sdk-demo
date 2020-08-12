@@ -85,6 +85,7 @@ public class PolyvChatListAdapter extends PolyvBaseRecyclerViewAdapter {
         public Object object;
         public int type;
         public String socketListen;
+        public int showTime;
 
         public ChatTypeItem(Object object, @Type int type, String socketListen) {
             this.object = object;

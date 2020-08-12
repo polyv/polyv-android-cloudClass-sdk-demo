@@ -93,19 +93,10 @@
 }
 #----------------------------------------------------------------------------
 
--keep class com.easefun.polyv.foundationsdk.** {*;}
--keep class com.easefun.polyv.cloudclass.**{*;}
--keep class com.easefun.polyv.businesssdk.**{*;}
--keep class com.easefun.polyv.linkmic.**{*;}
-
--keep class com.easefun.polyv.foundationsdk.** {*;}
--keep class com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient {*;}
--keep class com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient {*;}
--keep class com.easefun.polyv.businesssdk.model.** {*;}
--keep class com.easefun.polyv.businesssdk.sub.danmaku.entity.** {*;}
--keep class com.easefun.polyv.businesssdk.vodplayer.question.model.** {*;}
--keep class com.easefun.polyv.cloudclass.chat.** {*;}
--keep class com.easefun.polyv.cloudclass.model.** {*;}
--keep class com.easefun.polyv.linkmic.model.** {*;}
 -keep class tv.danmaku.** {*;}
 -keep class io.agora.** {*;}
+-keep class com.easefun.polyv.businesssdk.** {*;}
+-keep class com.easefun.polyv.foundationsdk.** {*;}
+-keep class com.easefun.polyv.thirdpart.** {*;}
+-keep class com.easefun.polyv.cloudclass.** {*;}
+-keep class com.easefun.polyv.linkmic.** {*;}

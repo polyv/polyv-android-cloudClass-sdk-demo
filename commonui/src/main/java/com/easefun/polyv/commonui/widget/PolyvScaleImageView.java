@@ -15,8 +15,6 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.bumptech.glide.load.resource.gif.GifDrawable;
-
 public class PolyvScaleImageView extends AppCompatImageView {
     private ScaleGestureDetector scaleGestureDetector;//缩放
     private GestureDetector gestureDetector;//双击
@@ -66,7 +64,9 @@ public class PolyvScaleImageView extends AppCompatImageView {
             @Override
             public boolean onDoubleTap(MotionEvent e) {
                 if (canScale()) {
-                    if (getIvScaleX() < midScaleX) {
+                    if (getIvScaleX() < scaleX) {
+                        reset();
+                    } else if (getIvScaleX() < midScaleX) {
                         scaleMatrix.postScale(midScaleX / getIvScaleX(), midScaleX / getIvScaleX(), getWidth() / 2.0f, getHeight() / 2.0f);
                         setImageMatrix(scaleMatrix);
                     } else {
@@ -192,9 +192,6 @@ public class PolyvScaleImageView extends AppCompatImageView {
                 resetScaleX(drawable);
                 reset();
                 setVisibility(View.VISIBLE);
-                if (drawable instanceof GifDrawable) {
-                    ((GifDrawable) drawable).start();//显示gif
-                }
             }
         });
     }

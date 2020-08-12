@@ -1,29 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvNormalLinkMicView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="horizontal"
     android:visibility="invisible"
-    android:id="@+id/normal_live_link_mic_layout_parent"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/dm_60">
+    tools:visibility="visible">
+
+
+    <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicBottomView
+        android:id="@+id/link_mic_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:paddingBottom="92dp">
+
+    </com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicBottomView>
+
+    <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvNormalLinkMicView
+        android:layout_toRightOf="@id/link_mic_fixed_position"
+        android:id="@+id/link_mic_layout_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/link_mic_bottom"
+        >
+
+        <FrameLayout
+            android:id="@+id/link_mic_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="invisible" />
+    </com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvNormalLinkMicView>
 
     <LinearLayout
-        android:gravity="center"
-        android:background="@drawable/link_mic_head_back"
+        android:layout_alignTop="@id/link_mic_layout_parent"
+        android:visibility="invisible"
         android:id="@+id/link_mic_fixed_position"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dm_60"
+        android:background="@drawable/link_mic_head_back"
+        android:gravity="center"
         android:orientation="horizontal">
+
     </LinearLayout>
-
-    <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/dm_60">
-
-        <LinearLayout
-            android:id="@+id/link_mic_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dm_60"
-            android:orientation="horizontal"
-            android:visibility="invisible" />
-    </com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView>
-</com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvNormalLinkMicView>
+</RelativeLayout>

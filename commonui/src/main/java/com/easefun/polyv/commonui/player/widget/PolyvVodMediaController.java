@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.service.PolyvNoLeakHandler;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodVideoView;
 import com.easefun.polyv.commonui.PolyvCommonMediacontroller;
@@ -384,7 +384,7 @@ public class PolyvVodMediaController extends PolyvCommonMediacontroller<PolyvVod
         pbSubviewShow.setVisibility(GONE);
         pbSubviewShowLand.setVisibility(GONE);
         if (polyvVodVideoHelper != null) {
-            polyvVodVideoHelper.showCamerView();
+            polyvVodVideoHelper.showCameraView();
         }
     }
 

@@ -1,30 +1,36 @@
 package com.easefun.polyv.commonui.adapter.viewholder;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 
-import com.blankj.utilcode.util.ConvertUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.adapter.PolyvBaseRecyclerViewAdapter;
 import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvOnProgressListener;
+import com.easefun.polyv.commonui.utils.imageloader.IPolyvProgressListener;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils.dip2px;
 
 /**
  * @author df
@@ -44,7 +50,7 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
     public ClickableViewHolder(View itemView, Q adapter) {
         super(itemView);
         this.parentView = itemView;
-        this.contentContainer = (FrameLayout) parentView.findViewById(R.id.message_container);
+        this.contentContainer = parentView.findViewById(R.id.message_container);
         resendMessageButton = $(com.easefun.polyv.commonui.R.id.resend_message_button);
         this.adapter = adapter;
         this.context = parentView.getContext();
@@ -57,7 +63,7 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
 
     @SuppressWarnings("unchecked")
     public <T extends View> T $(@IdRes int id) {
-        return (T) parentView.findViewById(id);
+        return parentView.findViewById(id);
     }
 
     // <editor-fold defaultstate="collapsed" desc=""抽象方法>
@@ -120,45 +126,53 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
 
 
     // <editor-fold defaultstate="collapsed" desc="图片处理方法">
-    protected void loadNetImg(String chatImg, final int position, final ProgressBar imgLoading, final ImageView imageView) {
-        PolyvMyProgressManager.removeListener(chatImg, position);
-        final PolyvOnProgressListener onProgressListener = new PolyvOnProgressListener() {
-            @Override
-            public void onStart(String url) {//后台回来会重新开始
-                if ((int) imgLoading.getTag() != position)
-                    return;
-                if (imgLoading.getProgress() == 0 && imgLoading.getVisibility() != View.VISIBLE) {
-                    imgLoading.setVisibility(View.VISIBLE);
-                    imageView.setImageDrawable(null);
-                }
-            }
+    protected void loadNetImg(final String chatImg, final int position, final ProgressBar imgLoading, final ImageView imageView) {
+        PolyvImageLoader.getInstance()
+                .loadImage(parentView.getContext(),
+                        chatImg,
+                        position,
+                        R.drawable.polyv_image_load_err,
+                        new IPolyvProgressListener() {
+                            @Override
+                            public void onStart(String url) {
+                                if ((int) imgLoading.getTag() != position)
+                                    return;
+                                if (imgLoading.getProgress() == 0 && imgLoading.getVisibility() != View.VISIBLE) {
+                                    imgLoading.setVisibility(View.VISIBLE);
+                                    imageView.setImageDrawable(null);
+                                }
+                            }
 
-            @Override
-            public void onProgress(String url, boolean isComplete, int percentage, long bytesRead, long totalBytes) {
-                if ((int) imgLoading.getTag() != position)
-                    return;
-                if (isComplete) {
-                    imgLoading.setVisibility(View.GONE);
+                            @Override
+                            public void onProgress(String url, boolean isComplete, int percentage, long bytesRead, long totalBytes) {
+                                if ((int) imgLoading.getTag() != position)
+                                    return;
+                                if (isComplete) {
+                                    imgLoading.setVisibility(View.GONE);
 
-                    imgLoading.setProgress(100);
-                } else if (imageView.getDrawable() == null) {//onFailed之后可能触发onProgress
-                    imgLoading.setVisibility(View.VISIBLE);
-                    imgLoading.setProgress(percentage);
-                }
-            }
+                                    imgLoading.setProgress(100);
+                                } else if (imageView.getDrawable() == null) {//onFailed之后可能触发onProgress
+                                    imgLoading.setVisibility(View.VISIBLE);
+                                    imgLoading.setProgress(percentage);
+                                }
+                            }
 
-            @Override
-            public void onFailed(@Nullable Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                if ((int) imgLoading.getTag() != position)
-                    return;
-                imgLoading.setVisibility(View.GONE);
-                imgLoading.setProgress(0);
-            }
+                            @Override
+                            public void onResourceReady(Drawable drawable) {
+                                removeImgUrl(chatImg, position);
+                                imageView.setImageDrawable(drawable);
+                            }
 
-        };
-        PolyvMyProgressManager.addListener(chatImg, position, onProgressListener);
+                            @Override
+                            public void onFailed(@Nullable Exception e, Object model) {
+                                if ((int) imgLoading.getTag() != position)
+                                    return;
+                                imgLoading.setVisibility(View.GONE);
+                                imgLoading.setProgress(0);
+                            }
+                        });
+
         putImgUrl(chatImg, position);
-        loadChatImg(chatImg, onProgressListener, imageView, position);
     }
 
     protected void putImgUrl(String imgUrl, int position) {
@@ -201,26 +215,54 @@ public abstract class ClickableViewHolder<M, Q extends PolyvBaseRecyclerViewAdap
         }
     }
 
-    private void loadChatImg(final String chatImg, final PolyvOnProgressListener onProgressListener, final ImageView view, final int position) {
-        Glide.with(parentView.getContext())
-                .load(chatImg)
-                .error(com.easefun.polyv.commonui.R.drawable.polyv_image_load_err)
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        onProgressListener.onFailed(e, model, target, isFirstResource);
-                        return false;
-                    }
+    protected void processItemLongClick(View anchor,boolean isLeft,String copyContent){
+        createPopupWindow(context,anchor,isLeft,copyContent);
+    }
 
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        PolyvMyProgressManager.removeListener(chatImg, position);
-                        removeImgUrl(chatImg, position);
-                        onProgressListener.onProgress(chatImg, true, 100, 0, 0);
-                        return false;
-                    }
-                })
-                .into(view);
+    /**
+     * 复制内容到剪切板
+     *
+     * @param copyStr
+     * @return
+     */
+    private boolean copy(String copyStr) {
+        try {
+            //获取剪贴板管理器
+            ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+            // 创建普通字符型ClipData
+            ClipData mClipData = ClipData.newPlainText("Label", copyStr);
+            // 将ClipData内容放到系统剪贴板里。
+            cm.setPrimaryClip(mClipData);
+            ToastUtils.showLong("复制成功");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public PopupWindow createPopupWindow(Context context, View anchor, boolean isLeft, final String copyContent) {
+        // 自定义的布局View
+        final PopupWindow popupWindow = new PopupWindow();
+        View view = LayoutInflater.from(context)
+                .inflate(R.layout.polyv_popup_item_active, null, false);
+        view.findViewById(R.id.long_press_copy).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                copy(copyContent);
+                popupWindow.dismiss();
+            }
+        });
+
+        popupWindow.setContentView(view);
+        popupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(dip2px(context, 96));
+        popupWindow.setBackgroundDrawable(new ColorDrawable()); // 需要设置一个背景setOutsideTouchable(true)才会生效
+        popupWindow.setFocusable(true); // 防止点击事件穿透
+        popupWindow.setOutsideTouchable(true); // 设置点击外部时取消
+        int[] location = new int[2];
+        anchor.getLocationOnScreen(location);
+        popupWindow.showAtLocation(anchor, Gravity.TOP | Gravity.START,
+                location[0]+ (isLeft?anchor.getMeasuredWidth()/2:-anchor.getMeasuredWidth()/2), (int) (location[1]-anchor.getHeight()*0.7));
+        return popupWindow;
     }
 // </editor-fold>
 }

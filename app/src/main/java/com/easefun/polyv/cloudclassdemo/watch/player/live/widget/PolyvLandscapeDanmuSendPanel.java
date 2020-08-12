@@ -12,8 +12,8 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.KeyboardUtils;
-import com.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.KeyboardUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.cloudclassdemo.R;
 
 /**
@@ -50,7 +50,24 @@ public class PolyvLandscapeDanmuSendPanel implements IPolyvLandscapeDanmuSender 
         window.setWidth(width);
         window.setHeight(height);
 
+//        activity.getLifecycle().addObserver(new GenericLifecycleObserver() {
+//            @Override
+//            public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) {
+//                switch (event) {
+//                    case ON_DESTROY:
+//                        window.dismiss();
+//                        break;
+//                }
+//            }
+//        });
         initView(root);
+    }
+
+    @Override
+    public void dismiss() {
+        if (window != null) {
+            window.dismiss();
+        }
     }
 
     @Override
@@ -61,19 +78,37 @@ public class PolyvLandscapeDanmuSendPanel implements IPolyvLandscapeDanmuSender 
     @Override
     public void openDanmuSender() {
         window.showAtLocation(anchor, Gravity.CENTER,0,0);
-        llSendDanmu.post(() -> {
-            KeyboardUtils.showSoftInput(etSendDanmu);
+        llSendDanmu.post(new Runnable() {
+            @Override
+            public void run() {
+                KeyboardUtils.showSoftInput(etSendDanmu);
+            }
         });
     }
 
     private void initView(View root) {
-        llSendDanmu = (OrientationSensibleLinearLayout) root.findViewById(R.id.ll_send_danmu);
-        tvSendDanmu = (TextView) root.findViewById(R.id.tv_send_danmu);
-        etSendDanmu = (EditText) root.findViewById(R.id.et_send_danmu);
-        ivSendDanmuClose = (ImageView) root.findViewById(R.id.iv_send_danmu_close);
-        llSendDanmu.setOnClickListener(this::onClick);
-        tvSendDanmu.setOnClickListener(this::onClick);
-        ivSendDanmuClose.setOnClickListener(this::onClick);
+        llSendDanmu = root.findViewById(R.id.ll_send_danmu);
+        tvSendDanmu = root.findViewById(R.id.tv_send_danmu);
+        etSendDanmu = root.findViewById(R.id.et_send_danmu);
+        ivSendDanmuClose = root.findViewById(R.id.iv_send_danmu_close);
+        llSendDanmu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view2) {
+                PolyvLandscapeDanmuSendPanel.this.onClick(view2);
+            }
+        });
+        tvSendDanmu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view1) {
+                PolyvLandscapeDanmuSendPanel.this.onClick(view1);
+            }
+        });
+        ivSendDanmuClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PolyvLandscapeDanmuSendPanel.this.onClick(view);
+            }
+        });
 
         etSendDanmu.addTextChangedListener(new TextWatcher() {
             @Override
@@ -91,20 +126,25 @@ public class PolyvLandscapeDanmuSendPanel implements IPolyvLandscapeDanmuSender 
                 }
             }
         });
-        llSendDanmu.onPortrait = this::hide;
+        llSendDanmu.onPortrait = new Runnable() {
+            @Override
+            public void run() {
+                PolyvLandscapeDanmuSendPanel.this.hide();
+            }
+        };
     }
 
     private void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.ll_send_danmu:
-                hide();
-                break;
-            case R.id.tv_send_danmu:
-                sendDanmuAndChatMsg();
-                break;
-            case R.id.iv_send_danmu_close:
-                hide();
-                break;
+        int i = view.getId();
+        if (i == R.id.ll_send_danmu) {
+            hide();
+
+        } else if (i == R.id.tv_send_danmu) {
+            sendDanmuAndChatMsg();
+
+        } else if (i == R.id.iv_send_danmu_close) {
+            hide();
+
         }
     }
 

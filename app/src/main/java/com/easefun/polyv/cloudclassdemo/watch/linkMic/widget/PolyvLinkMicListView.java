@@ -2,6 +2,7 @@ package com.easefun.polyv.cloudclassdemo.watch.linkMic.widget;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,17 +12,18 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Scroller;
 
+import com.easefun.polyv.cloudclassdemo.watch.linkMic.IPolyvViewVisibilityChangedListener;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
-import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 
 /**
  * @author df
  * @create 2018/10/18
  * @Describe
  */
-public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyvRotateBaseView{
+public class PolyvLinkMicListView extends ScrollView implements IPolyvRotateBaseView{
     private static final String TAG = "PolyvLinkMicListView";
     // 竖屏下的位置
     private int portraitLeft = 0;
@@ -30,9 +32,12 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
     //键盘弹起前得位置
     private int beforeSoftLeft = 0;
     private int beforeSoftTop = 0;
-    private Scroller scroller;
 
     private int originTop = 0;
+
+    private String linkType;
+
+    private IPolyvViewVisibilityChangedListener visibilityChangedListener;
 
     public PolyvLinkMicListView(Context context) {
         this(context,null);
@@ -47,8 +52,14 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
     }
 
     public void initView(Context context){
-        scroller = new Scroller(context);
+        resetFloatViewPort();
     }
+
+    @Override
+    public void setOnVisibilityChangedListener(IPolyvViewVisibilityChangedListener listener) {
+        this.visibilityChangedListener = listener;
+    }
+
     @Override
     protected void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -63,6 +74,14 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
             }
         });
 
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (visibilityChangedListener != null  && changedView == this) {
+            visibilityChangedListener.onVisibilityChanged(changedView, visibility);
+        }
     }
 
     public void topSubviewTo(final int top) {
@@ -122,8 +141,11 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
         Log.d(TAG, "resetFloatViewLand: leftMargin :" + layoutParams.leftMargin + " parent height :topMargin"
                 + layoutParams.topMargin + "   height :" + getMeasuredHeight());
 
-        layoutParams.leftMargin = PolyvScreenUtils.dip2px(getContext(), 100);
+        layoutParams.leftMargin = 0;
         layoutParams.topMargin = 0;
+
+        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         setLayoutParams(layoutParams);
 
     }
@@ -144,6 +166,8 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
                 + portraitTop + "   width :" + getMeasuredWidth());
         rlp.leftMargin = 0;
         rlp.topMargin = originTop;
+        rlp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        rlp.width = ViewGroup.LayoutParams.MATCH_PARENT;
         setLayoutParams(rlp);
 
     }
@@ -161,11 +185,6 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
         return rlp;
     }
 
-
-    public Scroller getScroller() {
-        return scroller;
-    }
-
     public void scrollToPosition(int pos, View parent) {
 
         smoothScrollTo(parent.getRight(),0);
@@ -178,6 +197,16 @@ public class PolyvLinkMicListView extends HorizontalScrollView implements IPolyv
 
     @Override
     public void enableShow( boolean canshow) {
+
+    }
+
+    @Override
+    public void setLinkType(String type) {
+        this.linkType = type;
+    }
+
+    @Override
+    public void setSupportRtc(boolean type) {
 
     }
 

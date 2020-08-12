@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!-- 播放区域布局，全屏时会移除这一块 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_top"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -36,11 +37,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
-    <!-- 跑马灯 -->
-    <com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView
-        android:id="@+id/polyv_marquee_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <!-- 控制栏 -->
     <com.easefun.polyv.cloudclassdemo.watch.player.live.PolyvCloudClassMediaController
@@ -48,5 +44,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
+
+    <TextView
+        tools:visibility="visible"
+        android:visibility="gone"
+        android:id="@+id/tv_start_time_count_down"
+        android:gravity="center"
+        android:textColor="@color/white"
+        tools:text="倒计时：06天22小时07分31秒"
+        android:textSize="14sp"
+        android:background="#FF0AA9F5"
+        android:layout_width="match_parent"
+        android:layout_height="32dp" />
 
 </RelativeLayout>

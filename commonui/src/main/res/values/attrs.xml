@@ -14,4 +14,18 @@
         <attr name="selected_color" format="color" />
         <attr name="disabled_color" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="PolyvMediaCheckView">
+
+        <attr name="placeholder" format="reference|color"/>
+        <attr name="mainColor" format="color"/>
+        <attr name="borderColor" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="PolyvBeadWidget">
+        <attr name="bead_margin" format="dimension" />
+        <attr name="bead_radius" format="dimension" />
+        <attr name="selected_bead_color" format="color" />
+        <attr name="unselected_bead_color" format="color" />
+    </declare-styleable>
 </resources>

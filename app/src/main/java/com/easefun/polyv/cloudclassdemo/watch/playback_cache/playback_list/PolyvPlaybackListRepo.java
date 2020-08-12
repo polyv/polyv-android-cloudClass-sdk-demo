@@ -1,7 +1,5 @@
 package com.easefun.polyv.cloudclassdemo.watch.playback_cache.playback_list;
 
-import com.blankj.utilcode.util.EncryptUtils;
-import com.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient;
 import com.easefun.polyv.cloudclass.model.playback.PolyvPlaybackListVO;
 import com.easefun.polyv.cloudclass.net.PolyvApiManager;
@@ -10,6 +8,8 @@ import com.easefun.polyv.commonui.modle.db.PolyvPlaybackCacheDBEntity;
 import com.easefun.polyv.foundationsdk.net.PolyvResponseBean;
 import com.easefun.polyv.foundationsdk.net.PolyvResponseExcutor;
 import com.easefun.polyv.foundationsdk.net.PolyvrResponseCallback;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.EncryptUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;

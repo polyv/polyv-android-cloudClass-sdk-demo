@@ -1,14 +1,12 @@
 package com.easefun.polyv.cloudclassdemo.watch.playback_cache.cache_storage;
 
 import android.content.Context;
-import android.content.IntentFilter;
-import android.graphics.Movie;
 import android.text.TextUtils;
 
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.Utils;
 import com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient;
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.cache_storage.db.PolyvPlaybackCacheDB;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
 
 /**
  * date: 2019/8/19 0019

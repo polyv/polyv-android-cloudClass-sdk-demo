@@ -7,6 +7,7 @@
     <color name="tab_no_select">#000000</color>
     <color name="red">#FF4081</color>
     <color name="black">#000000</color>
+    <color name="link_mic_back">#1F1F1F</color>
     <color name="gray">#e0e0e0</color>
     <color name="gray_alpha">#aa848e99</color>
     <color name="gray_deep">#8B8989</color>
@@ -16,6 +17,10 @@
     <color name="video_back">#D6F2FF</color>
 
     <color name="top_text_color_black">#000000</color>
+    <color name="text_gray">#666666</color>
+    <color name="text_red">#F1453D</color>
+    <color name="text_green">#8BC34A</color>
+    <color name="item_checkCircle_backgroundColor">#1E8AE8</color>
     <color name="top_layout_color_white">#ffffff</color>
     <color name="top_left_layout_color_black">#00101b</color>
     <color name="top_left_layout_color_black_alpha">#b200101b</color>

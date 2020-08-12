@@ -6,10 +6,10 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.Utils;
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.cache_storage.vo.PolyvCacheStatusConverter;
 import com.easefun.polyv.commonui.modle.db.PolyvPlaybackCacheDBEntity;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
 
 /**
  * date: 2019/8/16 0016

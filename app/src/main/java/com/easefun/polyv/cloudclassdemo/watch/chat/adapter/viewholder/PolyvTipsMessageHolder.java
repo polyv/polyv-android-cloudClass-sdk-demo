@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
+import com.easefun.polyv.cloudclass.chat.event.PLVRewardEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvBanIpEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvCloseRoomEvent;
 import com.easefun.polyv.cloudclass.chat.event.PolyvLikesEvent;
@@ -68,6 +69,10 @@ public class PolyvTipsMessageHolder extends ClickableViewHolder<Object, PolyvCha
         } else if (object instanceof PolyvUnshieldEvent) {//取消禁言
             resetTipsTextView(tipsMessageHolder, false);
             tipsMessageHolder.tipsMessage.setText("我已被管理员取消禁言！");
+        } else if (object instanceof PLVRewardEvent) {
+            resetTipsTextView(tipsMessageHolder, false);
+            PLVRewardEvent rewardEvent = (PLVRewardEvent) object;
+            tipsMessageHolder.tipsMessage.setText((CharSequence) rewardEvent.getObjects()[0]);
         } else {
             resetTipsTextView(tipsMessageHolder, false);
             tipsMessageHolder.tipsMessage.setText("暂不支持的消息类型");

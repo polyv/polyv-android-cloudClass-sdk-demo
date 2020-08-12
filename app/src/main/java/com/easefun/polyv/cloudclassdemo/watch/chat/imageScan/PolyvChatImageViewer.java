@@ -2,7 +2,6 @@ package com.easefun.polyv.cloudclassdemo.watch.chat.imageScan;
 
 import android.Manifest;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -15,16 +14,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ImageUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.FileUtils;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackImg;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.utils.PolyvToast;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.foundationsdk.permission.PolyvOnGrantedListener;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.utils.PolyvSDCardUtils;
@@ -65,9 +63,9 @@ public class PolyvChatImageViewer extends FrameLayout {
 
     private void init(Context context) {
         view = LayoutInflater.from(context).inflate(R.layout.polyv_image_viewpager, this);
-        vpImageViewer = (ViewPager) view.findViewById(R.id.vp_image_viewer);
-        tvPage = (TextView) view.findViewById(R.id.tv_page);
-        ivDownload = (ImageView) view.findViewById(R.id.iv_download);
+        vpImageViewer = view.findViewById(R.id.vp_image_viewer);
+        tvPage = view.findViewById(R.id.tv_page);
+        ivDownload = view.findViewById(R.id.iv_download);
         ivDownload.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,14 +111,7 @@ public class PolyvChatImageViewer extends FrameLayout {
                                         }
                                     } catch (Exception e) {
                                     }
-                                    File file = new File(savePath, fileName);
-                                    Bitmap bitmap = Glide.with(getContext())
-                                            .load(imgUrl)
-                                            .asBitmap()
-                                            .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                                            .get();
-                                    ImageUtils.save(bitmap, file, Bitmap.CompressFormat.PNG);
-                                    return file;
+                                    return PolyvImageLoader.getInstance().saveImageAsFile(getContext(),imgUrl);
                                 }
                             })
                             .map(new Function<File, Boolean>() {
@@ -192,6 +183,11 @@ public class PolyvChatImageViewer extends FrameLayout {
         } else if (chatTypeItem.object instanceof PolyvSendLocalImgEvent) {
             PolyvSendLocalImgEvent sendLocalImgEvent = (PolyvSendLocalImgEvent) chatTypeItem.object;
             chatImgUrl = sendLocalImgEvent.getImageFilePath();
+        } else if (chatTypeItem.object instanceof PolyvChatPlaybackImg) {
+            PolyvChatPlaybackImg chatPlaybackImg = (PolyvChatPlaybackImg) chatTypeItem.object;
+            if (chatPlaybackImg.getContent() != null) {
+                chatImgUrl = chatPlaybackImg.getContent().getUploadImgUrl();
+            }
         }
         return chatImgUrl;
     }

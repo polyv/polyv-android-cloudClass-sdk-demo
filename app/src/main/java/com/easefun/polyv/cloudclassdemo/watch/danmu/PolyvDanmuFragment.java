@@ -153,6 +153,9 @@ public class PolyvDanmuFragment extends Fragment {
 
     //发送
     public void sendDanmaku(CharSequence message) {
+        if (mContext == null) {
+            return;
+        }
         BaseDanmaku danmaku = mContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
         danmaku.text = message;
         danmaku.padding = 0;
@@ -168,7 +171,7 @@ public class PolyvDanmuFragment extends Fragment {
     }
 
     //释放
-    private void release() {
+    public void release() {
         if (mDanmakuView != null) {
             mDanmakuView.release();
             mDanmakuView = null;
@@ -184,6 +187,7 @@ public class PolyvDanmuFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        //26 support调用后context为null，多次调用会有异常
         super.onDestroy();
         release();
         mContext = null;

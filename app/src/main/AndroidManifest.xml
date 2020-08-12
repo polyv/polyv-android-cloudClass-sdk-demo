@@ -26,7 +26,7 @@
         tools:replace="android:icon,android:theme"
         tools:ignore="GoogleAppIndexingWarning">
         <meta-data
-            android:name="com.easefun.polyv.commonui.utils.glide.progress.PolyvProgressLibraryGlideModule"
+            android:name="com.easefun.polyv.commonui.utils.imageloader.glide.progress.PolyvProgressLibraryGlideModule"
             android:value="GlideModule" />
         <activity
             android:name=".login.PolyvCloudClassLoginActivity"

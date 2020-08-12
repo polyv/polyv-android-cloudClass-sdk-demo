@@ -13,12 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.easefun.polyv.cloudclass.download.PolyvCloudClassDownloader;
 import com.easefun.polyv.cloudclass.model.playback.PolyvPlaybackListVO;
+import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackListType;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.PolyvCloudClassHomeActivity;
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.PolyvDemoDownloaderFactory;
@@ -30,6 +28,9 @@ import com.easefun.polyv.commonui.base.PolyvBaseActivity;
 import com.easefun.polyv.commonui.modle.db.PolyvCacheStatus;
 import com.easefun.polyv.commonui.modle.db.PolyvPlaybackCacheDBEntity;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.FileUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -180,7 +181,7 @@ public class PolyvPlaybackListActivity extends PolyvBaseActivity {
                         isCacheEntityDownloaded = entityList.get(0).getStatus() == PolyvCacheStatus.FINISHED;
                     }
                     boolean canCache = isCacheEnabled && !isCacheEntityDownloaded;
-                    PolyvCloudClassHomeActivity.startActivityForPlayBack(this, bean.getVideoPoolId(), PolyvPlaybackCacheConfig.get().getChannelId(), userId, bean.isNormal(), canCache);
+                    PolyvCloudClassHomeActivity.startActivityForPlayBack(this, bean.getVideoPoolId(), PolyvPlaybackCacheConfig.get().getChannelId(), userId, bean.isNormal(), PolyvPlaybackListType.PLAYBACK, canCache);
                 });
     }
 

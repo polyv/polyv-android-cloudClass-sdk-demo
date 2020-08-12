@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
+import com.easefun.polyv.commonui.utils.imageloader.glide.progress.PolyvMyProgressManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,8 +58,6 @@ public abstract class PolyvBaseRecyclerViewAdapter extends
     public Map<String, List<Integer>> getLoadImgMap() {
         return loadImgMap;
     }
-
-
 
     public  void onDestory(){
         if (getLoadImgMap() != null) {

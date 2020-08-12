@@ -29,7 +29,7 @@ public class PolyvChatUIConfig {
         @interface UserType {
         }
 
-        private static final int DEFAULT_COLOR= Color.parseColor("#546e7a");
+        private static final int DEFAULT_COLOR= Color.parseColor("#333333");
 
         public static final String USER_TEACHER = "user_teacher";
         public static final String USER_MANAGER = "user_manager";

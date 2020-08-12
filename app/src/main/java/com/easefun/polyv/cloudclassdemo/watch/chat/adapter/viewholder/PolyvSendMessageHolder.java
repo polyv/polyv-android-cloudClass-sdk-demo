@@ -3,13 +3,14 @@ package com.easefun.polyv.cloudclassdemo.watch.chat.adapter.viewholder;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvLocalMessage;
 import com.easefun.polyv.cloudclass.chat.PolyvQuestionMessage;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
 import com.easefun.polyv.cloudclass.chat.history.PolyvSpeakHistory;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackImg;
+import com.easefun.polyv.cloudclass.chat.playback.PolyvChatPlaybackSpeak;
 import com.easefun.polyv.cloudclass.chat.send.custom.PolyvCustomEvent;
 import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendLocalImgEvent;
 import com.easefun.polyv.cloudclassdemo.R;
@@ -17,7 +18,14 @@ import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.itemview.PolyvItemViewFactoy;
 import com.easefun.polyv.commonui.adapter.itemview.IPolyvCustomMessageBaseItemView;
 import com.easefun.polyv.commonui.adapter.viewholder.ClickableViewHolder;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView;
+import com.easefun.polyv.commonui.utils.PolyvWebUtils;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
+import com.easefun.polyv.commonui.widget.PolyvCircleProgressView;
+
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_ASSISTANT;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_GUEST;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_MANAGER;
+import static com.easefun.polyv.cloudclass.chat.PolyvChatManager.USERTYPE_TEACHER;
 
 /**
  * @author df
@@ -25,10 +33,11 @@ import com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView;
  * @Describe 发送消息item
  */
 
-public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChatListAdapter> {
+public class PolyvSendMessageHolder extends ClickableViewHolder<Object, PolyvChatListAdapter> {
     public GifSpanTextView sendMessage;
     public ImageView chatImg;
     public PolyvCircleProgressView imgLoading;
+    private static final String TAG = "PolyvSendMessageHolder";
 
     public PolyvSendMessageHolder(View itemView, PolyvChatListAdapter adapter) {
         super(itemView, adapter);
@@ -36,30 +45,47 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
     }
 
     private void initView() {
-        sendMessage =  $(com.easefun.polyv.commonui.R.id.gtv_send_message);
-        chatImg =  $(com.easefun.polyv.commonui.R.id.iv_chat_img);
-        imgLoading =  $(com.easefun.polyv.commonui.R.id.cpv_img_loading);
+        sendMessage = $(com.easefun.polyv.commonui.R.id.gtv_send_message);
+        chatImg = $(com.easefun.polyv.commonui.R.id.iv_chat_img);
+        imgLoading = $(com.easefun.polyv.commonui.R.id.cpv_img_loading);
+
+        sendMessage.setWebLinkClickListener(new GifSpanTextView.WebLinkClickListener() {
+            @Override
+            public void webLinkOnClick(String url) {
+                // TODO: 2019/11/11 监听消息的链接点击回掉
+                PolyvWebUtils.openWebLink(url,context);
+            }
+        });
+
+        sendMessage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                processItemLongClick(sendMessage,false,sendMessage.getText().toString());
+                return true;
+            }
+        });
+
     }
 
     @Override
     public void processNormalMessage(Object item, int position) {
-            handleSendMessage(this,item,position);
+        handleSendMessage(this, item, position);
     }
 
     @Override
-    public   void processCustomMessage(PolyvCustomEvent item, int position) {
+    public void processCustomMessage(PolyvCustomEvent item, int position) {
         resendMessageButton.setVisibility(View.GONE);
 
     }
 
     @Override
     public <T> IPolyvCustomMessageBaseItemView createItemView(PolyvCustomEvent<T> baseCustomEvent) {
-        return PolyvItemViewFactoy.createItemView(baseCustomEvent.getEVENT(),context);
+        return PolyvItemViewFactoy.createItemView(baseCustomEvent.getEVENT(), context);
     }
 
-    private void handleSendMessage(PolyvSendMessageHolder sendMessageHolder, Object object, int position) {
+    private void handleSendMessage(final PolyvSendMessageHolder sendMessageHolder, Object object, final int position) {
         int childIndex = findReuseChildIndex(PolyvChatManager.SE_MESSAGE);
-        if(childIndex < 0){
+        if (childIndex < 0) {
             View child = View.inflate(context,
                     R.layout.polyv_chat_send_normal_message_content_item, null);
             child.setTag(PolyvChatManager.SE_MESSAGE);
@@ -68,7 +94,7 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
         }
 
         sendMessageHolder.imgLoading.setTag(position);
-        if (!(object instanceof PolyvSendLocalImgEvent || object instanceof PolyvChatImgHistory)) {
+        if (!(object instanceof PolyvSendLocalImgEvent || object instanceof PolyvChatImgHistory || object instanceof PolyvChatPlaybackImg)) {
             sendMessageHolder.resendMessageButton.setVisibility(View.GONE);
             sendMessageHolder.chatImg.setVisibility(View.GONE);
             sendMessageHolder.imgLoading.setVisibility(View.GONE);
@@ -83,7 +109,7 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
                     if (adapter != null && adapter.getOnChatImgViewClickListener() != null) {
                         adapter.getOnChatImgViewClickListener().onClick(sendMessageHolder.chatImg, position);
                     }
-                }
+            }
             });
             sendMessageHolder.resendMessageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -94,10 +120,14 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
                 }
             });
         }
+
+        String userType = PolyvChatManager.getInstance().userType;
+        boolean isSpecialType = USERTYPE_TEACHER.equals(userType)  || USERTYPE_ASSISTANT.equals(userType)
+                || USERTYPE_MANAGER.equals(userType) || USERTYPE_GUEST.equals(userType);
         //本地发言信息
         if (object instanceof PolyvLocalMessage) {
             PolyvLocalMessage localMessage = (PolyvLocalMessage) object;
-            sendMessageHolder.sendMessage.setText((CharSequence) localMessage.getObjects()[0]);
+            sendMessageHolder.sendMessage.setTextInner((CharSequence) localMessage.getObjects()[0],isSpecialType);
         } else if (object instanceof PolyvSendLocalImgEvent) {//本地图片信息
             PolyvSendLocalImgEvent sendLocalImgEvent = (PolyvSendLocalImgEvent) object;
 
@@ -106,15 +136,16 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
             sendMessageHolder.imgLoading.setProgress(sendLocalImgEvent.getSendProgress());
 
             fitChatImgWH(sendLocalImgEvent.getWidth(), sendLocalImgEvent.getHeight(), sendMessageHolder.chatImg);
-            Glide.with(parentView.getContext())
-                    .load(sendLocalImgEvent.getImageFilePath())
-                    .into(sendMessageHolder.chatImg);
+            PolyvImageLoader.getInstance()
+                    .loadImage(parentView.getContext(),
+                            sendLocalImgEvent.getImageFilePath(),
+                            sendMessageHolder.chatImg);
         } else if (object instanceof PolyvQuestionMessage) {//提问信息
             PolyvQuestionMessage questionMessage = (PolyvQuestionMessage) object;
-            sendMessageHolder.sendMessage.setText((CharSequence) questionMessage.getObjects()[0]);
+            sendMessageHolder.sendMessage.setTextInner((CharSequence) questionMessage.getObjects()[0],isSpecialType);
         } else if (object instanceof PolyvSpeakHistory) {//历史自己的发言信息
             PolyvSpeakHistory speakHistory = (PolyvSpeakHistory) object;
-            sendMessageHolder.sendMessage.setText((CharSequence) speakHistory.getObjects()[0]);
+            sendMessageHolder.sendMessage.setTextInner((CharSequence) speakHistory.getObjects()[0],isSpecialType);
         } else if (object instanceof PolyvChatImgHistory) {//历史自己的图片信息
             PolyvChatImgHistory chatImgHistory = (PolyvChatImgHistory) object;
             PolyvChatImgHistory.ContentBean contentBean = chatImgHistory.getContent();
@@ -123,6 +154,18 @@ public class PolyvSendMessageHolder extends ClickableViewHolder<Object,PolyvChat
             sendMessageHolder.imgLoading.setProgress(0);
             fitChatImgWH((int) contentBean.getSize().getWidth(), (int) contentBean.getSize().getHeight(), sendMessageHolder.chatImg);
             loadNetImg(contentBean.getUploadImgUrl(), position, sendMessageHolder.imgLoading, sendMessageHolder.chatImg);
+        } else if (object instanceof PolyvChatPlaybackSpeak) {//历史自己的回放信息
+            PolyvChatPlaybackSpeak chatPlaybackSpeak = (PolyvChatPlaybackSpeak) object;
+            sendMessageHolder.sendMessage.setTextInner((CharSequence) chatPlaybackSpeak.getObjects()[0],isSpecialType);
+        } else if (object instanceof PolyvChatPlaybackImg) {//历史自己的回放图片信息
+            PolyvChatPlaybackImg chatPlaybackImg = (PolyvChatPlaybackImg) object;
+            PolyvChatPlaybackImg.ContentBean contentBean = chatPlaybackImg.getContent();
+            if (contentBean != null) {
+                sendMessageHolder.imgLoading.setVisibility(View.GONE);
+                sendMessageHolder.imgLoading.setProgress(0);
+                fitChatImgWH((int) contentBean.getSize().getWidth(), (int) contentBean.getSize().getHeight(), sendMessageHolder.chatImg);
+                loadNetImg(contentBean.getUploadImgUrl(), position, sendMessageHolder.imgLoading, sendMessageHolder.chatImg);
+            }
         }
     }
 }

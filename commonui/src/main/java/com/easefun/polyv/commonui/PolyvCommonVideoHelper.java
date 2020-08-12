@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 
-import com.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvBaseVideoView;
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
@@ -23,7 +22,9 @@ import com.easefun.polyv.commonui.player.ppt.PolyvPPTView;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 
 /**
  * @author df
@@ -47,9 +48,10 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     protected PolyvAuxiliaryVideoview subVideoview;
     protected Q controller;
     protected View loadingView, noStreamView, audioModeView,screenShotView;
-    protected static int videoViewVolume;
+//    protected static int videoViewVolume;
 
     protected  static final Handler S_HANDLER;
+    protected PolyvPermissionManager permissionManager;
 
     private boolean firstSwitchLocation = true;//第一次切换主副屏 不用动画
 
@@ -145,7 +147,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     //true：ppt在主屏，false：ppt在副屏
     public void changeView(boolean changeToVideoView) {
-        if(pptContianer == null || pptView == null){
+        if (pptContianer == null || pptView == null || videoView == null) {
             return;
         }
         PolyvCommonLog.d(TAG,"show ppt sub:"+changeToVideoView);
@@ -226,9 +228,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         firstSwitchLocation = false;
     }
 
-    public void showCamerView() {
-        if(pptParent != null){
-            pptParent.setVisibility(View.VISIBLE);
+    public void showCameraView() {
+        if(pptContianer != null){
+            pptContianer.setVisibility(View.VISIBLE);
         }
         PolyvPPTItem pptItem = videoItem.getPPTItem();
         if (pptItem != null) {
@@ -259,14 +261,14 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
 
     public void initVolume(){
-        this.videoViewVolume = videoView.getVolume();
+//        this.videoViewVolume = videoView.getVolume();
     }
 
     public void restartPlay() {
         if (playOption == null) {
             return;
         }
-        openVideoViewSound();
+//        openVideoViewSound();
         startPlay(playOption);
     }
 
@@ -278,8 +280,9 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
     }
     
     protected void openVideoViewSound() {
-        if(videoView != null && videoViewVolume >0){
-            videoView.setVolume(videoViewVolume);
+        if(videoView != null/* && videoViewVolume >0*/ && videoView.getIjkMediaPlayer() != null){
+//            videoView.setVolume(videoViewVolume);
+            videoView.getIjkMediaPlayer().setVolume(1, 1);
         }
     }
 
@@ -303,15 +306,18 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 //        }
     }
 
-    public void onActivityResume(){
-        videoView.onActivityResume();
-    }
-    public void onActivityPause(){
-        videoView.onActivityPause();
+
+    public boolean requestPermission() {
+        permissionManager.request();
+        return true;
     }
 
     public void destory() {
         PolyvCommonLog.d(TAG, "destroy helper video");
+//        if(videoViewVolume >0){
+//            PolyvControlUtils.setVolume(context, videoViewVolume);
+//        }
+
         videoView.destroy();
         controller.destroy();
         videoItem.destroy();

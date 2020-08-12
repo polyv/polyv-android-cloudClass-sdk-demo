@@ -2,75 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:visibility="invisible"
-    android:orientation="vertical">
+    android:background="@drawable/chat_tab_background"
+    android:orientation="vertical"
+    android:visibility="invisible">
 
-    <LinearLayout
-        android:id="@+id/chat_top_select_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="horizontal"
-        >
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:id="@+id/group_chat_item_layout"
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
 
-            <TextView
-                android:id="@+id/tv_group_chat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="3dp"
-                android:text="聊天"
-                android:textColor="@drawable/polyv_color_topic_tab_text_selector"
-                android:textSize="16sp" />
-
-            <View
-                android:layout_width="32dp"
-                android:layout_height="3dp"
-                android:layout_below="@id/tv_group_chat"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/polyv_color_topic_tab_bottom_selector" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/personal_chat_item_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/tv_personal_chat"
+            <LinearLayout
+                android:id="@+id/chat_top_select_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="3dp"
-                android:gravity="center"
-                android:text="私聊"
-                android:textColor="@drawable/polyv_color_topic_tab_text_selector"
-                android:textSize="16sp" />
+                android:layout_height="48dp"
+                android:layout_marginTop="15dp"
+                android:clickable="true"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+        </HorizontalScrollView>
 
-            <View
-                android:layout_width="32dp"
-                android:layout_height="3dp"
-                android:layout_below="@id/tv_personal_chat"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="7dp"
-                android:background="@drawable/polyv_color_topic_tab_bottom_selector" />
-        </RelativeLayout>
-    </LinearLayout>
+        <com.easefun.polyv.cloudclassdemo.watch.player.live.widget.PolyvChatPullLayout
+            android:id="@+id/chat_top_pull"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+        </com.easefun.polyv.cloudclassdemo.watch.player.live.widget.PolyvChatPullLayout>
+    </RelativeLayout>
 
-    <android.support.v4.view.ViewPager
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="-1dp"
+        android:background="#F3F3F4" />
+
+    <com.easefun.polyv.commonui.widget.PolyvSimpleViewPager
         android:id="@+id/chat_viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/chat_top_select_layout"
-        >
+        android:background="@color/white">
 
-    </android.support.v4.view.ViewPager>
+    </com.easefun.polyv.commonui.widget.PolyvSimpleViewPager>
 </LinearLayout>

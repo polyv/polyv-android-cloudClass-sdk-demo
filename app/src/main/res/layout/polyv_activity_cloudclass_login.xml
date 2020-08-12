@@ -161,12 +161,21 @@
                 android:layout_width="@dimen/dm_307"
                 android:layout_height="@dimen/dm_48"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/dm_30"
+                android:layout_marginTop="@dimen/dm_20"
                 android:background="@drawable/polyv_login_selector"
                 android:gravity="center"
                 android:text="@string/login"
                 android:textColor="@drawable/polyv_login_text_selector"
                 android:textSize="18sp" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/playback_vodlist_sw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dm_30"
+                android:layout_marginTop="@dimen/dm_10"
+                android:text="点播列表"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 

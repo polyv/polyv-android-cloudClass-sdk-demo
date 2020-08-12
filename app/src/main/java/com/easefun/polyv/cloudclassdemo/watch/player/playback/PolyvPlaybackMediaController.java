@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.businesssdk.service.PolyvNoLeakHandler;
 import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackVideoView;
 import com.easefun.polyv.cloudclassdemo.R;
@@ -215,7 +215,6 @@ public class PolyvPlaybackMediaController extends PolyvCommonMediacontroller<Pol
         int totalTime = polyvVideoView.getDuration();
         tvTotaltime.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
         tvTotaltimeLand.setText(" / " + PolyvTimeUtils.generateTime(totalTime));
-        videoControllerPort.setVisibility(VISIBLE);
     }
 
     @Override
@@ -384,7 +383,7 @@ public class PolyvPlaybackMediaController extends PolyvCommonMediacontroller<Pol
         pbSubviewShow.setVisibility(GONE);
         pbSubviewShowLand.setVisibility(GONE);
         if (videoHelper != null) {
-            videoHelper.showCamerView();
+            videoHelper.showCameraView();
         }
     }
 

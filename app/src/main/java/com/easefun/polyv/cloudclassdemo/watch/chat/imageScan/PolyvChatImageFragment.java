@@ -1,29 +1,16 @@
 package com.easefun.polyv.cloudclassdemo.watch.chat.imageScan;
 
-import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
-import com.bumptech.glide.load.resource.bitmap.BitmapResource;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
-import com.easefun.polyv.cloudclass.chat.send.img.PolyvSendChatImageHelper;
 import com.easefun.polyv.cloudclassdemo.watch.chat.adapter.PolyvChatListAdapter;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.commonui.base.PolyvBaseFragment;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvCircleProgressView;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvMyProgressManager;
-import com.easefun.polyv.commonui.utils.glide.progress.PolyvOnProgressListener;
+import com.easefun.polyv.commonui.widget.PolyvCircleProgressView;
+import com.easefun.polyv.commonui.utils.imageloader.IPolyvProgressListener;
+import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.commonui.widget.PolyvScaleImageView;
-
-import java.io.File;
 
 public class PolyvChatImageFragment extends PolyvBaseFragment {
     private PolyvChatListAdapter.ChatTypeItem chatTypeItem;
@@ -32,7 +19,6 @@ public class PolyvChatImageFragment extends PolyvBaseFragment {
     private View.OnClickListener onClickListener;
     private int position;
     private String imgUrl;
-    private int listenerPosition;
 
     @Override
     public int layoutId() {
@@ -77,62 +63,37 @@ public class PolyvChatImageFragment extends PolyvBaseFragment {
             return;
         imgUrl = PolyvChatImageViewer.getImgUrl(chatTypeItem);
         if (imgUrl != null) {
-            listenerPosition = hashCode();
-            PolyvMyProgressManager.removeListener(imgUrl, listenerPosition);
-            final PolyvOnProgressListener onProgressListener = new PolyvOnProgressListener() {
-                @Override
-                public void onStart(String url) {
-                    if (cpvImgLoading.getProgress() == 0 && cpvImgLoading.getVisibility() != View.VISIBLE) {
-                        cpvImgLoading.setVisibility(View.VISIBLE);
-                        ivChatImg.setImageDrawable(null);
-                    }
-                }
+            PolyvImageLoader.getInstance()
+                    .loadImage(getContext(), imgUrl, hashCode(), R.drawable.polyv_image_load_err, new IPolyvProgressListener() {
 
-                @Override
-                public void onProgress(String url, boolean isComplete, int percentage, long bytesRead, long totalBytes) {
-                    if (isComplete) {
-                        cpvImgLoading.setVisibility(View.GONE);
-                        cpvImgLoading.setProgress(100);
-                    } else if (ivChatImg.getDrawable() == null) {//onFailed之后可能触发onProgress
-                        cpvImgLoading.setVisibility(View.VISIBLE);
-                        cpvImgLoading.setProgress(percentage);
-                    }
-                }
-
-                @Override
-                public void onFailed(@Nullable Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                    cpvImgLoading.setVisibility(View.GONE);
-                    cpvImgLoading.setProgress(0);
-                }
-            };
-            PolyvMyProgressManager.addListener(imgUrl, listenerPosition, onProgressListener);
-            Glide.with(this)
-                    .load(imgUrl)
-                    .error(R.drawable.polyv_image_load_err)
-                    .transform(new CompressTransformation(getContext(), imgUrl))
-                    .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            onProgressListener.onFailed(e, model, target, isFirstResource);
-                            return false;
+                        public void onStart(String url) {
+                            if (cpvImgLoading.getProgress() == 0 && cpvImgLoading.getVisibility() != View.VISIBLE) {
+                                cpvImgLoading.setVisibility(View.VISIBLE);
+                                ivChatImg.setImageDrawable(null);
+                            }
                         }
 
                         @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            PolyvMyProgressManager.removeListener(imgUrl, listenerPosition);
-                            onProgressListener.onProgress(imgUrl, true, 100, 0, 0);
-                            return false;
-                        }
-                    })
-                    .into(new SimpleTarget<GlideDrawable>() {
-                        @Override
-                        public void onDestroy() {
-                            PolyvMyProgressManager.removeListener(imgUrl, listenerPosition);//loadFailed时没移除(触发loadFailed时这里没回调了)，需在onDestroy里移除
+                        public void onResourceReady(Drawable drawable) {
+                            ivChatImg.drawablePrepared(drawable);
                         }
 
                         @Override
-                        public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
-                            ivChatImg.drawablePrepared(resource);
+                        public void onProgress(String url, boolean isComplete, int percentage, long bytesRead, long totalBytes) {
+                            if (isComplete) {
+                                cpvImgLoading.setVisibility(View.GONE);
+                                cpvImgLoading.setProgress(100);
+                            } else if (ivChatImg.getDrawable() == null) {//onFailed之后可能触发onProgress
+                                cpvImgLoading.setVisibility(View.VISIBLE);
+                                cpvImgLoading.setProgress(percentage);
+                            }
+                        }
+
+                        @Override
+                        public void onFailed(@Nullable Exception e, Object model) {
+                            cpvImgLoading.setVisibility(View.GONE);
+                            cpvImgLoading.setProgress(0);
                         }
                     });
         }
@@ -140,41 +101,6 @@ public class PolyvChatImageFragment extends PolyvBaseFragment {
 
     @Override
     public void onDestroy() {
-        PolyvMyProgressManager.removeListener(imgUrl, listenerPosition);
         super.onDestroy();
-    }
-
-
-    private static class CompressTransformation extends BitmapTransformation{
-        private String mUrl;
-
-        CompressTransformation(Context context, String url) {
-            super(context);
-            mUrl=url;
-        }
-
-        public CompressTransformation(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
-            if (new File(mUrl).isFile()){
-                try {
-                    Bitmap bitmap = PolyvSendChatImageHelper.compressImage(mUrl);
-                    if (bitmap != null) {
-                        return BitmapResource.obtain(bitmap, pool).get();
-                    }
-                } catch (Exception e) {
-                }
-            }
-            return toTransform;
-        }
-
-
-        @Override
-        public String getId() {
-            return "CompressTransformation.1";
-        }
     }
 }

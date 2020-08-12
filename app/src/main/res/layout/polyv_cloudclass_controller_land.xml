@@ -60,7 +60,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginRight="48dp"
         android:layout_marginBottom="34dp"
-        android:src="@drawable/controller_exchange" />
+        android:src="@drawable/polyv_ppt_sub_selector" />
 
     <ImageView
         android:id="@+id/video_danmu_land"
@@ -80,6 +80,7 @@
         android:layout_above="@+id/video_ppt_change_switch_land"
         android:layout_alignLeft="@id/video_ppt_change_switch_land"
         android:layout_marginBottom="@dimen/controller_margin"
+        android:layout_marginRight="@dimen/controller_margin"
         android:src="@drawable/polyv_mic_phone_selector"
         android:visibility="invisible" />
 

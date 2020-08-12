@@ -26,6 +26,7 @@ import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.PolyvMediaInfoType;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.widget.PolyvLightTipsView;
+import com.easefun.polyv.commonui.player.widget.PolyvLoadingLayout;
 import com.easefun.polyv.commonui.player.widget.PolyvProgressTipsView;
 import com.easefun.polyv.commonui.player.widget.PolyvVolumeTipsView;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
@@ -38,7 +39,7 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
     private PolyvPlaybackVideoView videoView;
     private PolyvPlaybackMediaController controller;
     //载入状态指示器
-    private ProgressBar loadingview;
+    private PolyvLoadingLayout loadingview;
     //准备中状态显示的视图
     private View preparingview;
     //tips view
@@ -87,7 +88,7 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
         this.view = LayoutInflater.from(this.context).inflate(R.layout.polyv_playback_video_item, this);
         videoView = (PolyvPlaybackVideoView) findViewById(R.id.pb_videoview);
         controller = (PolyvPlaybackMediaController) findViewById(R.id.controller);
-        loadingview = (ProgressBar) findViewById(R.id.loadingview);
+        loadingview = findViewById(R.id.loadingview);
         polyvLightTipsView = (PolyvLightTipsView) findViewById(R.id.tipsview_light);
         tipsviewVolume = (PolyvVolumeTipsView) findViewById(R.id.tipsview_volume);
         tipsviewProgress = (PolyvProgressTipsView) findViewById(R.id.tipsview_progress);
@@ -100,6 +101,8 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
 
         noStreamView = findViewById(R.id.no_stream);
         videoView.setNoStreamIndicator(noStreamView);
+
+        loadingview.bindVideoView(videoView);
     }
 
     private void initVideoView() {

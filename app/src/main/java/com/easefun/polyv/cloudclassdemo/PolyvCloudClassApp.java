@@ -29,6 +29,7 @@ public class PolyvCloudClassApp extends MultiDexApplication {
         PolyvCommonLog.setDebug(true);
         PolyvLiveSDKClient liveSDKClient = PolyvLiveSDKClient.getInstance();
         liveSDKClient.initContext(this);
+        liveSDKClient.enableHttpDns(false);
 
         PolyvVodSDKClient client = PolyvVodSDKClient.getInstance();
         //使用SDK加密串来配置

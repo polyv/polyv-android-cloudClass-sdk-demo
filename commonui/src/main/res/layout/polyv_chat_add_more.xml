@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="106dp"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#ececec"
     android:orientation="horizontal"
     android:paddingLeft="30dp"
@@ -12,8 +13,11 @@
     android:visibility="gone">
 
     <LinearLayout
+        android:id="@+id/select_photo_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginRight="30dp"
+        android:visibility="gone"
         android:orientation="vertical">
 
         <ImageView
@@ -32,9 +36,11 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/open_camera_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:visibility="gone"
         android:orientation="vertical">
 
         <ImageView
@@ -53,9 +59,10 @@
     </LinearLayout>
 
     <LinearLayout
+        android:layout_marginRight="30dp"
+        android:id="@+id/open_bulletin_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
         android:orientation="vertical">
 
         <ImageView
@@ -71,5 +78,25 @@
             android:layout_marginTop="3dp"
             android:text="公告"
             android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:id="@+id/iv_switch"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:src="@drawable/polyv_iv_hostonly_switch" />
+        <TextView
+            android:layout_gravity="center"
+            android:layout_marginTop="3dp"
+            android:text="只看讲师"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </LinearLayout>

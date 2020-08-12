@@ -16,6 +16,5 @@
         android:id="@+id/polyv_ppt_default_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:src="@drawable/ppt_default" />
 </FrameLayout>
