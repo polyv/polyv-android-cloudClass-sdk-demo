@@ -2,6 +2,7 @@ package com.easefun.polyv.cloudclassdemo;
 
 import android.support.multidex.MultiDexApplication;
 
+import com.blankj.utilcode.util.Utils;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient;
 import com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
@@ -29,6 +30,7 @@ public class PolyvCloudClassApp extends MultiDexApplication {
         PolyvCommonLog.setDebug(true);
         PolyvLiveSDKClient liveSDKClient = PolyvLiveSDKClient.getInstance();
         liveSDKClient.initContext(this);
+        Utils.init(this);
 
         PolyvVodSDKClient client = PolyvVodSDKClient.getInstance();
         //使用SDK加密串来配置

@@ -39,6 +39,7 @@ import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener;
 import com.easefun.polyv.cloudclass.chat.PolyvNewMessageListener2;
 import com.easefun.polyv.cloudclass.config.PolyvLiveSDKClient;
 import com.easefun.polyv.cloudclass.download.PolyvCloudClassDownloader;
+import com.easefun.polyv.cloudclass.model.PolyvInteractiveCallbackVO;
 import com.easefun.polyv.cloudclass.model.PolyvLiveClassDetailVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvJSQuestionVO;
@@ -78,6 +79,7 @@ import com.easefun.polyv.foundationsdk.net.PolyvResponseExcutor;
 import com.easefun.polyv.foundationsdk.net.PolyvrResponseCallback;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxFlowableTransformer;
+import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 
@@ -121,7 +123,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 
     private PolyvTouchContainerView videoPptContainer;
     //聊天室管理类
-    private PolyvChatManager chatManager = new PolyvChatManager();
+    private PolyvChatManager chatManager = PolyvChatManager.getInstance();
     private PolyvChatGroupFragment polyvChatGroupFragment;
 
     //答题相关
@@ -224,11 +226,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             return;
         }
         if (livePlayerHelper != null) {
-            livePlayerHelper.onActivityResume();
             livePlayerHelper.resume();
         }
         if (playbackVideoHelper != null) {
-            playbackVideoHelper.onActivityResume();
             playbackVideoHelper.resume();
         }
 
@@ -244,11 +244,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             return;
         }
         if (livePlayerHelper != null) {
-            livePlayerHelper.onActivityPause();
             livePlayerHelper.pause();
         }
         if (playbackVideoHelper != null) {
-            playbackVideoHelper.onActivityPause();
             playbackVideoHelper.pause();
         }
 
@@ -310,8 +308,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
     // <editor-fold defaultstate="collapsed" desc="初始化">
     private void initialStudentIdAndNickName() {
         //初始化观众id和观众昵称，用于统计数据
-        viewerId = PolyvLiveSDKClient.getInstance().getViewerId();
+        viewerId = Build.SERIAL;
         viewerName = "学员" + viewerId;
+        PolyvLiveSDKClient.getInstance().setViewerId(viewerId);
     }
 
     private void initial() {
@@ -557,30 +556,67 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             }
 
             @Override
+            public void callOnLotteryWinNew(String lotteryId, String winnerCode, String viewerId,
+                                            String receiveInfo, String seesionId) {
+                PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
+                                .postLotteryWinnerInfoNew(channelId, lotteryId, winnerCode, PolyvCloudClassHomeActivity.this.viewerId, receiveInfo, seesionId),
+                        String.class, new PolyvrResponseCallback<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils.d("抽奖信息上传成功" + s);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 200);
+                            }
+
+                            @Override
+                            public void onFailure(PolyvResponseBean<String> responseBean) {
+                                super.onFailure(responseBean);
+                                com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils.e("抽奖信息上传失败" + responseBean);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 400);
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                super.onError(e);
+                                PolyvInteractiveCallbackVO vo = new PolyvInteractiveCallbackVO(PolyvInteractiveCallbackVO.EVENT_LOTTERY, 400);
+                                com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils.e("抽奖信息上传失败");
+                                if (e instanceof HttpException) {
+                                    try {
+                                        ResponseBody errorBody = ((HttpException) e).response().errorBody();
+                                        if (errorBody != null) {
+                                            com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils.e(errorBody.string());
+                                        }
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+            }
+
+            @Override
             public void callOnAbandonLottery() {
                 PolyvResponseExcutor.excuteDataBean(PolyvApiManager.getPolyvApichatApi()
                                 .postLotteryAbandon(channelId, viewerId), String.class,
                         new PolyvrResponseCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
-                                LogUtils.d("放弃领奖信息上传成功 " + s);
+                                com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils.d("放弃领奖信息上传成功 " + s);
                             }
 
                             @Override
                             public void onFailure(PolyvResponseBean<String> responseBean) {
                                 super.onFailure(responseBean);
-                                LogUtils.d("放弃领奖信息上传失败 " + responseBean);
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 super.onError(e);
-                                LogUtils.e("放弃领奖信息上传失败");
+                                com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils.e("放弃领奖信息上传失败");
                                 if (e instanceof HttpException) {
                                     try {
                                         ResponseBody errorBody = ((HttpException) e).response().errorBody();
                                         if (errorBody != null) {
-                                            LogUtils.e(errorBody.string());
+                                            com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils.e(errorBody.string());
                                         }
                                     } catch (IOException e1) {
                                         e1.printStackTrace();

@@ -312,25 +312,6 @@ public class PolyvAnswerView extends FrameLayout {
                     }
                 });
                 break;
-            //未领奖的中奖人信息
-            case PolyvSocketEvent.LOTTERY_WINNER:
-                PolyvLotteryWinnerVO winnerVO = PolyvGsonUtil.fromJson(PolyvLotteryWinnerVO.class, msg);
-                showAnswerContainer();
-                final PolyvLottery2JsVO winnerJsonVO = new PolyvLottery2JsVO(true, notNull(winnerVO).getPrize(), winnerVO.getWinnerCode());
-                String winnerJson2 = winnerJsonVO.toJson();
-                if (winnerJsonVO.isWin()) {
-                    answerWebView.setWinnerCode(winnerJsonVO.getWinnerCode());
-                }
-                LogUtils.json(winnerJson2);
-                answerWebView.callLotteryWinner(winnerJson2, winnerVO.getSessionId(), winnerVO.getLotteryId(), new Runnable() {
-                    @Override
-                    public void run() {
-                        if (winnerJsonVO.isWin()){
-                            onWinLotteryShow();
-                        }
-                    }
-                });
-                break;
             //开始签到
             case PolyvSocketEvent.START_SIGN_IN:
                 showAnswerContainer();

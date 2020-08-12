@@ -30,6 +30,7 @@ import com.easefun.polyv.cloudclass.PolyvSocketEvent;
 import com.easefun.polyv.cloudclass.chat.PolyvChatApiRequestHelper;
 import com.easefun.polyv.cloudclass.chat.event.PolyvEventHelper;
 import com.easefun.polyv.cloudclass.model.PolyvCloudClassRoomStatusVO;
+import com.easefun.polyv.cloudclass.model.PolyvLiveClassDetailVO;
 import com.easefun.polyv.cloudclass.model.PolyvPauseRecordVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.cloudclass.model.PolyvSocketSliceControlVO;
@@ -410,6 +411,11 @@ public class PolyvCloudClassVideoItem extends FrameLayout
             public void onNoLiveAtPresent() {
                 isNoLiveAtPresent=true;
                 ToastUtils.showShort("暂无直播");
+            }
+
+            @Override
+            public void onLiveEnd() {
+                PolyvLinkMicWrapper.getInstance().leaveChannel();
             }
         });
         polyvCloudClassVideoView.setOnGestureClickListener((start, end) -> {

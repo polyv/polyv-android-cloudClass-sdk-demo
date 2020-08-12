@@ -98,6 +98,10 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
                 public void pptPrepare() {
                     pptView.setLoadingViewVisible(View.INVISIBLE);
                 }
+
+                @Override
+                public void pptPositionChange(boolean isVideoInMain) {
+                }
             });
         }
     }

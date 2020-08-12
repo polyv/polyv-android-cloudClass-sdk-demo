@@ -4,7 +4,6 @@ import com.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.cloudclass.download.IPolyvCloudClassDownloader;
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.PolyvDemoDownloaderFactory;
 import com.easefun.polyv.cloudclassdemo.watch.playback_cache.listener.db_caller.PolyvDownloadListenerDBCaller;
-import com.facebook.stetho.common.LogUtil;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,7 +50,7 @@ public class PolyvGlobalDownloaderListenerKeeper {
      */
     public IPolyvDownloaderListenerTagable getRegistryOrAddIfNull(String videoPoolId, IPolyvCloudClassDownloader downloader) {
         if (downloader == null) {
-            LogUtil.e("downloader==null");
+            LogUtils.e("downloader==null");
             return null;
         }
 

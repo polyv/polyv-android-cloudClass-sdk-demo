@@ -189,7 +189,7 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
         });
         subVideoview.setOnSubVideoViewPlayStatusListener(new IPolyvAuxiliaryVideoViewListenerEvent.IPolyvAuxliaryVideoViewPlayStatusListener() {
             @Override
-            public void onCompletion(IMediaPlayer mp, @PolyvAuxiliaryVideoview.AdStage int adStage) {
+            public void onCompletion(@PolyvAuxiliaryVideoview.AdStage int adStage) {
                 String tips = adStage == PolyvAuxiliaryVideoview.PLAY_STAGE_HEADAD ? "片头广告"
                         : adStage == PolyvAuxiliaryVideoview.PLAY_STAGE_TAILAD ? "片尾广告" : "";
                 PolyvCommonLog.i(TAG, "sub " + tips + " onCompletion");

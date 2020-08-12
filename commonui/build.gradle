@@ -30,16 +30,15 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api rootProject.ext.support.design
-    api ('com.easefun.polyv:polyvSDKCloudClass:0.7.5.1'){
-        exclude group :'com.easefun.polyv',module:'polyvSDKModuleABI'
-    }
-    implementation 'com.easefun.polyv:polyvSDKModuleABI:0.2.1'
+    api ('com.easefun.polyv:polyvSDKCloudClass:0.14.0')
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
-    implementation 'com.github.bumptech.glide:okhttp3-integration:1.5.0'
+    api 'com.github.bumptech.glide:okhttp3-integration:1.5.0'
 
     //room
     api ('android.arch.persistence.room:runtime:1.1.1'){
         exclude group:'com.android.support'
     }
+
+    api 'com.blankj:utilcode:1.9.9'
 }
 

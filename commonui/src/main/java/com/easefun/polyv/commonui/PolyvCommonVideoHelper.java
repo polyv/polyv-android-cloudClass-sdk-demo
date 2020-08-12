@@ -303,13 +303,6 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 //        }
     }
 
-    public void onActivityResume(){
-        videoView.onActivityResume();
-    }
-    public void onActivityPause(){
-        videoView.onActivityPause();
-    }
-
     public void destory() {
         PolyvCommonLog.d(TAG, "destroy helper video");
         videoView.destroy();

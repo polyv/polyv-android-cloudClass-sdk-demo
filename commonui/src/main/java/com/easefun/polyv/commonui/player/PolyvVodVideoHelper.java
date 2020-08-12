@@ -63,6 +63,11 @@ public class PolyvVodVideoHelper extends PolyvCommonVideoHelper<PolyvVodVideoIte
                 public void pptPrepare() {
                     pptView.setLoadingViewVisible(View.INVISIBLE);
                 }
+
+                @Override
+                public void pptPositionChange(boolean b) {
+
+                }
             });
             pptView.addWebProcessor(processor);
         }

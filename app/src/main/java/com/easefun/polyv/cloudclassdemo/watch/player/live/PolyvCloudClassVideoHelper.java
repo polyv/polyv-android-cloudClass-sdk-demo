@@ -171,8 +171,9 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         }
         processor.registerJSHandler(new PolyvCloudClassPPTProcessor.CloudClassJSCallback() {
             @Override
-            public void authorizationPPT(boolean authorization) {
-
+            public void brushPPT(String message) {
+                //发送画笔事件
+                polyvChatManager.sendScoketMessage(PolyvChatManager.SE_MESSAGE, message);
             }
 
             @Override
@@ -202,6 +203,11 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             public void reloadVideo() {
                 initVolume();
                 restartPlay();
+            }
+
+            @Override
+            public void backTopActivity() {
+
             }
         });
 
@@ -437,7 +443,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
                         }
                     }
                 },
-                roomId, sessionId
+                roomId, sessionId,true
         );
     }
 
