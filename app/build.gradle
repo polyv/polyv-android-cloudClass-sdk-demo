@@ -64,4 +64,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':commonui')
+    //下拉刷新&上拉加载更多控件
+    implementation 'me.dkzwm.widget.srl:core:1.6.6.4'
+    implementation 'me.dkzwm.widget.srl:ext-util:1.6.6.4'
+    implementation 'me.dkzwm.widget.srl:ext-material:1.6.6.4'
+    implementation 'me.dkzwm.widget.srl:ext-horizontal:1.6.6.4'
+    implementation 'me.dkzwm.widget.srl:ext-classics:1.6.6.4'
+    implementation 'me.dkzwm.widget.srl:ext-two-level:1.6.6.4'
 }

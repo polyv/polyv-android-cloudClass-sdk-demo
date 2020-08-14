@@ -31,6 +31,7 @@ import com.easefun.polyv.cloudclass.net.PolyvApiManager;
 import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackListType;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.PolyvCloudClassHomeActivity;
+import com.easefun.polyv.cloudclassdemo.watch.PolyvLiveLoginManager;
 import com.easefun.polyv.commonui.base.PolyvBaseActivity;
 import com.easefun.polyv.commonui.player.widget.PolyvSoftView;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
@@ -105,6 +106,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         if (getTokenDisposable != null) {
             getTokenDisposable.dispose();
         }
+        PolyvLiveLoginManager.getInstance().destroy();
     }
     // </editor-fold>
 
@@ -202,7 +204,7 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         playbackUserId.setText("");
         playbackVideoId.setText("");
         playbackAppId.setText("");
-        playbackAppSecret.setText("d255c756d527492fade5f8b7a55a873d");
+        playbackAppSecret.setText("");
     }
     // </editor-fold>
 
@@ -313,8 +315,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         loginTv.setSelected(false);
         progress.show();
         if (liveGroupLayout.isSelected()) {
-            checkToken(getTrim(userId), getTrim(appSecert),
-                    getTrim(channelId), null, getTrim(appId));
+//            //进入直播页面
+//            checkToken(getTrim(userId), getTrim(appSecert),
+//                    getTrim(channelId), null, getTrim(appId));
+            //根据当前直播状态进入直播页面/回放列表页面
+            loginLiveRoom(getTrim(channelId), getTrim(userId), getTrim(appId), getTrim(appSecert));
         } else {
             checkToken(getTrim(playbackUserId), null, getTrim(playbackChannelId),
                     getTrim(playbackVideoId), getTrim(playbackAppId));
@@ -323,6 +328,34 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
 
     private String getTrim(EditText playbackUserId) {
         return playbackUserId.getText().toString().trim();
+    }
+
+    private void loginLiveRoom(String channelId, String userId, String appId, String appSecret) {
+        PolyvLiveLoginManager.getInstance().loginLiveRoom(channelId, userId, appId, appSecret,
+                new PolyvLiveLoginManager.OnRequestListener() {
+                    @Override
+                    public void onLiveCallback(String channelId, String userId, String rtcType, boolean isNormalLive) {
+                        progress.dismiss();
+                        if (isParticipant) {
+                            if ("urtc".equals(rtcType) || TextUtils.isEmpty(rtcType)) {
+                                ToastUtils.showShort("暂不支持该频道观看");
+                                return;
+                            }
+                        }
+                        startActivityForLive(userId, isNormalLive, rtcType);
+                    }
+
+                    @Override
+                    public void onPlaybackCallback(String channelId, String userId, String rtcType) {
+                        progress.dismiss();
+                        startActivityForPlayback(channelId, userId, rtcType);
+                    }
+
+                    @Override
+                    public void onFailed(String errorMsg, Throwable throwable) {
+                        failedStatus(errorMsg);
+                    }
+                });
     }
 
     private void checkToken(final String userId, String appSecret, String channel, final String vid, final String appId) {
@@ -501,6 +534,11 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
         }
         PolyvCloudClassHomeActivity.startActivityForPlayBack(PolyvCloudClassLoginActivity.this,
                 getTrim(playbackVideoId), getTrim(playbackChannelId), getTrim(playbackUserId), isNormalLivePlayBack, getVideoListType());
+    }
+
+    //以回放列表的方式启动回放页面
+    private void startActivityForPlayback(String channelId, String userId, String rtcType) {
+        PolyvCloudClassHomeActivity.startActivityForPlayBack(PolyvCloudClassLoginActivity.this, channelId, userId, rtcType, isParticipant);
     }
     // </editor-fold>
 

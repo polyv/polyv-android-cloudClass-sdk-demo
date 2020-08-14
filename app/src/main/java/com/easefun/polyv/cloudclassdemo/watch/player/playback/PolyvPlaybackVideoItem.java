@@ -20,6 +20,7 @@ import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeUtils;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeView;
 import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackVideoView;
 import com.easefun.polyv.cloudclassdemo.R;
+import com.easefun.polyv.cloudclassdemo.watch.chat.playback.PolyvPlaybackListFragment;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.PolyvMediaInfoType;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
@@ -28,6 +29,7 @@ import com.easefun.polyv.commonui.player.widget.PolyvLoadingLayout;
 import com.easefun.polyv.commonui.player.widget.PolyvProgressTipsView;
 import com.easefun.polyv.commonui.player.widget.PolyvVolumeTipsView;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
 
 public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickListener,
@@ -146,6 +148,7 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
             @Override
             public void onCompletion() {
                 PolyvCommonLog.i(TAG, "onCompletion");
+                PolyvRxBus.get().post(new PolyvPlaybackListFragment.CompletionEvent(true));
             }
         });
         videoView.setOnErrorListener(new IPolyvVideoViewListenerEvent.OnErrorListener() {

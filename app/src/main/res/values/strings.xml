@@ -20,5 +20,6 @@
     <string name="chat_tab_tuwen_menu_text_default">图文直播</string>
     <string name="chat_tab_group_chat_text_default">聊天</string>
     <string name="chat_tab_personal_chat_text_default">提问</string>
+    <string name="chat_tab_previous_text_default">往期</string>
 
 </resources>
