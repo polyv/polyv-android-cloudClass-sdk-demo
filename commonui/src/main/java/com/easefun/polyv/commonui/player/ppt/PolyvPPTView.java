@@ -9,13 +9,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.easefun.polyv.businesssdk.api.common.ppt.IPolyvPPTView;
-import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTVodProcessor;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvPPTWebView;
 import com.easefun.polyv.businesssdk.model.ppt.PolyvPPTAuthentic;
-import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
 import com.easefun.polyv.businesssdk.vodplayer.PolyvVodSDKClient;
 import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
-import com.easefun.polyv.cloudclass.download.PolyvCloudClassCachesManager;
 import com.easefun.polyv.cloudclass.model.PolyvSocketMessageVO;
 import com.easefun.polyv.commonui.R;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
@@ -40,7 +37,7 @@ import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICESTART;
  */
 public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     private static final String TAG = "PolyvPPTView";
-    public static final int DELAY_TIME =  5 *1000;
+    public static final int DELAY_TIME = 5 * 1000;
     public int delayTime = DELAY_TIME;
     protected PolyvPPTWebView polyvPPTWebView;
     protected ImageView pptLoadingView;
@@ -93,21 +90,21 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         });
     }
 
-    public void reLoad(){
+    public void reLoad() {
         polyvPPTWebView.loadWeb();
     }
 
-    public void loadLocalFile(String filePath,String pptPath,String vid,String videoId){
-        if(TextUtils.isEmpty(filePath)){
+    public void loadLocalFile(String filePath, String pptPath, String vid, String videoId) {
+        if (TextUtils.isEmpty(filePath)) {
             return;
         }
-        polyvPPTWebView.loadUrl("file:///"+filePath);
+        polyvPPTWebView.loadUrl("file:///" + filePath);
         polyvPPTWebView.callMessage(SETOFFLINEPATH, createPPTOffLinePath(pptPath));
-        polyvPPTWebView.callPPTParams(createTokenSign("",vid,videoId));
+        polyvPPTWebView.callPPTParams(createTokenSign("", vid, videoId));
     }
 
     private String createPPTOffLinePath(String pptPath) {
-        String data  = "{\"path\":\""+pptPath+"\"}";
+        String data = "{\"path\":\"" + pptPath + "\"}";
         return data;
     }
 
@@ -117,19 +114,19 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
                 ONSLICEDRAW.equals(event) ||
                 ONSLICECONTROL.equals(event) ||
                 ONSLICEOPEN.equals(event) || ONSLICEID.equals(event)) {
-            PolyvCommonLog.d(TAG, "receive ppt message:"+event);
+            PolyvCommonLog.d(TAG, "receive ppt message:" + event);
             hideLoading();
 //            delayDisposes.add(PolyvRxTimer.delay(delayTime, new Consumer<Long>() {
 //                @Override
 //                public void accept(Long aLong) throws Exception {
-            PolyvCommonLog.d(TAG, "receive ppt message: delay"+polyvSocketMessageVO.getMessage());
+            PolyvCommonLog.d(TAG, "receive ppt message: delay" + polyvSocketMessageVO.getMessage());
             String message = polyvSocketMessageVO.getMessage();
-            if(delayTime >0){
+            if (delayTime > 0) {
                 int lastPos = message.lastIndexOf("}");
-                message = message.substring(0,lastPos)+",\"delayTime\":"+delayTime+"}";
+                message = message.substring(0, lastPos) + ",\"delayTime\":" + delayTime + "}";
             }
 
-            PolyvCommonLog.d(TAG, "receive ppt message: delay"+message);
+            PolyvCommonLog.d(TAG, "receive ppt message: delay" + message);
             sendWebMessage(message);
 //                }
 //            }));
@@ -143,12 +140,12 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     }
 
     @Override
-    public void pptPrepare(String channelId,String vid,String videoId) {
+    public void pptPrepare(String channelId, String vid, String videoId) {
         hideLoading();
-        polyvPPTWebView.callPPTParams(createTokenSign(channelId,vid,videoId));
+        polyvPPTWebView.callPPTParams(createTokenSign(channelId, vid, videoId));
     }
 
-    private String createTokenSign(String channelId,String vid,String videoId) {
+    private String createTokenSign(String channelId, String vid, String videoId) {
         long timestamp = System.currentTimeMillis();
         String appId = PolyvVodSDKClient.getInstance().getAppId();
         String appSecret = PolyvVodSDKClient.getInstance().getAppSecret();
@@ -164,9 +161,9 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
                 .append(appSecret);
         String sign = EncryptUtils.encryptMD5ToString(
                 content.toString()).toUpperCase();
-        String params = "{ \"vid\":\""+id+"\",\"appId\":\""+appId+
-                "\",\"timestamp\":"+timestamp+",\"sign\":\""+sign+
-                "\",\"videoId\":\""+videoId+
+        String params = "{ \"vid\":\"" + id + "\",\"appId\":\"" + appId +
+                "\",\"timestamp\":" + timestamp + ",\"sign\":\"" + sign +
+                "\",\"videoId\":\"" + videoId +
                 "\"}";
 
         return params;
@@ -228,12 +225,12 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
 
     @Override
     public void sendWebMessage(String event, String message) {
-        polyvPPTWebView.callMessage(event,message);
+        polyvPPTWebView.callMessage(event, message);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        PolyvCommonLog.e(TAG,"onTouchEvent");
+        PolyvCommonLog.e(TAG, "onTouchEvent");
         return super.onTouchEvent(event);
     }
 
@@ -243,16 +240,16 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         }
     }
 
-    public void updateDelayTime(int delay_time){
+    public void updateDelayTime(int delay_time) {
         this.delayTime = delay_time;
     }
 
-    public void resetDelayTime(){
+    public void resetDelayTime() {
         this.delayTime = DELAY_TIME;
     }
 
     public void updateBrushPermission(String message) {
-        PolyvPPTAuthentic polyvPPTAuthentic = PolyvGsonUtil.fromJson(PolyvPPTAuthentic.class,message);
+        PolyvPPTAuthentic polyvPPTAuthentic = PolyvGsonUtil.fromJson(PolyvPPTAuthentic.class, message);
         polyvPPTWebView.setNeedGestureAction("1".equals(polyvPPTAuthentic.getStatus()));
     }
 }
