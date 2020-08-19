@@ -32,6 +32,7 @@ import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVi
 import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.businesssdk.model.video.PolyvCloudClassVideoParams;
 import com.easefun.polyv.businesssdk.model.video.PolyvPlaybackVideoParams;
+import com.easefun.polyv.cloudclass.chat.IPolyvProhibitedWordListener;
 import com.easefun.polyv.cloudclass.chat.PolyvChatApiRequestHelper;
 import com.easefun.polyv.cloudclass.chat.PolyvChatManager;
 import com.easefun.polyv.cloudclass.chat.PolyvConnectStatusListener;
@@ -93,6 +94,7 @@ import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ConvertUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -341,7 +343,9 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             viewerId = PolyvVClassGlobalConfig.viewerId;
             viewerName = PolyvVClassGlobalConfig.username;
         } else {
-            viewerId = "" + Build.SERIAL;
+            //todo 这里仅为了展示使用，开发者应当将viewerid、viewerName设置为应用使用用户的ID和昵称，以保证直播SDK的统计数据映射相对的用户系统
+            //如：viewerId设置为手机号等唯一识别号ID，viewerName设置为用户昵称
+            viewerId = "" + Settings.System.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
             viewerName = "学员" + viewerId;
         }
 
@@ -986,6 +990,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
+                        PolyvCommonLog.e(TAG, throwable.getMessage());
                         //获取失败
                         setupChatPlaybackFragment();
                         refreshChatPagerAdapter();
@@ -1267,6 +1272,14 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             public void onDestroy() {
             }
         });
+        // 用于监听用户发送消息涉及了违规词的提示
+        chatManager.setProhibitedWordListener(new IPolyvProhibitedWordListener() {
+            @Override
+            public void onSendProhibitedWord(@NonNull String prohibitedMessage, @NonNull String hintMsg, @NonNull String status) {
+                PolyvCommonLog.d(TAG, "聊天消息含有违规词：" + prohibitedMessage);
+                ToastUtils.showShort(hintMsg);
+            }
+        });
 
         //设置字体聊天室字体颜色
 //        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_ASSISTANT, Color.BLUE);
@@ -1274,7 +1287,7 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
 //        PolyvChatUIConfig.FontColor.set(PolyvChatUIConfig.FontColor.USER_TEACHER,Color.BLUE);
 
         //TODO 登录聊天室(userId：学员的Id(聊天室用户的唯一标识，非直播后台的userId，不同的学员应当使用不同的userId)，roomId：频道号，nickName：学员的昵称)
-        //TODO 登录聊天室后一些功能才可以正常使用，例如：连麦
+        //TODO 登录聊天室后一些功能才可以正常使用，例如：连麦,PPT
 
         //根据直播类型(普通直播、三分屏直播)设置聊天室的学员的类型
         chatManager.userType = isNormalLive ? PolyvChatManager.USERTYPE_STUDENT : PolyvChatManager.USERTYPE_SLICE;
@@ -1282,7 +1295,8 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             chatManager.userType = USERTYPE_VIEWER;
         }
         chatManager.login(viewerId, channelId, viewerName);
-
+        //TODO 可给互动应用添加自定义param4，param5的统计数据，建议播放器同步添加参数.buildOptions(PolyvBaseVideoParams.PARAMS4, "P4")
+//        chatManager.login(viewerId,channelId, viewerName, PolyvChatManager.DEFAULT_AVATARURL, null, "TestP4","TestP5");
         if (livePlayerHelper != null) {
             livePlayerHelper.setNickName(viewerName);
         }

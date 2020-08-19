@@ -49,7 +49,8 @@ public class PolyvCustomMenuFragment extends Fragment {
                 content = content.replaceAll("<p>", "<p style=\"word-break:break-all\">");
                 content = content.replaceAll("<table>", "<table border='1' rules=all>");
                 content = content.replaceAll("<td>", "<td width=\"36\">");
-                wv_desc.loadData(content, "text/html; charset=UTF-8", null);
+//                wv_desc.loadData(content, "text/html; charset=UTF-8", null);
+                wv_desc.loadDataWithBaseURL(null, content, "text/html; charset=UTF-8", null, null);
             }
         } else {
             String url = getArguments().getString("url");

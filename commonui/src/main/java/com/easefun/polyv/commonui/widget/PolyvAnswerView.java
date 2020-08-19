@@ -28,7 +28,6 @@ import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionResultVO;
 import com.easefun.polyv.cloudclass.model.answer.PolyvQuestionSResult;
 import com.easefun.polyv.cloudclass.model.bulletin.PolyvBulletinVO;
 import com.easefun.polyv.cloudclass.model.lottery.PolyvLotteryEndVO;
-import com.easefun.polyv.cloudclass.model.lottery.PolyvLotteryWinnerVO;
 import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignIn2JsVO;
 import com.easefun.polyv.cloudclass.model.sign_in.PolyvSignInVO;
 import com.easefun.polyv.cloudclass.video.PolyvAnswerWebView;
@@ -277,6 +276,15 @@ public class PolyvAnswerView extends FrameLayout {
             //停止问卷调查
             case PolyvSocketEvent.STOP_QUESTIONNAIRE:
                 answerWebView.callStopQuestionnaire(msg);
+                break;
+            //问卷统计相关数据事件
+            case PolyvSocketEvent.QUESTIONNAIRE_ACHIEVEMENT:
+                showAnswerContainer(event);
+                answerWebView.callQuestionAchievement(msg);
+                lockToPortrait();//问卷调查
+                break;
+            case PolyvSocketEvent.SEND_QUESTIONNAIRE_RESULT:
+                answerWebView.callQuestionSendResult(msg);
                 break;
             //开始抽奖
             case PolyvSocketEvent.LOTTERY_START:

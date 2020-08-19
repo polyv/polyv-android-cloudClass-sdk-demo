@@ -8,6 +8,7 @@ import com.easefun.polyv.cloudclass.chat.event.PLVRewardEvent;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
@@ -88,6 +89,7 @@ public class PolyvPointRewardEffectQueue implements IPolyvPointRewardEventProduc
 
     @Override
     public void prepare(final OnPreparedListener onPreparedListener) {
+        final WeakReference<OnPreparedListener> weakReference = new WeakReference<>(onPreparedListener);
         handlerThread = new HandlerThread("PolyvPointRewardEffectQueue-HandlerThread") {
             @Override
             protected void onLooperPrepared() {
@@ -95,7 +97,10 @@ public class PolyvPointRewardEffectQueue implements IPolyvPointRewardEventProduc
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        onPreparedListener.onPrepared();
+                        OnPreparedListener li = weakReference.get();
+                        if (li != null) {
+                            li.onPrepared();
+                        }
                     }
                 });
             }

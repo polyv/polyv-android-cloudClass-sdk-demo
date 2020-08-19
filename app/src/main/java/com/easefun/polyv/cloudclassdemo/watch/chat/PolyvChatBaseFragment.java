@@ -2,11 +2,14 @@ package com.easefun.polyv.cloudclassdemo.watch.chat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.GridLayoutManager;
@@ -110,6 +113,7 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
     protected LinearLayout moreLayout, selectPhotoLayout, openCameraLayout, openBulletinLayout;
 
     protected File takePhotosFilePath;
+    protected Uri takeCameraUri;
     protected static final int REQUEST_SELECT_PHOTO = 0x01;
     protected static final int REQUEST_OPEN_CAMERA = 0x02;
 
@@ -530,12 +534,30 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         String picName = System.currentTimeMillis() + ".jpg";//同名会覆盖
         String savePath = PolyvSDCardUtils.createPath(getContext(), "PolyvImg");
         takePhotosFilePath = new File(savePath, picName);
-        Uri photoUri = FileProvider.getUriForFile(
-                getContext(),
-                getContext().getPackageName() + ".fileprovider",
-                takePhotosFilePath);
+        Uri photoUri = createImageUri(picName);
+
         intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         startActivityForResult(intent, REQUEST_OPEN_CAMERA);
+    }
+
+    private Uri createImageUri(String fileName){
+        String status = Environment.getExternalStorageState();
+        if(Build.VERSION.SDK_INT >= 29){
+            // 判断是否有SD卡,优先使用SD卡存储,当没有SD卡时使用手机存储
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+            takeCameraUri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            return takeCameraUri;
+        } else {
+            String savePath = PolyvSDCardUtils.createPath(getContext(), "PolyvImg");
+            takePhotosFilePath = new File(savePath, fileName);
+            Uri photoUri = FileProvider.getUriForFile(
+                    getContext(),
+                    getContext().getPackageName() + ".fileprovider",
+                    takePhotosFilePath);
+            return photoUri;
+        }
     }
 
     private void selectPhoto() {
@@ -840,13 +862,18 @@ public abstract class PolyvChatBaseFragment extends PolyvBaseFragment {
         if (requestCode == REQUEST_SELECT_PHOTO && resultCode == Activity.RESULT_OK) {
             final Uri selectedUri = data.getData();
             if (selectedUri != null) {
-                String picturePath = PolyvUriPathHelper.getPath(getContext(), selectedUri);
+                String picturePath = PolyvUriPathHelper.getPrivatePath(getContext(), selectedUri);
                 sendPicture(picturePath);
             } else {
                 toast.makeText(getContext(), "cannot retrieve selected image", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == REQUEST_OPEN_CAMERA && resultCode == Activity.RESULT_OK) {//data->null
-            sendPicture(takePhotosFilePath.getAbsolutePath());
+            if(Build.VERSION.SDK_INT >= 29){
+                String picturePath = PolyvUriPathHelper.getPrivatePath(getContext(), takeCameraUri);
+                sendPicture(picturePath);
+            } else {
+                sendPicture(takePhotosFilePath.getAbsolutePath());
+            }
         }
     }
 

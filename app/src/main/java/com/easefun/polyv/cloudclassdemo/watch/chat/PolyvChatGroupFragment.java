@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.ScaleAnimation;
@@ -86,6 +87,7 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import io.socket.client.Ack;
 import okhttp3.ResponseBody;
 
 /**
@@ -93,6 +95,9 @@ import okhttp3.ResponseBody;
  */
 public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     // <editor-fold defaultstate="collapsed" desc="成员变量">
+
+    private static final String TAG = "PolyvChatGroupFragment";
+
     //只看讲师后是否还能发送信息(关闭后，输入框都不能点击操作，包括：文字输入框，点赞，送花，更多（发送图片）)
     private boolean isOnlyHostCanSendMessage = true;
     //连接状态ui
@@ -455,6 +460,10 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
 
                     //把带表情的信息解析保存下来
                     speakHistory.setObjects(PolyvTextImageLoader.messageToSpan(convertSpecialString(speakHistory.getContent()), ConvertUtils.dp2px(14), false, getContext()));
+                    if(speakHistory.getQuote() != null && speakHistory.getQuote().getImage() == null){
+                        speakHistory.getQuote().objects = PolyvTextImageLoader.messageToSpan(speakHistory.getQuote().getContent(), ConvertUtils.dp2px(12), false, getContext());
+                    }
+
                     PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(speakHistory, type, PolyvChatManager.SE_MESSAGE);
                     tempChatItems.add(0, chatTypeItem);
                     if (isOnlyHostType(speakHistory.getUser().getUserType(), speakHistory.getUser().getUserId())) {
@@ -510,6 +519,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
         }
     }
 
+
     private void removeItem(List<PolyvChatListAdapter.ChatTypeItem> lists, String chatMessageId, boolean isTeacherLists, boolean notifiyList) {
         for (int i = 0; i < lists.size(); i++) {
             PolyvChatListAdapter.ChatTypeItem chatTypeItem = lists.get(i);
@@ -525,6 +535,46 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                 }
             } else if (chatTypeItem.object instanceof PolyvSpeakHistory) {
                 if (chatMessageId.equals(((PolyvSpeakHistory) chatTypeItem.object).getId())) {
+                    lists.remove(chatTypeItem);
+                    if (notifiyList &&
+                            (!isOnlyWatchTeacher() && !isTeacherLists
+                                    || (isOnlyWatchTeacher() && isTeacherLists))) {
+                        chatListAdapter.notifyItemRemoved(i);
+                    }
+                    break;
+                }
+            } else if (chatTypeItem.object instanceof PolyvLocalMessage){
+                if (chatMessageId.equals(((PolyvLocalMessage) chatTypeItem.object).getId())) {
+                    lists.remove(chatTypeItem);
+                    if (notifiyList &&
+                            (!isOnlyWatchTeacher() && !isTeacherLists
+                                    || (isOnlyWatchTeacher() && isTeacherLists))) {
+                        chatListAdapter.notifyItemRemoved(i);
+                    }
+                    break;
+                }
+            } else if (chatTypeItem.object instanceof PolyvSendLocalImgEvent){
+                if (chatMessageId.equals(((PolyvSendLocalImgEvent) chatTypeItem.object).getId())) {
+                    lists.remove(chatTypeItem);
+                    if (notifiyList &&
+                            (!isOnlyWatchTeacher() && !isTeacherLists
+                                    || (isOnlyWatchTeacher() && isTeacherLists))) {
+                        chatListAdapter.notifyItemRemoved(i);
+                    }
+                    break;
+                }
+            } else if(chatTypeItem.object instanceof PolyvChatImgEvent){
+                if (chatMessageId.equals(((PolyvChatImgEvent) chatTypeItem.object).getId())) {
+                    lists.remove(chatTypeItem);
+                    if (notifiyList &&
+                            (!isOnlyWatchTeacher() && !isTeacherLists
+                                    || (isOnlyWatchTeacher() && isTeacherLists))) {
+                        chatListAdapter.notifyItemRemoved(i);
+                    }
+                    break;
+                }
+            } else if(chatTypeItem.object instanceof PolyvChatImgHistory){
+                if (chatMessageId.equals(((PolyvChatImgHistory) chatTypeItem.object).getId())) {
                     lists.remove(chatTypeItem);
                     if (notifiyList &&
                             (!isOnlyWatchTeacher() && !isTeacherLists
@@ -552,26 +602,45 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     }
 
     private void sendLocalMessage() {
-        String sendMessage = talk.getText().toString();
+        final String sendMessage = talk.getText().toString();
         if (sendMessage.trim().length() == 0) {
             toast.makeText(getContext(), "发送内容不能为空！", Toast.LENGTH_SHORT).show(true);
         } else {
-            PolyvLocalMessage localMessage = new PolyvLocalMessage(sendMessage);
-            int sendValue = chatManager.sendChatMessage(localMessage);
-            //添加到列表中
-            if (sendValue > 0 || sendValue == PolyvLocalMessage.SENDVALUE_BANIP) {//被禁言后还会显示，但不会广播给其他用户
+            final PolyvLocalMessage localMessage = new PolyvLocalMessage(sendMessage);
+            int sendValue = chatManager.sendChatMessage(localMessage, true, new Ack() {
+                @Override
+                public void call(final Object... args) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if ("".equals(args[0])) {
+                                // 触发严禁词时，args[0]为""，不加到本地消息列表
+                                Log.d(TAG, "发送的消息涉及违禁词");
+                                return;
+                            }
+                            //把带表情的信息解析保存下来
+                            PolyvLocalMessage message = new PolyvLocalMessage(sendMessage);
+                            message.setId(args[0].toString());
+                            message.setObjects(PolyvTextImageLoader.messageToSpan(message.getSpeakMessage(), ConvertUtils.dp2px(14), false, getContext()));
+                            addLocalMessageToAdapter(message);
+                            //发送弹幕
+                            sendDanmu((CharSequence) message.getObjects()[0]);
+                        }
+                    });
+                }
+            });
+            //被禁言后还会添加到列表中显示，但不会广播发送给其他用户
+            if (sendValue > 0 || sendValue == PolyvLocalMessage.SENDVALUE_BANIP) {
                 talk.setText("");
                 hideSoftInputAndEmoList();
 
-                //把带表情的信息解析保存下来
-                localMessage.setObjects(PolyvTextImageLoader.messageToSpan(localMessage.getSpeakMessage(), ConvertUtils.dp2px(14), false, getContext()));
-                PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(localMessage, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND, PolyvChatManager.SE_MESSAGE);
-                chatTypeItems.add(chatTypeItem);
-                teacherItems.add(chatTypeItem);
-                chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
-                chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
-                //发送弹幕
-                sendDanmu((CharSequence) localMessage.getObjects()[0]);
+                if(sendValue == PolyvLocalMessage.SENDVALUE_BANIP) {
+//                //把带表情的信息解析保存下来
+                    localMessage.setObjects(PolyvTextImageLoader.messageToSpan(localMessage.getSpeakMessage(), ConvertUtils.dp2px(14), false, getContext()));
+                    addLocalMessageToAdapter(localMessage);
+                    //发送弹幕
+                    sendDanmu((CharSequence) localMessage.getObjects()[0]);
+                }
             } else {
                 toast.makeText(getContext(), "发送失败：" + sendValue, PolyvToast.LENGTH_SHORT).show(true);
             }
@@ -579,7 +648,7 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
     }
 
     //发送的弹幕消息一起发送到聊天室
-    public void sendChatMessageByDanmu(String sendMessage) {
+    public void sendChatMessageByDanmu(final String sendMessage) {
         if (talk == null) {
             return;
         }
@@ -587,25 +656,49 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
             toast.makeText(getContext(), "发送内容不能为空！", Toast.LENGTH_SHORT).show(true);
         } else {
             PolyvLocalMessage localMessage = new PolyvLocalMessage(sendMessage);
-            int sendValue = chatManager.sendChatMessage(localMessage);
+            int sendValue = chatManager.sendChatMessage(localMessage, true, new Ack() {
+                @Override
+                public void call(final Object... args) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //把带表情的信息解析保存下来
+                            PolyvLocalMessage message = new PolyvLocalMessage(sendMessage);
+                            if (args[0]!= null) {
+                                message.setId(args[0].toString());
+                            }
+                            message.setObjects(PolyvTextImageLoader.messageToSpan(message.getSpeakMessage(), ConvertUtils.dp2px(14), false, getContext()));
+                            addLocalMessageToAdapter(message);
+                            //发送弹幕
+                            sendDanmu((CharSequence) message.getObjects()[0]);
+                        }
+                    });
+                }
+            });
             //添加到列表中
             if (sendValue > 0 || sendValue == PolyvLocalMessage.SENDVALUE_BANIP) {//被禁言后还会显示，但不会广播给其他用户
                 talk.setText("");
                 hideSoftInputAndEmoList();
 
-                //把带表情的信息解析保存下来
-                localMessage.setObjects(PolyvTextImageLoader.messageToSpan(localMessage.getSpeakMessage(), ConvertUtils.dp2px(14), false, getContext()));
-                PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(localMessage, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND, PolyvChatManager.SE_MESSAGE);
-                chatTypeItems.add(chatTypeItem);
-                teacherItems.add(chatTypeItem);
-                chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
-                chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
-                //发送弹幕
-                sendDanmu((CharSequence) localMessage.getObjects()[0]);
+                if(sendValue == PolyvLocalMessage.SENDVALUE_BANIP) {
+//                //把带表情的信息解析保存下来
+                    localMessage.setObjects(PolyvTextImageLoader.messageToSpan(localMessage.getSpeakMessage(), ConvertUtils.dp2px(14), false, getContext()));
+                    addLocalMessageToAdapter(localMessage);
+                    //发送弹幕
+                    sendDanmu((CharSequence) localMessage.getObjects()[0]);
+                }
             } else {
                 toast.makeText(getContext(), "发送失败：" + sendValue, PolyvToast.LENGTH_SHORT).show(true);
             }
         }
+    }
+
+    private void addLocalMessageToAdapter(PolyvLocalMessage message){
+        PolyvChatListAdapter.ChatTypeItem chatTypeItem = new PolyvChatListAdapter.ChatTypeItem(message, PolyvChatListAdapter.ChatTypeItem.TYPE_SEND, PolyvChatManager.SE_MESSAGE);
+        chatTypeItems.add(chatTypeItem);
+        teacherItems.add(chatTypeItem);
+        chatListAdapter.notifyItemInserted(chatListAdapter.getItemCount() - 1);
+        chatMessageList.scrollToPosition(chatListAdapter.getItemCount() - 1);
     }
 
     // </editor-fold>
@@ -736,6 +829,9 @@ public class PolyvChatGroupFragment extends PolyvChatBaseFragment {
                                     String speakMsg = speakEvent.getValues().get(0);
                                     speakMsg = convertSpecialString(speakMsg);
                                     speakEvent.setObjects(PolyvTextImageLoader.messageToSpan(speakMsg, ConvertUtils.dp2px(14), false, getContext()));
+                                    if(speakEvent.getQuote() != null && speakEvent.getQuote().getImage() == null){
+                                        speakEvent.getQuote().objects = PolyvTextImageLoader.messageToSpan(speakEvent.getQuote().getContent(), ConvertUtils.dp2px(12), false, getContext());
+                                    }
 
                                     //判断是不是只看讲师的类型
                                     if (isOnlyHostType(speakEvent.getUser().getUserType(), speakEvent.getUser().getUserId())) {

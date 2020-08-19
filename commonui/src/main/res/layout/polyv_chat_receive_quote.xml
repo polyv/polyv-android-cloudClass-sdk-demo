@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_quote"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_quote_nick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        android:textColor="#757575"
+        android:textSize="12sp"
+        tools:text="quote_nick:" />
+
+    <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
+        android:id="@+id/gtv_quote_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:textColor="#757575"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊测试啊啊啊"
+        tools:visibility="visible" />
+
+    <com.easefun.polyv.commonui.widget.PolyvRoundImageView
+        android:id="@+id/iv_quote_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/polyv_iv_gray"
+        android:scaleType="centerCrop"
+        android:src="@drawable/polyv_image_load_err"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</LinearLayout>

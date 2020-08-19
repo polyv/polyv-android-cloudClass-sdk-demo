@@ -30,9 +30,9 @@
         <ImageView
             android:id="@+id/iv_playpause"
             style="@style/Controller_Play_Button"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginLeft="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="4dp"
             android:src="@drawable/selector_controller_play_and_pause" />
 
         <TextView
@@ -40,11 +40,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginLeft="8dp"
             android:layout_toRightOf="@id/iv_playpause"
             android:text="00:00"
             android:textColor="#ffffff"
-            android:textSize="13dp" />
+            android:textSize="11dp" />
 
         <TextView
             android:id="@+id/tv_totaltime"
@@ -54,12 +53,33 @@
             android:layout_toRightOf="@id/tv_currenttime"
             android:text=" / 00:00"
             android:textColor="#ffffff"
-            android:textSize="13dp" />
+            android:textSize="11dp" />
+
+        <SeekBar
+            android:id="@+id/sb_playprogress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/pb_ppt_video_switch"
+            android:layout_toEndOf="@id/tv_totaltime"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_centerInParent="true"
+            android:focusable="true"
+            android:max="1000"
+            android:maxHeight="3dp"
+            android:minHeight="3dp"
+            android:progress="0"
+            android:progressDrawable="@drawable/polyv_sb_bg_drawable"
+            android:secondaryProgress="0"
+            android:thumb="@drawable/polyv_sb_thumb"
+            android:thumbOffset="0dp" />
 
         <ImageView
             android:id="@+id/iv_orientation"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
             android:layout_marginRight="8dp"
@@ -67,37 +87,20 @@
 
         <ImageView
             android:id="@+id/pb_ppt_video_switch"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerInParent="true"
-            android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/iv_orientation"
             android:src="@drawable/controller_exchange" />
 
     </RelativeLayout>
-
-    <SeekBar
-        android:id="@+id/sb_playprogress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/rl_bottom_controll"
-        android:focusable="true"
-        android:max="1000"
-        android:maxHeight="3dp"
-        android:minHeight="3dp"
-        android:paddingTop="5dp"
-        android:progress="0"
-        android:progressDrawable="@drawable/polyv_sb_bg_drawable"
-        android:secondaryProgress="0"
-        android:thumb="@drawable/polyv_sb_thumb"
-        android:thumbOffset="0dp" />
 
 
     <ImageView
         android:id="@+id/pb_subview_show"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/sb_playprogress"
+        android:layout_above="@id/rl_bottom_controll"
         android:layout_alignParentRight="true"
         android:src="@drawable/ppt"
         android:visibility="gone" />

@@ -2,6 +2,9 @@ package com.easefun.polyv.cloudclassdemo.watch.chat.imageScan;
 
 import android.Manifest;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
@@ -14,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.easefun.polyv.commonui.utils.PolyvPictureUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.FileUtils;
 import com.easefun.polyv.cloudclass.chat.event.PolyvChatImgEvent;
 import com.easefun.polyv.cloudclass.chat.history.PolyvChatImgHistory;
@@ -119,6 +123,15 @@ public class PolyvChatImageViewer extends FrameLayout {
                                 public Boolean apply(File file) throws Exception {
                                     if (file.getAbsolutePath().equals(new File(savePath, fileName).getAbsolutePath()))
                                         return true;
+
+                                    if(Build.VERSION.SDK_INT >= 29){//Q以上使用MediaStore保存图片到Pictures
+                                        if(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/" + fileName).exists()){
+                                            return true;
+                                        }
+                                        Uri uri = PolyvPictureUtils.insertImageToMediaStore(fileName);
+                                        return PolyvPictureUtils.copyImageToExternal(file.getAbsolutePath(), uri);
+                                    }
+
                                     return FileUtils.copyFile(file, new File(savePath, fileName),//同path时，复制失败
                                             new FileUtils.OnReplaceListener() {
                                                 @Override
@@ -133,7 +146,10 @@ public class PolyvChatImageViewer extends FrameLayout {
                             .subscribe(new Consumer<Boolean>() {
                                 @Override
                                 public void accept(Boolean aBoolean) throws Exception {
-                                    toast(aBoolean ? "图片保存在：" + new File(savePath, fileName).getAbsolutePath() : "图片保存失败(saveFailed)");
+                                    String path = Build.VERSION.SDK_INT >= 29 ?
+                                            Environment.DIRECTORY_PICTURES+"/" + fileName
+                                            : new File(savePath, fileName).getAbsolutePath();
+                                    toast(aBoolean ? "图片保存在：" +  path : "图片保存失败(saveFailed)");
                                 }
                             }, new Consumer<Throwable>() {
                                 @Override

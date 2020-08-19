@@ -53,7 +53,7 @@
                 android:layout_marginBottom="@dimen/dm_5"
                 android:ellipsize="end"
                 android:maxLength="10"
-                android:text="教师名字教师名字教师名字教师名字教师名字教师名字教师名字"
+                android:text="讲师"
                 android:textColor="@color/white"
                 android:textSize="14sp" />
 

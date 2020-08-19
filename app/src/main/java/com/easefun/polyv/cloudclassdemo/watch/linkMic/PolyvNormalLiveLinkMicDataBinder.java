@@ -75,10 +75,33 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder {
         this.frontParentView = (ViewGroup) linkMicLayoutParent.getParent();
         View bottomView = frontParentView.findViewById(R.id.link_mic_bottom);
         ViewGroup frontView = frontParentView.findViewById(R.id.link_mic_fixed_position);
+        boolean linkMicFrontViewFirstBind=false;
+
+        if (this.linkMicFrontView==null){
+            linkMicFrontViewFirstBind=true;
+        }
 
         this.linkMicFrontView = frontView;
+
         if (linkMicFrontView != null) {
             this.linkMicFrontView.setVisibility(View.VISIBLE);//isAudio?View.VISIBLE:View.GONE
+            if (linkMicFrontViewFirstBind){
+                //处理android 5.x 设备上R.id.link_mic_layout_parent在横屏时异常大，因此横屏时不再和它对齐。
+                linkMicFrontView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        if (PolyvScreenUtils.isLandscape(linkMicFrontView.getContext())){
+                            //横屏
+                            RelativeLayout.LayoutParams lp=(RelativeLayout.LayoutParams)linkMicFrontView.getLayoutParams();
+                            lp.removeRule(RelativeLayout.ALIGN_TOP);
+                        }else {
+                            //竖屏
+                            RelativeLayout.LayoutParams lp=(RelativeLayout.LayoutParams)linkMicFrontView.getLayoutParams();
+                            lp.addRule(RelativeLayout.ALIGN_TOP,R.id.link_mic_layout_parent);
+                        }
+                    }
+                });
+            }
         }
 //        if(bottomView != null ){
 //            bottomView.setVisibility(isAudio? View.GONE :View.VISIBLE);

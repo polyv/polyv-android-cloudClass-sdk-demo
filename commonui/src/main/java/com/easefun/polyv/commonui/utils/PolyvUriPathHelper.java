@@ -3,6 +3,7 @@ package com.easefun.polyv.commonui.utils;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -12,13 +13,19 @@ import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class PolyvUriPathHelper {
 
@@ -224,4 +231,63 @@ public class PolyvUriPathHelper {
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
+
+    /**
+     * 根据Uri直接获取图片
+     * @param context 上下文
+     * @param uri 图片的uri
+     * */
+    public static String getPrivatePath(Context context,Uri uri){
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
+            File file=compressImage(context,bitmap);
+            return file.getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+    /**
+     * 把bitmap写入app私有目录下
+     * @param context 上下文
+     * @param bitmap 这个bitmap不能为null
+     * @return File
+     * 适配到4.4
+     * */
+    private static File compressImage(Context context, Bitmap bitmap) {
+        String filename;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+            Date date = new Date(System.currentTimeMillis());
+            //图片名
+            filename = format.format(date);
+        }else {
+            Date date=new Date();
+            filename=date.getYear()+date.getMonth()+date.getDate()+date.getHours()+date.getMinutes()+date.getSeconds()+"";
+        }
+
+        final File primaryDir = context.getExternalFilesDir(null);
+        PolyvCommonLog.e("uri","compressImage:"+primaryDir);
+        File file = new File(primaryDir.getAbsolutePath(), filename + ".png");
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            try {
+                fos.write(baos.toByteArray());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+
+            e.printStackTrace();
+        }
+
+        // recycleBitmap(bitmap);
+        return file;
+    }
+
 }

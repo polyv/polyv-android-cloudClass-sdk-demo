@@ -10,17 +10,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:background="@drawable/polyv_tv_receive"
         >
 
-        <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
-            android:id="@+id/gtv_receive_message"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/polyv_tv_receive"
-            android:gravity="center_vertical"
-            android:padding="8dp"
-            android:textColor="#546e7a"
-            android:textSize="14sp" />
+            android:layout_height="wrap_content">
+
+
+            <include
+                layout="@layout/polyv_chat_receive_quote"/>
+
+            <View
+                android:id="@+id/quote_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#dcdee2"
+                android:visibility="gone"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp" />
+
+            <com.easefun.polyv.businesssdk.sub.gif.GifSpanTextView
+                android:id="@+id/gtv_receive_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:textColor="#546e7a"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
         <com.easefun.polyv.commonui.widget.PolyvRoundImageView
             android:id="@+id/iv_chat_img"
