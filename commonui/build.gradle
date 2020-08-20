@@ -30,7 +30,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api rootProject.ext.support.design
-    api ('com.easefun.polyv:polyvSDKCloudClass:0.14.0-compatible'){
+    api ('com.easefun.polyv:polyvSDKCloudClass:0.14.1-compatible'){
 //        exclude group:'tv.danmaku.ijk.media',module:'ijkplayer-exo'
 //        exclude group:'tv.danmaku.ijk.media',module:'ijkplayer-java'
     }
