@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.Utils;
 import com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor;
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
 import com.easefun.polyv.businesssdk.model.link.PolyvLinkMicMedia;
@@ -120,6 +121,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private String sessionId = "";
     private String roomId = "";
     private boolean cameraOpen = true,showPPT;
+    private boolean isLinkMicInit=false;
 
     private Disposable joinListTimer;
     private Set<Long> noCachesIds = new HashSet<>();//在缓存中没有找到数据得uid
@@ -133,7 +135,6 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
         polyvChatManager.addNewMessageListener(this);
         this.polyvChatManager = polyvChatManager;
-        PolyvLinkMicWrapper.getInstance().addEventHandler(polyvLinkMicAGEventHandler);
 
 
         permissionManager = PolyvPermissionManager.with((Activity) context)
@@ -961,6 +962,16 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         return true;
     }
 
+    private void initLinkMic(){
+        if (isLinkMicInit){
+            return;
+        }
+        isLinkMicInit=true;
+        PolyvLinkMicWrapper.getInstance().init(Utils.getApp());
+        PolyvLinkMicWrapper.getInstance().intialConfig(roomId);
+        PolyvLinkMicWrapper.getInstance().addEventHandler(polyvLinkMicAGEventHandler);
+    }
+
     @Override
     public void onGranted() {
         List<String> permissions = new ArrayList<String>();
@@ -976,6 +987,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             return;
         }
         PolyvCommonLog.d(TAG,"onGranted");
+        initLinkMic();
         controller.handsUp(joinSuccess);
         return;
     }

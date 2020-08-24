@@ -357,11 +357,6 @@ public class PolyvCloudClassHomeActivity extends PolyvBaseActivity
             linkMicLayoutParent = (IPolyvRotateBaseView) linkMicStubView;
         }
 
-        if (playMode == PolyvPlayOption.PLAYMODE_LIVE) {
-            PolyvLinkMicWrapper.getInstance().init(Utils.getApp());
-            PolyvLinkMicWrapper.getInstance().intialConfig(channelId);
-        }
-
         linkMicLayoutParent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
