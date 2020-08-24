@@ -5,11 +5,11 @@ import android.view.ViewGroup;
 
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
+import com.plv.rtc.PLVARTCAudioVolumeInfo;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import io.agora.rtc.IRtcEngineEventHandler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -101,7 +101,7 @@ public abstract class IPolyvDataBinder {
 
     public abstract void clear();
 
-    public void startAudioWave(IRtcEngineEventHandler.AudioVolumeInfo[] speakers, int totalVolume){
+    public void startAudioWave(PLVARTCAudioVolumeInfo[] speakers, int totalVolume){
 
     };
 

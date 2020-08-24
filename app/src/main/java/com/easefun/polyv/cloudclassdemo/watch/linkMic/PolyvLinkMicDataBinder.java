@@ -24,13 +24,12 @@ import com.easefun.polyv.foundationsdk.utils.PolyvAppUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
+import com.plv.rtc.PLVARTCConstants;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.agora.rtc.video.VideoCanvas;
 
 /**
  * @author df
@@ -259,11 +258,11 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
 
         long longUid = Long.valueOf(uid);
         if (uid.equals(myUid)) {
-             PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_FIT, (int) longUid);
+            PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
+                    PLVARTCConstants.RENDER_MODE_FIT, (int) longUid);
         } else {
             PolyvLinkMicWrapper.getInstance().setupRemoteVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_FIT, (int) longUid);
+                    PLVARTCConstants.RENDER_MODE_FIT, (int) longUid);
         }
     }
 

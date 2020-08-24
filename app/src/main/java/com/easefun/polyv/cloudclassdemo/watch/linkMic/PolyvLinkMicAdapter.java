@@ -18,13 +18,13 @@ import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListVie
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
+import com.plv.rtc.PLVARTCConstants;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.agora.rtc.video.VideoCanvas;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -148,10 +148,10 @@ public class PolyvLinkMicAdapter extends RecyclerView.Adapter<PolyvLinkMicAdapte
         long longUid = Long.valueOf(uid);
         if (uid == myUid) {
             PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_HIDDEN, (int) longUid);
+                    PLVARTCConstants.RENDER_MODE_HIDDEN, (int) longUid);
         } else {
             PolyvLinkMicWrapper.getInstance().setupRemoteVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_HIDDEN, (int) longUid);
+                    PLVARTCConstants.RENDER_MODE_HIDDEN, (int) longUid);
         }
 
     }

@@ -13,9 +13,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.easefun.polyv.businesssdk.model.link.PolyvJoinInfoEvent;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.chat.PolyvChatGroupFragment;
@@ -26,6 +23,8 @@ import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvAppUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
+import com.plv.rtc.PLVARTCAudioVolumeInfo;
+import com.plv.rtc.PLVARTCConstants;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -33,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.video.VideoCanvas;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -213,10 +210,10 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder {
         long longUid = Long.valueOf(uid);
         if (uid.equals(myUid)) {
             PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_FIT, (int) longUid);
+                    PLVARTCConstants.RENDER_MODE_FIT, (int) longUid);
         } else {
             PolyvLinkMicWrapper.getInstance().setupRemoteVideo(surfaceView,
-                    VideoCanvas.RENDER_MODE_FIT, (int) longUid);
+                    PLVARTCConstants.RENDER_MODE_FIT, (int) longUid);
         }
 
     }
@@ -293,12 +290,12 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder {
     }
 
     @Override
-    public synchronized void startAudioWave(IRtcEngineEventHandler.AudioVolumeInfo[] speakers, int totalVolume) {
+    public synchronized void startAudioWave(PLVARTCAudioVolumeInfo[] speakers, int totalVolume) {
         super.startAudioWave(speakers, totalVolume);
         if (totalVolume == 0) {
             return;
         }
-        for (IRtcEngineEventHandler.AudioVolumeInfo audioVolumeInfo : speakers) {
+        for (PLVARTCAudioVolumeInfo audioVolumeInfo : speakers) {
             PolyvJoinInfoEvent joinInfoEvent = null;
             if (audioVolumeInfo.uid == 0) {
                 joinInfoEvent = joins.get(myUid);

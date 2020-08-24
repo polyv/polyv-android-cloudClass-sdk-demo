@@ -67,6 +67,8 @@ import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
+import com.plv.rtc.PLVARTCAudioVolumeInfo;
+import com.plv.rtc.PLVARTCConstants;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -76,8 +78,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.video.VideoCanvas;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -1053,7 +1053,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
 
     PolyvLinkMicAGEventHandler polyvLinkMicAGEventHandler = new PolyvLinkMicAGEventHandler() {
         @Override
-        public void onAudioVolumeIndication(final IRtcEngineEventHandler.AudioVolumeInfo[] speakers, final int totalVolume) {
+        public void onAudioVolumeIndication(final PLVARTCAudioVolumeInfo[] speakers, final int totalVolume) {
             super.onAudioVolumeIndication(speakers, totalVolume);
             S_HANDLER.post(new Runnable() {
                 @Override
@@ -1133,7 +1133,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         }
 
         @Override
-        public void onLeaveChannel(IRtcEngineEventHandler.RtcStats stats) {
+        public void onLeaveChannel() {
             PolyvCommonLog.d(TAG, "onLeaveChannel");
             S_HANDLER.post(new Runnable() {
                 @Override
@@ -1317,7 +1317,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         try {
             if (show) {
                 PolyvLinkMicWrapper.getInstance().setupRemoteVideo(surfaceView,
-                        VideoCanvas.RENDER_MODE_FIT, Integer.valueOf(teacherId));
+                        PLVARTCConstants.RENDER_MODE_FIT, Integer.valueOf(teacherId));
             }
         } catch (Exception e) {
             PolyvCommonLog.exception(e);
