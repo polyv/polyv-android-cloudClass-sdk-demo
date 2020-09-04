@@ -27,7 +27,7 @@ import io.reactivex.functions.Consumer;
 public class PolyvSingleZipDownloadAndPlayExample {
 
     public static void testDownloadAndPlay(View attachedView, PolyvPlaybackVideoHelper helper, PolyvPlaybackVideoParams playbackVideoParams) {
-        String url = "http://liveimages.videocc.net/ppt/8205ac89d37e05513c5cb49dcb5f2705.zip?run=2234";
+        String url = "http://liveimages.videocc.net/ppt/d5c168fc26c3a1d5a33fe592b5ca41f5.zip?run=2234";
         PolyvSingleZipDownloadAndPlayExample.testDownloadZip(url, file -> {
             attachedView.post(() -> {
                 helper.startLocal(file, playbackVideoParams);

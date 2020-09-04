@@ -30,7 +30,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     api rootProject.ext.support.design
-    api 'com.easefun.polyv:polyvSDKCloudClass:0.7.5.4'
+    api 'com.easefun.polyv:polyvSDKCloudClass:0.7.5.5'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
     implementation 'com.github.bumptech.glide:okhttp3-integration:1.5.0'
 
