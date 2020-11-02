@@ -54,7 +54,7 @@
         android:layout_alignParentBottom="true"
         android:layout_gravity="center_vertical"
         android:layout_marginRight="10dp"
-        android:layout_toLeftOf="@id/video_screen_switch_port"
+        android:layout_toLeftOf="@+id/video_screen_switch_port"
         android:src="@drawable/polyv_ppt_sub_selector" />
 
     <ImageView

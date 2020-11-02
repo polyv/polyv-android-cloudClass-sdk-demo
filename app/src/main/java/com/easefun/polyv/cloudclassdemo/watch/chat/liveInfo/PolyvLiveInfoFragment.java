@@ -56,7 +56,7 @@ public class PolyvLiveInfoFragment extends Fragment {
     TextView tv_status;
 
     //状态变量
-    private int viewerCount = 0;
+    private long viewerCount = 0;
 
     //直播属性
     private int channelId;
@@ -248,7 +248,7 @@ public class PolyvLiveInfoFragment extends Fragment {
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="刷新View">
-    private void refreshViewerTv(int viewerCount) {
+    private void refreshViewerTv(long viewerCount) {
         String viewerCountText;
         if (viewerCount > 10000) {
             viewerCountText = String.format(Locale.CHINA, "%.1f", (double) viewerCount / 10000) + "w";

@@ -17,14 +17,14 @@
             android:id="@+id/plv_v_top_transparent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/plv_v_point_reward_top" />
+            android:layout_above="@+id/plv_v_point_reward_top" />
 
         <!--        top-->
         <View
             android:id="@+id/plv_v_point_reward_top"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_above="@id/plv_v_point_reward_middle"
+            android:layout_above="@+id/plv_v_point_reward_middle"
             android:background="#CF3F4E" />
 
         <ImageView
@@ -57,7 +57,7 @@
             android:id="@+id/plv_v_point_reward_middle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/plv_v_point_reward_bottom"
+            android:layout_above="@+id/plv_v_point_reward_bottom"
             android:background="@drawable/plv_gradient_point_reward_bg"
             android:orientation="vertical">
 

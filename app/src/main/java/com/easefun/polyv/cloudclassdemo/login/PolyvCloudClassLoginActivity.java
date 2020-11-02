@@ -415,10 +415,8 @@ public class PolyvCloudClassLoginActivity extends PolyvBaseActivity implements V
                 , new PolyvrResponseCallback<PolyvLiveStatusVO>() {
                     @Override
                     public void onSuccess(PolyvLiveStatusVO statusVO) {
-                        String data = statusVO.getData();
-                        String[] dataArr = data.split(",");
 
-                        final boolean isAlone = "alone".equals(dataArr[1]);//是否有ppt
+                        final boolean isAlone = statusVO.isAlone();//是否有ppt
 
                         requestLiveDetail(new Consumer<String>() {
                             @Override

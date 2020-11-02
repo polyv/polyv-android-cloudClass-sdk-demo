@@ -29,6 +29,8 @@ public class PolyvTouchContainerView extends FrameLayout {
     private int originLeft,portraitLeft = 0;
     private int originTop,portraitTop = 0;
 
+    private boolean isSetPortraitParam = false;
+
     //键盘弹起前得位置
     private int beforeSoftLeft = 0;
     private int beforeSoftTop = 0;
@@ -127,12 +129,14 @@ public class PolyvTouchContainerView extends FrameLayout {
             return;
         }
         PolyvCommonLog.d(TAG,"left ;"+layoutParams.leftMargin+"  width :"+getMeasuredWidth()+"  width :"+ScreenUtils.getScreenWidth());
-        portraitLeft = layoutParams.leftMargin;
-        portraitTop = layoutParams.topMargin;
+        if (!isSetPortraitParam) {
+            portraitLeft = layoutParams.leftMargin;
+            portraitTop = layoutParams.topMargin;
+            isSetPortraitParam = true;
 
-        Log.d(TAG, "resetFloatViewLand: portraitLeft :" + portraitLeft + " portraitTop :"
-                + portraitTop+ "   width :" + getMeasuredWidth());
-
+            Log.d(TAG, "resetFloatViewLand: portraitLeft :" + portraitLeft + " portraitTop :"
+                    + portraitTop+ "   width :" + getMeasuredWidth());
+        }
         layoutParams.leftMargin = 0;
         layoutParams.topMargin = 0;
         setLayoutParams(layoutParams);

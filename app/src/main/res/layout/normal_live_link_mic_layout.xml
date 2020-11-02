@@ -19,7 +19,7 @@
     </com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicBottomView>
 
     <com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvNormalLinkMicView
-        android:layout_toRightOf="@id/link_mic_fixed_position"
+        android:layout_toRightOf="@+id/link_mic_fixed_position"
         android:id="@+id/link_mic_layout_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

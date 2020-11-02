@@ -59,7 +59,7 @@
             android:id="@+id/sb_playprogress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/pb_ppt_video_switch"
+            android:layout_toStartOf="@+id/pb_ppt_video_switch"
             android:layout_toEndOf="@id/tv_totaltime"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"

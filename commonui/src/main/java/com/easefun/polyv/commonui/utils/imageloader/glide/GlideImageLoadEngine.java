@@ -1,6 +1,7 @@
 package com.easefun.polyv.commonui.utils.imageloader.glide;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;

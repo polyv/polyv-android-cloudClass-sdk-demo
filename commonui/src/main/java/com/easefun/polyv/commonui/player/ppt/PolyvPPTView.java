@@ -59,6 +59,7 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         View.inflate(context, R.layout.polyv_ppt_webview_layout, this);
         polyvPPTWebView = findViewById(R.id.polyv_ppt_web);
         pptLoadingView = findViewById(R.id.polyv_ppt_default_icon);
+        setDefaultTextZoom();
         loadWeb();
     }
 
@@ -66,6 +67,12 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
     public void addWebProcessor(IPolyvWebMessageProcessor processor) {
         processor.bindWebView(polyvPPTWebView);
         polyvPPTWebView.registerProcessor(processor);
+    }
+
+    private void setDefaultTextZoom() {
+        // 用户设置了手机显示的字体大小后，如字体过大可能导致PPT文字显示不全
+        // 这里强制设置字体为标准的缩放大小
+        polyvPPTWebView.getSettings().setTextZoom(100);
     }
 
     private void loadWeb() {

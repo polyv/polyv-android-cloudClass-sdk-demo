@@ -299,6 +299,9 @@ public class PolyvReceiveMessageHolder extends ClickableViewHolder<Object, Polyv
 
         //设置不同用户类型的字体颜色
         int fontColor;
+        if (userType==null) {
+            userType="";
+        }
         switch (userType) {
             case USERTYPE_TEACHER:
                 fontColor = PolyvChatUIConfig.FontColor.color_teacher;
