@@ -59,8 +59,21 @@ public class PolyvPPTView extends FrameLayout implements IPolyvPPTView {
         View.inflate(context, R.layout.polyv_ppt_webview_layout, this);
         polyvPPTWebView = findViewById(R.id.polyv_ppt_web);
         pptLoadingView = findViewById(R.id.polyv_ppt_default_icon);
+        initialPPTViewStyle();
         setDefaultTextZoom();
         loadWeb();
+    }
+
+    /**
+     * 设置PPT加载时的默认样式，应在{@link PolyvPPTWebView#loadWeb()}前调用
+     */
+    private void initialPPTViewStyle() {
+        // 设置ppt加载时中间占位图图片地址
+        polyvPPTWebView.setPptBackgroundImg("https://player.polyv.net/resp/ppt-h5/latest/images/ppt-back-dark.png");
+        // 设置占位图图片宽度，应带单位px或者以百分号表示
+        polyvPPTWebView.setPptBackgroundImgWidth("12%");
+        // 设置ppt加载时背景图片颜色，不能使用#FFFFFF或者0xFFFFFF表示
+        polyvPPTWebView.setPptBackgroundColor("rgb(57,56,66)");
     }
 
     @Override

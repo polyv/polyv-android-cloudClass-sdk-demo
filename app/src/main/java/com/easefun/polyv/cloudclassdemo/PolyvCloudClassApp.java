@@ -29,7 +29,10 @@ public class PolyvCloudClassApp extends MultiDexApplication {
         PolyvCommonLog.setDebug(true);
         PolyvLiveSDKClient liveSDKClient = PolyvLiveSDKClient.getInstance();
         liveSDKClient.initContext(this);
-        liveSDKClient.enableHttpDns(false);
+        //0.16.0 起默认开启 HttpDns
+//        liveSDKClient.enableHttpDns(true);
+        //如果需要支持 IPV6，请开启enableIPV6=true。默认为false。开启后自动关闭 HttpDns
+//        liveSDKClient.enableIPV6(false);
 
         PolyvVodSDKClient client = PolyvVodSDKClient.getInstance();
         //使用SDK加密串来配置
