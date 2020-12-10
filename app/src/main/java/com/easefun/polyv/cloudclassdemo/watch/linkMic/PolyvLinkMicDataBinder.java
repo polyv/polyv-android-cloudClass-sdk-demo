@@ -21,6 +21,7 @@ import com.easefun.polyv.cloudclass.chat.event.PolyvSendCupEvent;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.utils.PolyvAppUtils;
+import com.easefun.polyv.foundationsdk.utils.PolyvFormatUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
@@ -256,7 +257,7 @@ public class PolyvLinkMicDataBinder extends IPolyvDataBinder{
             }
         }
 
-        long longUid = Long.valueOf(uid);
+        long longUid = PolyvFormatUtils.parseLong(uid);
         if (uid.equals(myUid)) {
             PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
                     PLVARTCConstants.RENDER_MODE_FIT, (int) longUid);

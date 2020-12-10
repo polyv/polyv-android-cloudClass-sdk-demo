@@ -56,6 +56,7 @@ import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvAppUtils;
+import com.easefun.polyv.foundationsdk.utils.PolyvFormatUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicAGEventHandler;
@@ -67,6 +68,8 @@ import com.easefun.polyv.thirdpart.blankj.utilcode.util.LogUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.plv.rtc.PLVARTCAudioVolumeInfo;
 import com.plv.rtc.PLVARTCConstants;
 
@@ -89,7 +92,6 @@ import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTPro
 import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.CHAT_LOGIN;
 import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.ERASE_STATUS;
 import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.PPT_PAINT_STATUS;
-import static com.easefun.polyv.businesssdk.api.common.ppt.PolyvCloudClassPPTProcessor.SETSEIDATA;
 import static com.easefun.polyv.businesssdk.model.ppt.PolyvPPTAuthentic.PermissionType.VOICE;
 import static com.easefun.polyv.businesssdk.sp.PolyvPreConstant.LINK_MIC_TOKEN;
 import static com.easefun.polyv.cloudclass.PolyvSocketEvent.ONSLICECONTROL;
@@ -897,6 +899,30 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             public void onDestroy() {
             }
         });
+
+        // 进入直播间时 主副屏跟随讲师端显示
+        PolyvChatManager.getInstance().addNewMessageListener(new PolyvNewMessageListener() {
+            @Override
+            public void onNewMessage(String message, String event) {
+                if (ONSLICEID.equals(event)) {
+                    PolyvChatManager.getInstance().removeNewMessageListener(this);
+
+                    JsonObject jsonObject = new JsonParser().parse(message).getAsJsonObject();
+                    // pptAndVideoPosition 0表示讲师端目前ppt在主屏 1表示讲师端目前播放器在主屏
+                    int pptAndVideoPosition = jsonObject.get("pptAndVedioPosition").getAsInt();
+                    // 跟随讲师端主副屏位置
+                    boolean needToChangePptVideoPosition = pptAndVideoPosition == 0 ^ pptShowMainScreen();
+                    if (needToChangePptVideoPosition) {
+                        controller.changePPTVideoLocationUncheckPPT();
+                    }
+                }
+            }
+
+            @Override
+            public void onDestroy() {
+
+            }
+        });
     }
 
     private void processLeaveMessage(String userId) {
@@ -1317,7 +1343,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         try {
             if (show) {
                 PolyvLinkMicWrapper.getInstance().setupRemoteVideo(surfaceView,
-                        PLVARTCConstants.RENDER_MODE_FIT, Integer.valueOf(teacherId));
+                        PLVARTCConstants.RENDER_MODE_FIT, PolyvFormatUtils.parseInt(teacherId));
             }
         } catch (Exception e) {
             PolyvCommonLog.exception(e);
@@ -1521,7 +1547,7 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private void joinLinkByParticipant() {
         initSupportRTC();
         if(!TextUtils.isEmpty(PolyvVClassGlobalConfig.viewerId)){
-            PolyvLinkMicWrapper.getInstance().getEngineConfig().mUid = Integer.valueOf(PolyvVClassGlobalConfig.viewerId);
+            PolyvLinkMicWrapper.getInstance().getEngineConfig().mUid = PolyvFormatUtils.parseInt(PolyvVClassGlobalConfig.viewerId);
         }
         createLinkMicLayout(linkMicLayout, true);
 

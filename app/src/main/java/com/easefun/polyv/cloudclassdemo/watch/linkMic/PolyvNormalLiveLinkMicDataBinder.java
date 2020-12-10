@@ -21,6 +21,7 @@ import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
 import com.easefun.polyv.foundationsdk.utils.PolyvAppUtils;
+import com.easefun.polyv.foundationsdk.utils.PolyvFormatUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 import com.plv.rtc.PLVARTCAudioVolumeInfo;
@@ -207,7 +208,7 @@ public class PolyvNormalLiveLinkMicDataBinder extends IPolyvDataBinder {
             holder.soundRoundView.setVisibility(View.VISIBLE);
             PolyvCommonLog.d(TAG, "cameraOpen:" + cameraOpen);
         }
-        long longUid = Long.valueOf(uid);
+        long longUid = PolyvFormatUtils.parseLong(uid);
         if (uid.equals(myUid)) {
             PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
                     PLVARTCConstants.RENDER_MODE_FIT, (int) longUid);

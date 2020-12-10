@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.Log;
 
+import com.easefun.polyv.foundationsdk.utils.PolyvFormatUtils;
+
 import java.lang.ref.WeakReference;
 import java.util.Random;
 
@@ -56,7 +58,7 @@ public class BadgeAnimator extends ValueAnimator {
         for (int i = 0; i < mFragments.length; i++) {
             for (int j = 0; j < mFragments[i].length; j++) {
                 BitmapFragment bf = mFragments[i][j];
-                float value = Float.parseFloat(getAnimatedValue().toString());
+                float value = PolyvFormatUtils.parseFloat(getAnimatedValue().toString());
                 bf.updata(value, canvas);
             }
         }

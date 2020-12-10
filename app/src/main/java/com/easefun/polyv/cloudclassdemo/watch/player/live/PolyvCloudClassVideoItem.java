@@ -50,6 +50,7 @@ import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxBus;
 import com.easefun.polyv.foundationsdk.utils.PolyvControlUtils;
+import com.easefun.polyv.foundationsdk.utils.PolyvFormatUtils;
 import com.easefun.polyv.foundationsdk.utils.PolyvGsonUtil;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
@@ -511,7 +512,7 @@ public class PolyvCloudClassVideoItem extends FrameLayout
         polyvCloudClassVideoView.setOnSEIRefreshListener(new IPolyvVideoViewListenerEvent.OnSEIRefreshListener() {
             @Override
             public void onSEIRefresh(int seiType, byte[] seiData) {
-                long ts = Long.valueOf(new String(seiData));
+                long ts = PolyvFormatUtils.parseLong(new String(seiData));
                 PolyvCommonLog.d(TAG, "sei ts :" + ts);
                 if (polyvPPTItem != null) {
                     polyvPPTItem.getPPTView().sendWebMessage(SETSEIDATA, "{\"time\":" + ts + "}");

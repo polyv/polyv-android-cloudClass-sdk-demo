@@ -17,6 +17,7 @@ import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.PolyvLinkMicListView;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.rx.PolyvRxTimer;
+import com.easefun.polyv.foundationsdk.utils.PolyvFormatUtils;
 import com.easefun.polyv.linkmic.PolyvLinkMicWrapper;
 import com.plv.rtc.PLVARTCConstants;
 
@@ -145,7 +146,7 @@ public class PolyvLinkMicAdapter extends RecyclerView.Adapter<PolyvLinkMicAdapte
             PolyvCommonLog.d(TAG, "cameraOpen:" + cameraOpen);
             surfaceView.setVisibility(cameraOpen ? View.VISIBLE : View.INVISIBLE);
         }
-        long longUid = Long.valueOf(uid);
+        long longUid = PolyvFormatUtils.parseLong(uid);
         if (uid == myUid) {
             PolyvLinkMicWrapper.getInstance().setupLocalVideo(surfaceView,
                     PLVARTCConstants.RENDER_MODE_HIDDEN, (int) longUid);

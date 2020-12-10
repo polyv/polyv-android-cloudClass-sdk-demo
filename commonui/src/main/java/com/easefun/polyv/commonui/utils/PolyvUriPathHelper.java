@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.foundationsdk.utils.PolyvFormatUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -148,7 +149,7 @@ public class PolyvUriPathHelper {
             else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),
-                        Long.valueOf(id));
+                        PolyvFormatUtils.parseLong(id));
                 return getDataColumn(context, contentUri, null, null);
             }
             // MediaProvider
