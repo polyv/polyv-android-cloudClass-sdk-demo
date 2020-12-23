@@ -35,8 +35,8 @@ import com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView;
 import com.easefun.polyv.cloudclassdemo.R;
 import com.easefun.polyv.cloudclassdemo.watch.PolyvDemoClient;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.IPolyvDataBinder;
-import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvNormalLiveLinkMicDataBinder;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvLinkMicDataBinder;
+import com.easefun.polyv.cloudclassdemo.watch.linkMic.PolyvNormalLiveLinkMicDataBinder;
 import com.easefun.polyv.cloudclassdemo.watch.linkMic.widget.IPolyvRotateBaseView;
 import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.base.PolyvBaseActivity;
@@ -503,14 +503,12 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
         if (micphoneStatus == null) {
             return;
         }
-        videoView.setLinkType(micphoneStatus.getType());
         String type = micphoneStatus.getType();
-        if (("Video".equals(type) || "Audio".equals(type))
-                && "close".equals(micphoneStatus.getStatus())) {//挂断
-//                restartPlay();//用restart比较好
+        boolean isAudio = "audio".equals(type);
+        videoView.setLinkType(isAudio ? "audio" : "video");
+        if ("close".equals(micphoneStatus.getStatus())) {//挂断
             processLeaveMessage(micphoneStatus.getUserId());
-        } else if (("audio".equals(type) || "video".equals(type))
-                && "close".equals(micphoneStatus.getStatus())) {//断开连麦
+        } else if ("close".equals(micphoneStatus.getStatus())) {//断开连麦
             PolyvLinkMicWrapper.getInstance().leaveChannel();
 
             S_HANDLER.post(new Runnable() {
