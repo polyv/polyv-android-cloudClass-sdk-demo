@@ -504,11 +504,12 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
             return;
         }
         String type = micphoneStatus.getType();
+        String userId = micphoneStatus.getUserId();
         boolean isAudio = "audio".equals(type);
         videoView.setLinkType(isAudio ? "audio" : "video");
-        if ("close".equals(micphoneStatus.getStatus())) {//挂断
-            processLeaveMessage(micphoneStatus.getUserId());
-        } else if ("close".equals(micphoneStatus.getStatus())) {//断开连麦
+        if ("close".equals(micphoneStatus.getStatus()) && !TextUtils.isEmpty(userId)) {//挂断
+            processLeaveMessage(userId);
+        } else if ("close".equals(micphoneStatus.getStatus()) && TextUtils.isEmpty(userId)) {//断开连麦
             PolyvLinkMicWrapper.getInstance().leaveChannel();
 
             S_HANDLER.post(new Runnable() {
@@ -1026,8 +1027,6 @@ public class PolyvCloudClassVideoHelper extends PolyvCommonVideoHelper<PolyvClou
     private void clearLinkStatus() {
         if(joinSuccess){
             PolyvLinkMicWrapper.getInstance().leaveChannel();
-        }else {
-            leaveChannel();
         }
 
         linkMicLayoutParent.setVisibility(INVISIBLE);
