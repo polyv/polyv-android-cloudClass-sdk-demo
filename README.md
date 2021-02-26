@@ -73,6 +73,9 @@ polyv-android-cloudClass-sdk-demo
 0.15.1版API文档请看[v0.15.1 API](http://repo.polyv.net/android/cloudclass/javadoc/0.15.0/index.html)
 
 0.15.2版API文档请看[v0.15.2 API](http://repo.polyv.net/android/cloudclass/javadoc/0.15.0/index.html)
+
+0.16.2版API文档请看[v0.15.2 API](http://repo.polyv.net/android/cloudclass/javadoc/0.16.2/index.html)
+
 ### 登录
 
 - #### 直播登录
