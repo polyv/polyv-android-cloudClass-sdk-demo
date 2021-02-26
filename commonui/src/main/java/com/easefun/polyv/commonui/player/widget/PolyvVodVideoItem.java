@@ -18,6 +18,7 @@ import com.easefun.polyv.businesssdk.api.auxiliary.IPolyvAuxiliaryVideoViewListe
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvPlayError;
 import com.easefun.polyv.businesssdk.api.common.player.listener.IPolyvVideoViewListenerEvent;
+import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.businesssdk.model.video.PolyvLiveMarqueeVO;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeItem;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeUtils;
@@ -485,6 +486,11 @@ public class PolyvVodVideoItem extends FrameLayout implements View.OnClickListen
     @Override
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    @Override
+    public void setBaseVideoParams(PolyvBaseVideoParams polyvBaseVideoParams) {
+
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.player.PolyvPlayError;
 import com.easefun.polyv.businesssdk.api.common.player.listener.IPolyvVideoViewListenerEvent;
 import com.easefun.polyv.businesssdk.model.link.PolyvMicphoneStatus;
+import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.businesssdk.model.video.PolyvLiveMarqueeVO;
 import com.easefun.polyv.businesssdk.model.video.PolyvMediaPlayMode;
 import com.easefun.polyv.businesssdk.sub.marquee.PolyvMarqueeItem;
@@ -113,6 +114,8 @@ public class PolyvCloudClassVideoItem extends FrameLayout
     private CountDownTimer startTimeCountDown;
     //直播开始时间
     private String liveStartTime;
+
+    private PolyvBaseVideoParams baseVideoParams;
 
 
     /**
@@ -787,6 +790,11 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    @Override
+    public void setBaseVideoParams(PolyvBaseVideoParams polyvBaseVideoParams) {
+        baseVideoParams = polyvBaseVideoParams;
     }
 
     // <editor-fold defaultstate="collapsed" desc="根据连麦状态调整布局位置">

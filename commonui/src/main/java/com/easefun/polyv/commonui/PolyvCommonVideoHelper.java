@@ -19,12 +19,14 @@ import com.easefun.polyv.cloudclass.video.api.IPolyvCloudClassVideoView;
 import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTView;
+import com.easefun.polyv.commonui.utils.PLVNetworkBroadcastReceiver;
 import com.easefun.polyv.commonui.widget.PolyvTouchContainerView;
 import com.easefun.polyv.foundationsdk.config.PolyvPlayOption;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
 import com.easefun.polyv.foundationsdk.permission.PolyvPermissionManager;
 import com.easefun.polyv.foundationsdk.utils.PolyvScreenUtils;
 import com.easefun.polyv.thirdpart.blankj.utilcode.util.ScreenUtils;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.Utils;
 
 /**
  * @author df
@@ -52,6 +54,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     protected  static final Handler S_HANDLER;
     protected PolyvPermissionManager permissionManager;
+    protected PLVNetworkBroadcastReceiver networkBroadcastReceiver = new PLVNetworkBroadcastReceiver();
 
     private boolean firstSwitchLocation = true;//第一次切换主副屏 不用动画
 
@@ -77,6 +80,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         controller.setMediaPlayer(videoView);
 
         initPPT(videoItem, polyvPPTItem);
+        networkBroadcastReceiver.init(Utils.getApp());
 
     }
 
@@ -253,6 +257,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
 
     public void startPlay(PolyvBaseVideoParams polyvBaseVideoParams) {
         playOption = polyvBaseVideoParams;
+        videoItem.setBaseVideoParams(polyvBaseVideoParams);
         if (videoView instanceof IPolyvCloudClassVideoView) {
             videoView.playByMode(polyvBaseVideoParams, PolyvPlayOption.PLAYMODE_LIVE);
         } else if (videoView instanceof PolyvVodVideoView || videoView instanceof PolyvPlaybackVideoView) {
@@ -278,7 +283,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
             videoItem.setNickName(studentNickName);
         }
     }
-    
+
     protected void openVideoViewSound() {
         if(videoView != null/* && videoViewVolume >0*/ && videoView.getIjkMediaPlayer() != null){
 //            videoView.setVolume(videoViewVolume);
@@ -321,6 +326,7 @@ public abstract class PolyvCommonVideoHelper<T extends IPolyvVideoItem<P, Q>, P 
         videoView.destroy();
         controller.destroy();
         videoItem.destroy();
+        networkBroadcastReceiver.destroy(Utils.getApp());
 
         videoView = null;
         controller = null;

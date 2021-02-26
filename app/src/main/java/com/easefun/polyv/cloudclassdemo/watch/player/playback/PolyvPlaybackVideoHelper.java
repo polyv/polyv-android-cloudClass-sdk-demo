@@ -9,7 +9,9 @@ import com.easefun.polyv.businesssdk.web.IPolyvWebMessageProcessor;
 import com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackVideoView;
 import com.easefun.polyv.commonui.PolyvCommonVideoHelper;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
+import com.easefun.polyv.commonui.utils.PLVNetworkBroadcastReceiver;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
+import com.easefun.polyv.thirdpart.blankj.utilcode.util.ToastUtils;
 import com.github.lzyzsd.jsbridge.CallBackFunction;
 
 public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlaybackVideoItem,
@@ -20,6 +22,13 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
 
     public PolyvPlaybackVideoHelper(PolyvPlaybackVideoItem videoItem, PolyvPPTItem polyvPPTItem) {
         super(videoItem, polyvPPTItem);
+        networkBroadcastReceiver.setListener(new PLVNetworkBroadcastReceiver.OnNetworkBroadcastReceiverListener() {
+            @Override
+            public void onConnectedMobile() {
+                PolyvCommonLog.d(TAG, "onConnectedMobile");
+                ToastUtils.showShort("当前为非Wi-Fi环境，请注意流量消耗");
+            }
+        });
     }
 
     @Override
@@ -66,19 +75,19 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
 
     @Override
     protected void addCloudClassWebProcessor() {
-        if(pptView != null){
+        if (pptView != null) {
             IPolyvWebMessageProcessor<PolyvPPTVodProcessor.PolyvVideoPPTCallback> processor = new
                     PolyvPPTVodProcessor(null);
             pptView.addWebProcessor(processor);
             processor.registerJSHandler(new PolyvPPTVodProcessor.PolyvVideoPPTCallback() {
                 @Override
                 public void callVideoDuration(CallBackFunction function) {
-                    PolyvCommonLog.d(TAG,"callVideoDuration:");
+                    PolyvCommonLog.d(TAG, "callVideoDuration:");
                     if (videoView == null) {
                         return;
                     }
                     String time = "{\"time\":" + videoView.getCurrentPosition() + "}";
-                    PolyvCommonLog.d(TAG,"time:"+time);
+                    PolyvCommonLog.d(TAG, "time:" + time);
                     function.onCallBack(time);
                 }
 
@@ -90,9 +99,9 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
                 @Override
                 public void pptPositionChange(boolean isVideoInMain) {
 
-                    if(!controller.isShowPPTSubView() && isVideoInMain) {
+                    if (!controller.isShowPPTSubView() && isVideoInMain) {
                         controller.changePPTVideoLocation();
-                    } else if(controller.isShowPPTSubView() && !isVideoInMain){
+                    } else if (controller.isShowPPTSubView() && !isVideoInMain) {
                         controller.changePPTVideoLocation();
                     }
                 }
@@ -108,7 +117,7 @@ public class PolyvPlaybackVideoHelper extends PolyvCommonVideoHelper<PolyvPlayba
     @Override
     public void resume() {
         super.resume();
-        if(videoView != null && !videoView.isPlaying()){
+        if (videoView != null && !videoView.isPlaying()) {
             videoView.start();
         }
     }

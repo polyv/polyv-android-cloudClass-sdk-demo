@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    tools:parentTag="FrameLayout">
+
+    <TextView
+        android:id="@+id/plv_player_retry_tv"
+        android:layout_width="80dp"
+        android:layout_height="24dp"
+        android:background="@drawable/plvlc_bg_player_retry_btn"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="重试"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

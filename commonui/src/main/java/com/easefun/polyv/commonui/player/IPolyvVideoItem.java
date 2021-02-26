@@ -5,6 +5,7 @@ import android.view.View;
 import com.easefun.polyv.businesssdk.api.auxiliary.PolyvAuxiliaryVideoview;
 import com.easefun.polyv.businesssdk.api.common.meidaControl.IPolyvMediaController;
 import com.easefun.polyv.businesssdk.api.common.player.microplayer.PolyvCommonVideoView;
+import com.easefun.polyv.businesssdk.model.video.PolyvBaseVideoParams;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 
 /**
@@ -30,4 +31,6 @@ public interface IPolyvVideoItem<T extends PolyvCommonVideoView,R extends IPolyv
     void destroy();
 
     void setNickName(String studentNickName);
+
+    void setBaseVideoParams(PolyvBaseVideoParams polyvBaseVideoParams);
 }
