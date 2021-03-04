@@ -1,3 +1,5 @@
+# 该项目已废弃不再维护，请移步至：[保利威直播多场景SDK](https://github.com/polyv/polyv-android-livescenes-sdk-demo)
+
 polyv-android-cloudClass-sdk-demo
 ===
 
