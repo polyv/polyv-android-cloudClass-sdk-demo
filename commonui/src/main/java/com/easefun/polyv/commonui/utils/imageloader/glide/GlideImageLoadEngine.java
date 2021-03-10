@@ -1,7 +1,6 @@
 package com.easefun.polyv.commonui.utils.imageloader.glide;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -19,10 +18,10 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.easefun.polyv.commonui.utils.imageloader.glide.progress.PolyvMyProgressManager;
-import com.easefun.polyv.commonui.utils.imageloader.glide.progress.PolyvOnProgressListener;
 import com.easefun.polyv.commonui.utils.imageloader.IImageLoadEngine;
 import com.easefun.polyv.commonui.utils.imageloader.IPolyvProgressListener;
+import com.easefun.polyv.commonui.utils.imageloader.glide.progress.PolyvMyProgressManager;
+import com.easefun.polyv.commonui.utils.imageloader.glide.progress.PolyvOnProgressListener;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
@@ -41,6 +40,11 @@ public class GlideImageLoadEngine implements IImageLoadEngine {
         Glide.with(context)
                 .load(url)
                 .into(imageView);
+    }
+
+    @Override
+    public void loadImage(Context context, int resId, ImageView imageView) {
+        Glide.with(context).load(resId).into(imageView);
     }
 
     @Override

@@ -55,6 +55,13 @@ public class PolyvImageLoader {
     }
 
     /**
+     * 加载图片，使用resource id
+     */
+    public void loadImage(Context context, @DrawableRes int resId, ImageView imageView) {
+        loadEngine.loadImage(context, resId, imageView);
+    }
+
+    /**
      * 加载图片：带有进度监听。
      */
     public void loadImage(Context context, String url, final int position, @DrawableRes int errorRes, final IPolyvProgressListener listener) {

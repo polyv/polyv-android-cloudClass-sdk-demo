@@ -8,8 +8,8 @@
     <com.easefun.polyv.cloudclass.video.PolyvCloudClassVideoView
         android:id="@+id/cloudschool_videoview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
         <ImageView
             android:visibility="gone"
             android:id="@+id/iv_screenshot"
@@ -17,6 +17,11 @@
             android:layout_height="match_parent" />
 
         <include layout="@layout/polyv_cloudclass_audio_mode_layout" />
+
+        <com.easefun.polyv.commonui.player.widget.PolyvPlayerLogoView
+            android:id="@+id/cloud_class_logo_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <!-- 主播放器载入状态指示器 -->
         <com.easefun.polyv.commonui.player.widget.PolyvLoadingLayout

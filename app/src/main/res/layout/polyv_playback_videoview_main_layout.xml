@@ -19,7 +19,12 @@
             android:layout_gravity="center"
             android:visibility="gone" />
 
-        <include layout="@layout/polyv_nostream_layout"/>
+        <com.easefun.polyv.commonui.player.widget.PolyvPlayerLogoView
+            android:id="@+id/playback_logo_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include layout="@layout/polyv_nostream_layout" />
     </com.easefun.polyv.cloudclass.playback.video.PolyvPlaybackVideoView>
 
 

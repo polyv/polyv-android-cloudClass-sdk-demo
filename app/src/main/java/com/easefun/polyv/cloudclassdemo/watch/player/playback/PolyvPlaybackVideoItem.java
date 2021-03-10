@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.easefun.polyv.commonui.player.PolyvMediaInfoType;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.widget.PolyvLightTipsView;
 import com.easefun.polyv.commonui.player.widget.PolyvLoadingLayout;
+import com.easefun.polyv.commonui.player.widget.PolyvPlayerLogoView;
 import com.easefun.polyv.commonui.player.widget.PolyvPlayerRetryLayout;
 import com.easefun.polyv.commonui.player.widget.PolyvProgressTipsView;
 import com.easefun.polyv.commonui.player.widget.PolyvVolumeTipsView;
@@ -47,6 +49,8 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
     private PolyvLightTipsView polyvLightTipsView;
     private PolyvVolumeTipsView tipsviewVolume;
     private PolyvProgressTipsView tipsviewProgress;
+    // Logo
+    private PolyvPlayerLogoView playbackLogoView;
     //手势滑动进度
     private int fastForwardPos = 0;
 
@@ -109,6 +113,8 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
         videoView.setNoStreamIndicator(noStreamView);
 
         loadingview.bindVideoView(videoView);
+
+        playbackLogoView = findViewById(R.id.playback_logo_view);
     }
 
     private void initVideoView() {
@@ -318,6 +324,20 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
                         marqueeItem, nickName);
             }
         });
+
+        videoView.setOnGetLogoListener(new IPolyvVideoViewListenerEvent.OnGetLogoListener() {
+            @Override
+            public void onLogo(String logoImage, int logoAlpha, int logoPosition, String logoHref) {
+                if (TextUtils.isEmpty(logoImage)) {
+                    return;
+                }
+                if (playbackLogoView != null) {
+                    playbackLogoView.removeAllViews();
+                    playbackLogoView.addLogo(new PolyvPlayerLogoView.LogoParam().setWidth(0.1F).setHeight(0.1F)
+                            .setAlpha(logoAlpha).setOffsetX(0.05F).setOffsetY(0.05F).setPos(logoPosition).setResUrl(logoImage));
+                }
+            }
+        });
     }
 
     @Override
@@ -402,6 +422,11 @@ public class PolyvPlaybackVideoItem extends FrameLayout implements View.OnClickL
         if (tipsviewVolume != null) {
             tipsviewVolume.removeAllViews();
             tipsviewVolume = null;
+        }
+
+        if (playbackLogoView != null) {
+            playbackLogoView.removeAllViews();
+            playbackLogoView = null;
         }
     }
 

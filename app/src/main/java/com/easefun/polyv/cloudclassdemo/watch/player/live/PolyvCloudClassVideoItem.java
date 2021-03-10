@@ -46,6 +46,7 @@ import com.easefun.polyv.commonui.player.IPolyvVideoItem;
 import com.easefun.polyv.commonui.player.ppt.PolyvPPTItem;
 import com.easefun.polyv.commonui.player.widget.PolyvLightTipsView;
 import com.easefun.polyv.commonui.player.widget.PolyvLoadingLayout;
+import com.easefun.polyv.commonui.player.widget.PolyvPlayerLogoView;
 import com.easefun.polyv.commonui.player.widget.PolyvVolumeTipsView;
 import com.easefun.polyv.commonui.utils.imageloader.PolyvImageLoader;
 import com.easefun.polyv.foundationsdk.log.PolyvCommonLog;
@@ -109,6 +110,9 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
     //只听音频View
     private IPolyvCloudClassAudioModeView audioModeView;
+
+    // Logo
+    private PolyvPlayerLogoView cloudClassLogoView;
 
     //开始时间倒计时器
     private CountDownTimer startTimeCountDown;
@@ -272,6 +276,8 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
         //打开弹幕下的竖屏
 //        controller.enableDanmuInPortrait();
+
+        cloudClassLogoView = findViewById(R.id.cloud_class_logo_view);
     }
 
     private void initialVideoView() {
@@ -330,7 +336,6 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 controller.handsUpAuto();
 
                 stopLiveCountDown();
-
             }
 
             @Override
@@ -522,6 +527,19 @@ public class PolyvCloudClassVideoItem extends FrameLayout
                 }
             }
         });
+        polyvCloudClassVideoView.setOnGetLogoListener(new IPolyvVideoViewListenerEvent.OnGetLogoListener() {
+            @Override
+            public void onLogo(String logoImage, int logoAlpha, int logoPosition, String logoHref) {
+                if (TextUtils.isEmpty(logoImage)) {
+                    return;
+                }
+                if (cloudClassLogoView != null) {
+                    cloudClassLogoView.removeAllViews();
+                    cloudClassLogoView.addLogo(new PolyvPlayerLogoView.LogoParam().setWidth(0.1F).setHeight(0.1F)
+                            .setAlpha(logoAlpha).setOffsetX(0.05F).setOffsetY(0.05F).setPos(logoPosition).setResUrl(logoImage));
+                }
+            }
+        });
     }
 
 
@@ -623,6 +641,11 @@ public class PolyvCloudClassVideoItem extends FrameLayout
 
         if (landscapeDanmuSender != null) {
             landscapeDanmuSender.dismiss();
+        }
+
+        if (cloudClassLogoView != null) {
+            cloudClassLogoView.removeAllViews();
+            cloudClassLogoView = null;
         }
 
         stopLiveCountDown();
